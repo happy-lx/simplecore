@@ -1,0 +1,16 @@
+[
+  {
+    "class":"firrtl.options.OutputAnnotationFileAnnotation",
+    "file":"alu_module"
+  },
+  {
+    "class":"firrtl.options.TargetDirAnnotation",
+    "directory":"./generated/alutest/simpleshell.testMain2119791853"
+  },
+  {
+    "class":"logger.LogLevelAnnotation",
+    "globalLogLevel":{
+      
+    }
+  }
+]
