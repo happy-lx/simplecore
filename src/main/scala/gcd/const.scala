@@ -96,10 +96,10 @@ trait core
     val Y = true.B
     val N = false.B
 
-    val STARTADDR = 0x80000000.U(64.W)
+    val STARTADDR = 0x80000000L.U(64.W)
 }
 
-object CSRConstants extends PRV
+trait CSRConstants extends PRV
 {
     //csr operation
     val csr_op_sz = 3.W 
@@ -118,25 +118,25 @@ object CSRConstants extends PRV
     val csr_MSB = 31
 }
 
-object CpathConstants 
+trait CpathConstants 
 {
     //pc selector
-    val pc_4 = 0.U(2.W)
-    val pc_j = 1.U(2.W)
-    val pc_branch = 2.U(2.W)
-    val pc_jr = 3.U(2.W)
-    val pc_redir = 4.U(2.W)
+    val pc_4 = 0.U(3.W)
+    val pc_j = 1.U(3.W)
+    val pc_branch = 2.U(3.W)
+    val pc_jr = 3.U(3.W)
+    val pc_redir = 4.U(3.W)
 
     //brach type selector
-    val BR_N = 0.U(3.W)
-    val BR_EQ = 1.U(3.W)
-    val BR_NEQ = 2.U(3.W)
-    val BR_LT = 3.U(3.W)
-    val BR_LTU = 4.U(3.W)
-    val BR_GE = 5.U(3.W)
-    val BR_GEU = 6.U(3.W)
-    val BR_J = 7.U(3.W)
-    val BR_JR = 8.U(3.W)
+    val BR_N = 0.U(4.W)
+    val BR_EQ = 1.U(4.W)
+    val BR_NEQ = 2.U(4.W)
+    val BR_LT = 3.U(4.W)
+    val BR_LTU = 4.U(4.W)
+    val BR_GE = 5.U(4.W)
+    val BR_GEU = 6.U(4.W)
+    val BR_J = 7.U(4.W)
+    val BR_JR = 8.U(4.W)
 
     //OP1 selector
     val OP1_X = 0.U(2.W)
@@ -199,5 +199,5 @@ object Cause
     val store_page_fault =      15.U(64.W)
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants
 {}

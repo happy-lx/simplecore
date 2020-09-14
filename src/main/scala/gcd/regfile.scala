@@ -1,4 +1,5 @@
-package simpleshell
+package simplecore
+
 import chisel3._
 import chisel3.util._
 
@@ -20,7 +21,7 @@ class RegfileIO() extends Bundle
 }
 
 
-class Regfile() extends Module
+class Regfile extends Module
 {
     val io = IO(new RegfileIO())
 

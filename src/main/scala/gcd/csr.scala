@@ -1,9 +1,11 @@
-package simpleshell
+package simplecore
 
 import chisel3._
 import chisel3.util._
 
-import constants.(CSRConstants,Constraints)._
+import constants.RV64I._
+import constants.RV64M._
+import constants.Constraints._
 import constants.Cause._
 
 class MIP extends Bundle
@@ -45,15 +47,15 @@ class Mstatus extends Bundle
 
 class CSRIO extends Bundle
 {
-    val instruction = Input(32.W)
-    val csr_op = Input(csr_op_sz)
-    val data_in = Input(64.W)
+    val instruction = Input(UInt(32.W))
+    val csr_op = Input(UInt(csr_op_sz))
+    val data_in = Input(UInt(64.W))
     val hasException = Input(Bool())
     val hasStall = Input(Bool())
-    val in_pc = Input(64.W)
+    val in_pc = Input(UInt(64.W))
 
-    val redir_target = Output(64.W)
-    val csr_info = Output(64.W)
+    val redir_target = Output(UInt(64.W))
+    val csr_info = Output(UInt(64.W))
     val isredir = Output(Bool())
 }
 
@@ -61,19 +63,21 @@ class CSRfile extends Module
 {
     val io = IO(new CSRIO)
 
+    io := DontCare
+
     //当是特定的操作，并且没有异常发生，也没有阻塞的时候，才可以写
     val wen = WireInit((io.csr_op === csr_w || io.csr_op === csr_s || io.csr_op === csr_c) && !io.hasException && !io.hasStall)
 
     val mtvec = RegInit(UInt(64.W),0.U)
     val mepc = RegInit(UInt(64.W),0.U)
-    val mcause = RegInit(UInt(64.W),0x8000000000000000L.U)
+    val mcause = RegInit(UInt(64.W),0.U)//默认值代表了一个异常情况，但是并不一定会触发
     val mie = RegInit(0.U.asTypeOf(new MIP()))
     val mip = RegInit(0.U.asTypeOf(new MIP()))
     val mtval = RegInit(0.U(64.W))
     val mscratch = RegInit(0.U(64.W))
     val mstatus = RegInit(0.U.asTypeOf(new Mstatus()))
-    val mtimecmp = RegInit(64.W)
-    val mtime = RegInit(64.W)//??
+    val mtimecmp = RegInit(UInt(64.W),0.U)
+    val mtime = RegInit(UInt(64.W),0.U)//??
 
     val prv_now = WireInit(PRV_M)
 

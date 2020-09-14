@@ -1,0 +1,19 @@
+[
+  {
+    "class":"firrtl.options.OutputAnnotationFileAnnotation",
+    "file":"top"
+  },
+  {
+    "class":"chisel3.stage.phases.DriverCompatibility$RunFirrtlCompilerAnnotation$"
+  },
+  {
+    "class":"firrtl.options.TargetDirAnnotation",
+    "directory":"./generated/core"
+  },
+  {
+    "class":"logger.LogLevelAnnotation",
+    "globalLogLevel":{
+      
+    }
+  }
+]

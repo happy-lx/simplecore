@@ -1,8 +1,8 @@
-// ANDtest.scala
-package simpleshell
+// // ANDtest.scala
+// package simplecore
  
-import chisel3._
+// import chisel3._
  
-object testMain extends App {
-  Driver.execute(args, () => new alu_module)
-}
+// object testMain extends App {
+//   Driver.execute(args, () => new alu_module)
+// }

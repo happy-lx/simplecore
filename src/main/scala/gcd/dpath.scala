@@ -3,7 +3,10 @@ package simplecore
 import chisel3._
 import chisel3.util._
 
-import constants.(RV64I,RV64M,Constraints)._
+
+import constants.RV64I._
+import constants.RV64M._
+import constants.Constraints._
 
 class D2CIO extends Bundle
 {
@@ -15,24 +18,26 @@ class D2CIO extends Bundle
 }
 class DpathIO extends Bundle
 {
-    val c2d = new Flipped(C2DIO()) 
+    val c2d = Flipped(new C2DIO()) 
     val d2c = new D2CIO()
-    val imem = new memory_port_io()
-    val dmem = new memory_port_io()
+    val imem = Flipped(new memory_port_io)
+    val dmem = Flipped(new memory_port_io)
 }
 
 class Dpath extends Module {
-    val io = IO(new DpathIO())
+    val io = IO(new DpathIO)
+
+    io := DontCare
 
     val reg_pc = RegInit(STARTADDR)
     val wire_pc_next = Wire(UInt(64.W))
 
     //instruction fetch
-    io.imem.req.valid = true.B
-    io.imem.req.bits.addr = reg_pc(31,0)
-    io.imem.req.bits.op = op_wu
-    io.imem.req.bits.memen = true.B
-    io.imem.req.bits.wen = false.B
+    io.imem.req.valid := true.B
+    io.imem.req.bits.addr := reg_pc(31,0)
+    io.imem.req.bits.op := op_wu
+    io.imem.req.bits.memen := true.B
+    io.imem.req.bits.wen := false.B
 
     val dp_instr = WireInit(io.imem.resp.bits.rdata(31,0))
 
@@ -44,15 +49,10 @@ class Dpath extends Module {
     val temp_pc_jr_target = Wire(UInt(64.W))
     val temp_pc_branch_target = Wire(UInt(64.W))
     
-    
-    temp_pc_next_4 := reg_pc + 4.U
-    temp_pc_jump_target := (reg_pc.asSInt() + dp_jim_ext.asSInt()).asUInt()
-    temp_pc_jr_target := ((reg_pc.asSInt() + dp_iim_ext.asSInt()) & ~(1.U(64.W))).asUInt()
-    temp_pc_branch_target := (reg_pc.asSInt() + dp_bim_ext.asSInt()).asUInt()
 
     wire_pc_next := MuxCase(temp_pc_next_4,Array(
         (io.c2d.cp_pc_sel === pc_4) -> temp_pc_next_4,
-        (io.c2d.cp_pc_sel === pc_redir) -> csr.io.redir_target,
+        // (io.c2d.cp_pc_sel === pc_redir) -> csr.io.redir_target,
         (io.c2d.cp_pc_sel === pc_j)     -> temp_pc_jump_target,
         (io.c2d.cp_pc_sel === pc_jr)    -> temp_pc_jr_target,
         (io.c2d.cp_pc_sel === pc_branch)-> temp_pc_branch_target
@@ -68,7 +68,7 @@ class Dpath extends Module {
     val dp_rs2_addr = dp_instr(rs2_MSB,rs2_LSB)
     val dp_rd_addr  = dp_instr(rd_MSB,rd_LSB)
 
-    val regfile = Module(new Regfile())
+    val regfile = Module(new Regfile)
 
     regfile.io.rp1 := dp_rs1_addr
     regfile.io.rp2 := dp_rs2_addr
@@ -89,6 +89,13 @@ class Dpath extends Module {
     val dp_sim_ext = Cat(Fill(52,dp_sim(11)),dp_sim)
     val dp_bim_ext = Cat(Fill(51,dp_bim(11)),dp_bim,0.U(1.W))
     val dp_zim_ext = Cat(Fill(59,0.U(1.W)),dp_zim)
+
+
+    //pc update
+    temp_pc_next_4 := reg_pc + 4.U
+    temp_pc_jump_target := (reg_pc.asSInt() + dp_jim_ext.asSInt()).asUInt()
+    temp_pc_jr_target := (((reg_pc.asSInt() + dp_iim_ext.asSInt()) >> 1) << 1).asUInt()
+    temp_pc_branch_target := (reg_pc.asSInt() + dp_bim_ext.asSInt()).asUInt()
 
     //execute 
     val dp_op1_src = Wire(UInt(64.W))
@@ -157,8 +164,14 @@ class Dpath extends Module {
     when(!io.c2d.hasexception && !io.c2d.shouldstall && io.c2d.cp_reg_wen)
     {
         regfile.io.wp_en := true.B
+    }.otherwise
+    {
+        regfile.io.wp_en := false.B
     }
     regfile.io.wp := dp_rd_addr
     regfile.io.wp_data := dp_wb_data
 
 
+
+
+}

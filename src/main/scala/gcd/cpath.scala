@@ -3,23 +3,25 @@ package simplecore
 import chisel3._
 import chisel3.util._
 
-import constants.(RV64I,RV64M,Constraints)._
+import constants.RV64I._
+import constants.RV64M._
+import constants.Constraints._
 
 class C2DIO extends Bundle
 {
     //控制通路向数据通路传递的信息
-    val cp_pc_sel = Output(UInt(2.W))
+    val cp_pc_sel = Output(UInt(3.W))
     val cp_op1_sel = Output(UInt(2.W))
     val cp_op2_sel = Output(UInt(2.W))
     val cp_alu_sel = Output(UInt(5.W))
     val cp_reg_wen = Output(Bool())
     val cp_mem_en = Output(Bool())
-    val cp_mem_read_op = Output(3.W)
-    val cp_mem_write_mask = Output(8.W)
+    val cp_mem_read_op = Output(UInt(3.W))
+    val cp_mem_write_mask = Output(UInt(8.W))
     val cp_mem_wen = Output(Bool())
-    val cp_alu_ext_sel = Output(3.W)
-    val cp_wb_sel = Output(2.W)
-    val cp_csr_op = Output(csr_op_sz) 
+    val cp_alu_ext_sel = Output(UInt(3.W))
+    val cp_wb_sel = Output(UInt(2.W))
+    val cp_csr_op = Output(UInt(csr_op_sz)) 
 
 
     val hasexception = Output(Bool())
@@ -29,18 +31,20 @@ class C2DIO extends Bundle
 class CpathIO extends Bundle
 {
     val c2d = new C2DIO()
-    val d2c = new Flipped(D2CIO())
-    val imem = new memory_port_io()
-    val dmem = new memory_port_io()
+    val d2c = Flipped(new D2CIO())
+    val imem = Flipped(new memory_port_io)
+    val dmem = Flipped(new memory_port_io)
     
 }
 
 class Cpath extends Module {
     val io = IO(new CpathIO())
 
+    io := DontCare
+
     //根据数据通路传入的指令进行译码
 
-    val ctr_list = LookUpTable(io.d2c.instr, 
+    val ctr_list = ListLookup(io.d2c.instr, 
                            List(    N  ,     BR_N  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x),
             Array(
                             /*
@@ -131,7 +135,7 @@ class Cpath extends Module {
 
     )
 
-    val cs_valid_inst :: cs_branch :: cs_op1_sel :: cs_op2_sel :: cs_alu_sel :: cs_rf_wen :: cs_mem_valid :: cs_mem_read_op :: cs_mem_write_mask :: cs_mem_en :: cs_wb_sel :: cs_csr_op :: cs_alu_ext :: Nil = ctr_list
+    val (cs_valid_inst : Bool) :: cs_branch :: cs_op1_sel :: cs_op2_sel :: cs_alu_sel :: cs_rf_wen :: (cs_mem_valid : Bool) :: cs_mem_read_op :: cs_mem_write_mask :: cs_mem_en :: cs_wb_sel :: cs_csr_op :: cs_alu_ext :: Nil = ctr_list
 
     //branch logic 
     val temp_pc_sel = Wire(UInt(2.W))
@@ -139,24 +143,24 @@ class Cpath extends Module {
     val temp_exception = Wire(Bool())
 
     temp_pc_sel := MuxCase(pc_4,Array(
-        (temp_exception || io.d2c.isdir) ->pc_redir
-        (BR_N) -> (pc_4),
-        (BR_EQ) -> (Mux(io.d2c.iseq,pc_branch,pc_4),
-        (BR_NEQ) -> (Mux(!io.d2c.iseq,pc_branch,pc_4),
-        (BR_GE) -> (Mux(!io.d2c.islt,pc_branch,pc_4),
-        (BR_GEU) -> (Mux(!io.d2c.isltu,pc_branch,pc_4),
-        (BR_LT) -> (Mux(io.d2c.islt,pc_branch,pc_4),
-        (BR_LTU) -> (Mux(io.d2c.isltu,pc_branch,pc_4),
-        (BR_J) -> pc_j,
-        (BR_JR) -> pc_jr
+        (temp_exception || io.d2c.isredir) -> pc_redir,
+        (cs_branch === BR_N) -> (pc_4),
+        (cs_branch === BR_EQ) -> (Mux(io.d2c.iseq,pc_branch,pc_4)),
+        (cs_branch === BR_NEQ) -> (Mux(!io.d2c.iseq,pc_branch,pc_4)),
+        (cs_branch === BR_GE) -> (Mux(!io.d2c.islt,pc_branch,pc_4)),
+        (cs_branch === BR_GEU) -> (Mux(!io.d2c.isltu,pc_branch,pc_4)),
+        (cs_branch === BR_LT) -> (Mux(io.d2c.islt,pc_branch,pc_4)),
+        (cs_branch === BR_LTU) -> (Mux(io.d2c.isltu,pc_branch,pc_4)),
+        (cs_branch === BR_J) -> pc_j,
+        (cs_branch === BR_JR) -> pc_jr
     ))
 
     //judge stall and exception 
     //stall happens when i$ miss or d$miss 
-    temp_stall := !io.imem.resq.valid || !(!cs_mem_valid || (cs_mem_valid && io.dmem.resq.valid))
+    temp_stall := (!io.imem.resp.valid || !(!cs_mem_valid || (cs_mem_valid && io.dmem.resp.valid)))
 
     //exception happens when the instruction is illegal
-    temp_exception := io.imem.resq.valid && !cs_valid_inst
+    temp_exception := (io.imem.resp.valid && !cs_valid_inst)
 
     //assgin control signal to output 
     // val cp_pc_sel = Output(UInt(2.W))
