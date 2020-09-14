@@ -1,5 +1,5 @@
 // alutest.scala
-package simpleshell
+package simplecore
  
 import chisel3._
 import chisel3.iotesters._

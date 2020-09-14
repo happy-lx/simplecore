@@ -1,4 +1,4 @@
-package simpleshell
+package simplecore
 
 import chisel3._
 import chisel3.util._
@@ -29,7 +29,7 @@ class C2DIO extends Bundle
 class CpathIO extends Bundle
 {
     val c2d = new C2DIO()
-    val d2c = new D2CIO()
+    val d2c = new Flipped(D2CIO())
     val imem = new memory_port_io()
     val dmem = new memory_port_io()
     
@@ -139,7 +139,7 @@ class Cpath extends Module {
     val temp_exception = Wire(Bool())
 
     temp_pc_sel := MuxCase(pc_4,Array(
-        (temp_exception || io.d2c.isdir) ->pc_isredir
+        (temp_exception || io.d2c.isdir) ->pc_redir
         (BR_N) -> (pc_4),
         (BR_EQ) -> (Mux(io.d2c.iseq,pc_branch,pc_4),
         (BR_NEQ) -> (Mux(!io.d2c.iseq,pc_branch,pc_4),

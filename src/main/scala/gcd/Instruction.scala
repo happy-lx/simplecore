@@ -1,4 +1,4 @@
-package simpleshell
+package simplecore
 package constants
 
 import chisel3._

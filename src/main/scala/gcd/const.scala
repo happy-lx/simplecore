@@ -1,4 +1,4 @@
-package simpleshell
+package simplecore
 package constants
 
 //定义一些常量

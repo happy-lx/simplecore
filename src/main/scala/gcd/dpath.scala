@@ -1,4 +1,4 @@
-package simpleshell
+package simplecore
 
 import chisel3._
 import chisel3.util._
@@ -15,7 +15,7 @@ class D2CIO extends Bundle
 }
 class DpathIO extends Bundle
 {
-    val c2d = new C2DIO()
+    val c2d = new Flipped(C2DIO()) 
     val d2c = new D2CIO()
     val imem = new memory_port_io()
     val dmem = new memory_port_io()
