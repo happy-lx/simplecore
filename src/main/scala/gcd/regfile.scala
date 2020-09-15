@@ -2,6 +2,7 @@ package simplecore
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 //reg file 
 class RegfileIO() extends Bundle
@@ -34,6 +35,9 @@ class Regfile extends Module
 
     io.rp1_data := Mux(io.rp1 === 0.U,0.U,regs(io.rp1))
     io.rp2_data := Mux(io.rp2 === 0.U,0.U,regs(io.rp2))
+
+    //for diff test
+    BoringUtils.addSource(VecInit((0 until 32).map(i => regs(i))),"regs")
 
 
 }

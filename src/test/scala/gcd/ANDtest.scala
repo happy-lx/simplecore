@@ -1,8 +1,8 @@
-// ANDtest.scala
-package test
+// // ANDtest.scala
+// package test
  
-import chisel3._
+// import chisel3._
  
-object testMain extends App {
-  Driver.execute(args, () => new AND)
-}
+// object testMain extends App {
+//   Driver.execute(args, () => new AND)
+// }

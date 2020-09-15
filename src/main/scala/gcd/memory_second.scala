@@ -57,7 +57,7 @@ class memorymodule extends Module
     //two ports , one is for instruction , one is for data 
     io := DontCare
 
-    val mem = Mem(1<<32,UInt(8.W))
+    val mem = Mem((1L<<24),UInt(8.W))//why 32 cannot?
 
     for(i <- 0 until 2)
     {
@@ -68,7 +68,7 @@ class memorymodule extends Module
     val wdata_temp = Wire(Vec(2,Vec(8,UInt(8.W))))
     val rdata_temp = Wire(Vec(2,Vec(8,UInt(8.W))))
     val mask_temp = Wire(Vec(2,Vec(8,Bool())))
-    val addr_temp = Wire(Vec(2,Vec(8,UInt(32.W))))
+    val addr_temp = Wire(Vec(2,Vec(8,UInt(24.W))))
 
     rdata_temp := DontCare
 
@@ -79,7 +79,7 @@ class memorymodule extends Module
             //for each port , split the mask , wdata into 8 bits width Vec
             wdata_temp(i)(j) := io.ports(i).req.bits.wdata(7+8*j,8*j)
             mask_temp(i)(j) := io.ports(i).req.bits.mask(j).asBool
-            addr_temp(i)(j) := io.ports(i).req.bits.addr + j.U(32.W)
+            addr_temp(i)(j) := io.ports(i).req.bits.addr(23,0) + j.U(23.W)
         }
     }
 

@@ -7,7 +7,7 @@
   },
   {
     "class":"firrtl.options.TargetDirAnnotation",
-    "directory":"generated/core"
+    "directory":"generated/new_core"
   },
   {
     "class":"firrtl.EmitCircuitAnnotation",
@@ -19,6 +19,6 @@
   },
   {
     "class":"firrtl.transforms.BlackBoxTargetDirAnno",
-    "targetDir":"generated/core"
+    "targetDir":"generated/new_core"
   }
 ]

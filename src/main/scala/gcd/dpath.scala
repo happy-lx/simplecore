@@ -2,6 +2,7 @@ package simplecore
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 
 import constants.RV64I._
@@ -48,11 +49,12 @@ class Dpath extends Module {
     val temp_pc_jump_target = Wire(UInt(64.W))
     val temp_pc_jr_target = Wire(UInt(64.W))
     val temp_pc_branch_target = Wire(UInt(64.W))
+    val temp_pc_redirect_target = Wire(UInt(64.W))
     
 
     wire_pc_next := MuxCase(temp_pc_next_4,Array(
         (io.c2d.cp_pc_sel === pc_4) -> temp_pc_next_4,
-        // (io.c2d.cp_pc_sel === pc_redir) -> csr.io.redir_target,
+        (io.c2d.cp_pc_sel === pc_redir) -> temp_pc_redirect_target,
         (io.c2d.cp_pc_sel === pc_j)     -> temp_pc_jump_target,
         (io.c2d.cp_pc_sel === pc_jr)    -> temp_pc_jr_target,
         (io.c2d.cp_pc_sel === pc_branch)-> temp_pc_branch_target
@@ -148,6 +150,8 @@ class Dpath extends Module {
     csr.io.hasException := io.c2d.hasexception
     csr.io.hasStall := io.c2d.shouldstall
     csr.io.in_pc := reg_pc
+
+    temp_pc_redirect_target := csr.io.redir_target
     
     io.d2c.isredir := csr.io.isredir
 
@@ -173,5 +177,7 @@ class Dpath extends Module {
 
 
 
-
+    //for diff test
+    // BoringUtils.addSource(VecInit((0 until 32).map(i => regfile(i))),"regs")
+    BoringUtils.addSource(reg_pc,"pc_data")
 }

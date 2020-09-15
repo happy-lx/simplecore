@@ -2,27 +2,35 @@ package simplecore
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
-// class top extends Module {
-//     val io = IO(new Bundle {
-//         val result = Output(Bool())
-//     })
+class difftestIO extends Bundle
+{
+    val r = Output(Vec(32,UInt(64.W)))
+    val pc_data = Output(UInt(64.W))
+}
 
-//     val mymem = Module(new memorymodule())
-//     val mycore = Module(new core())
-//     mycore.io := DontCare
+class top extends Module {
+    val io = IO(new Bundle {
+        val diff = new difftestIO
+    })
 
-//     mycore.io.imem <> mymem.io.ports(0)//??
-//     mycore.io.dmem <> mymem.io.ports(1)//??
+    val mycore = Module(new core)
 
-//     io.result := true.B
+    val difftestwire = WireInit(0.U.asTypeOf(new difftestIO))
 
-//     printf("core has been built successfully!")
-// }
+    BoringUtils.addSink(difftestwire.r,"regs")
+    BoringUtils.addSink(difftestwire.pc_data,"pc_data")
+
+    io.diff := difftestwire
+
+    // io.pc_data := mycore.dpath.reg_pc
+
+}
 
 object start 
 {
     def main(args: Array[String]): Unit = {
-        chisel3.Driver.execute(args, () => new core)
+        chisel3.Driver.execute(args, () => new top)
     }
 }

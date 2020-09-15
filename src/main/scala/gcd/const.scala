@@ -10,8 +10,8 @@ trait memory_const
     //掩码  64位8个字节
     val mask_b = 1.U(8.W)
     val mask_hb = 3.U(8.W)
-    val mask_w = 7.U(8.W)
-    val mask_dw = 15.U(8.W)
+    val mask_w = 15.U(8.W)
+    val mask_dw = 255.U(8.W)
     val mask_x = 1.U(8.W)
 
     //内存操作方式
