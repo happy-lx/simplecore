@@ -175,9 +175,7 @@ class Dpath extends Module {
     regfile.io.wp := dp_rd_addr
     regfile.io.wp_data := dp_wb_data
 
-
-
-    //for diff test
-    // BoringUtils.addSource(VecInit((0 until 32).map(i => regfile(i))),"regs")
     BoringUtils.addSource(reg_pc,"pc_data")
+
+    
 }

@@ -31,6 +31,7 @@ class top extends Module {
 object start 
 {
     def main(args: Array[String]): Unit = {
-        chisel3.Driver.execute(args, () => new top)
+        chisel3.Driver.execute(args, () => {new top
+        })
     }
 }

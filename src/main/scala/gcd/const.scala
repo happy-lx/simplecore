@@ -96,7 +96,8 @@ trait core
     val Y = true.B
     val N = false.B
 
-    val STARTADDR = 0x80000000L.U(64.W)
+    // val STARTADDR = 0x80000000L.U(64.W)
+    val STARTADDR = 0.U(64.W)
 }
 
 trait CSRConstants extends PRV

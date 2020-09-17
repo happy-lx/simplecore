@@ -4,6 +4,9 @@ import chisel3._
 import chisel3.util._
 
 import constants.Constraints._
+import chisel3.util.experimental.loadMemoryFromFile
+import chisel3.util.experimental._
+// import chisel3.util.experimental.MemoryLoadFileType
 
 class readportio extends Bundle
 {
@@ -42,13 +45,13 @@ class memory_resp_io extends Bundle
 
 class memory_port_io extends Bundle
 {
-    val req = Flipped(DecoupledIO(new memory_req_io))
-    val resp = DecoupledIO(new memory_resp_io)
+    val req = Flipped(Decoupled(new memory_req_io))
+    val resp = Decoupled(new memory_resp_io)
 
     override def cloneType = {new memory_port_io().asInstanceOf[this.type]}
 }
 
-class memorymodule extends Module
+class memorymodule(memdir : String = "") extends Module
 {
     val io = IO(new Bundle {
         val ports = Vec(2,new memory_port_io)
@@ -56,8 +59,14 @@ class memorymodule extends Module
 
     //two ports , one is for instruction , one is for data 
     io := DontCare
+    
 
     val mem = Mem((1L<<24),UInt(8.W))//why 32 cannot?
+
+    if(memdir != "")
+    {
+        loadMemoryFromFile(mem,memdir)
+    }
 
     for(i <- 0 until 2)
     {
@@ -125,6 +134,25 @@ class memorymodule extends Module
 
             }
         }
+
+
+    // BoringUtils.addSource(io.ports(0).resp.bits,"imem_resp_bits")
+    // BoringUtils.addSource(io.ports(0).resp.valid,"imem_resp_valid")
+    // BoringUtils.addSink(io.ports(0).resp.ready,"imem_resp_ready")
+
+    // BoringUtils.addSource(io.ports(1).resp.bits,"dmem_resp_bits")
+    // BoringUtils.addSource(io.ports(1).resp.valid,"dmem_resp_valid")
+    // BoringUtils.addSink(io.ports(1).resp.ready,"dmem_resp_ready")
+
+
+    // BoringUtils.addSink(io.ports(0).req.bits,"imem_req_bits")
+    // BoringUtils.addSink(io.ports(0).req.valid,"imem_req_valid")
+    // BoringUtils.addSource(io.ports(0).req.ready,"imem_req_ready")
+
+
+    // BoringUtils.addSink(io.ports(1).req.bits,"dmem_req_bits")
+    // BoringUtils.addSink(io.ports(1).req.valid,"dmem_req_valid")
+    // BoringUtils.addSource(io.ports(1).req.ready,"dmem_req_ready")
     
 
 

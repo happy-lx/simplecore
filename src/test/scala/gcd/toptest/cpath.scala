@@ -195,6 +195,22 @@ class Cpath extends Module {
     io.c2d.shouldstall := temp_stall
 
 
-    
+    //to connect cpath to memory
+    // BoringUtils.addSink(io.imem.resp.bits,"imem_resp_bits")
+    // BoringUtils.addSink(io.imem.resp.valid,"imem_resp_valid")
+    // BoringUtils.addSource(io.imem.resp.ready,"imem_resp_ready")
+
+    // BoringUtils.addSink(io.dmem.resp.bits,"dmem_resp_bits")
+    // BoringUtils.addSink(io.dmem.resp.valid,"dmem_resp_valid")
+    // BoringUtils.addSource(io.dmem.resp.ready,"dmem_resp_ready")
+
+    // BoringUtils.addSource(io.imem.req.bits,"imem_req_bits")
+    // BoringUtils.addSource(io.imem.req.valid,"imem_req_valid")
+    // BoringUtils.addSink(io.imem.req.ready,"imem_req_ready")
+
+
+    // BoringUtils.addSource(io.dmem.req.bits,"dmem_req_bits")
+    // BoringUtils.addSource(io.dmem.req.valid,"dmem_req_valid")
+    // BoringUtils.addSink(io.dmem.req.ready,"dmem_req_ready")
 
 }
