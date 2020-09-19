@@ -24,9 +24,42 @@ void reset_cycle(Vtop* target,int cycle)
 
 void print_regs(Vtop* target)
 {
+    int temp_cnt = 0;
+    int save_cnt = 0;
+    int arg_cnt = 0;
+
     for(int i=0;i<32;i++)
     {
-        printf("$r%d : [%x] ",i,(unsigned int)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        if(i == 0)
+        {
+            printf("$x%d : [%lx] ",i,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if(i == 1)
+        {
+            printf("$ra : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if(i == 2)
+        {
+            printf("$sp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if(i == 3)
+        {
+            printf("$gp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if(i == 4)
+        {
+            printf("$tp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if( (i>=5 && i<=7) || (i>=28 && i<=31))
+        {
+            printf("$t%d : [%lx] ",temp_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if(i == 8)
+        {
+            printf("$fp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if( (i == 9) || (i>=18 && i<=27))
+        {
+            printf("$s%d : [%lx] ",save_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }else if( (i>=10 && i<=11) || (i>=12 && i<=17))
+        {
+            printf("$a%d : [%lx] ",arg_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+        }
+        
+        
         if(i%10 == 0)
         {
             printf("\n");
@@ -65,6 +98,38 @@ void print_instr(Vtop* target)
     printf("instruction: %lx\n",(unsigned long)target->v__DOT__mycore__DOT__mymem_io_ports_0_resp_bits_rdata);
 }
 
+void print_wbsel(Vtop* target)
+{
+    printf("wbsel: [%x]\n pc_4: [%lx]\n",(unsigned)target->v__DOT__mycore__DOT__cpath_io_c2d_cp_wb_sel,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__temp_pc_next_4);
+}
+void print_rfen(Vtop* target)
+{
+    if(target->io_diff_rf_wen)
+    {
+        printf("rf_wen is true\n");
+    }else
+    {
+        printf("rf_wen is false\n");
+    }
+
+    if(target->io_diff_rf_cp_wen)
+    {
+        printf("rf_wen from cpath is true\n");
+    }else
+    {
+        printf("rf_wen from cpath is false\n");
+    }
+    if(target->v__DOT__mycore__DOT__cpath_io_c2d_cp_reg_wen)
+    {
+        printf("rf_wen local is true\n");
+    }else
+    {
+        printf("rf_wen local is false\n");
+    }
+    
+    
+}
+
 int main(int argc,char** argv)
 {
     Verilated::commandArgs(argc,argv);
@@ -87,15 +152,17 @@ int main(int argc,char** argv)
             printf("in cycle %d:\n",(int)main_time / 20);
             print_valid(top);
             print_pc(top);
+            print_rfen(top);
             print_instr(top);
+            print_wbsel(top);
             print_mem(top);
             print_regs(top);
-
+            printf("============================================   end  ================================================\n");
         }
          
         main_time ++;
 
-        if(main_time == 100)
+        if(main_time == 300)
         {
             break;
         }

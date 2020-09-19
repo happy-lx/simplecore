@@ -14,7 +14,7 @@ module BindsTo_0_memorymodule(
 );
 
 initial begin
-  $readmemh("./test.txt", memorymodule.mem);
+  $readmemh("./test1.txt", memorymodule.mem);
 end
                       endmodule
 

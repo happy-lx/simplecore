@@ -10,7 +10,7 @@
 
 + 写完单周期的代码
 + 完成语法测试
-+ 利用`loadMemoryFromFile`和`verilator`测试了lui,addi等指令
++ 利用`loadMemoryFromFile`和`verilator`测试了算术运算，分支，load，store，跳转等指令，测试通过
 + 没有添加csr模块
 
 ### 问题列表
@@ -21,9 +21,9 @@
 
 ### 接下来的工作
 
-- [ ] 完善代码
+- [ ] 完善代码的csr模块
 - [ ] 学习difftest框架
 - [ ] 编写测试框架
-- [ ] 完成对单周期的测试
+- [x] 完成对单周期的测试
 - [ ] 同步将其修改为五级流水线
 

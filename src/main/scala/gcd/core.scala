@@ -19,11 +19,11 @@ class core extends Module {
 
     val dpath = Module(new Dpath())
     val cpath = Module(new Cpath())
-    val mymem = Module(new memorymodule("./test.txt"))
+    val mymem = Module(new memorymodule("./test1.txt"))
 
 
-    dpath.io.c2d <> cpath.io.c2d
-    dpath.io.d2c <> cpath.io.d2c
+    dpath.io.c2d := cpath.io.c2d
+    cpath.io.d2c := dpath.io.d2c
     
     // mymem.io.ports(0).req <> dpath.io.imem.req
     // mymem.io.ports(0).resp <> dpath.io.imem.resp

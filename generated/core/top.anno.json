@@ -3,7 +3,7 @@
     "class":"firrtl.transforms.BlackBoxInlineAnno",
     "target":"top.memorymodule",
     "name":"top.memorymodule.mem.v",
-    "text":"module BindsTo_0_memorymodule(\n  input         clock,\n  input  [31:0] io_ports_0_req_bits_addr,\n  output [63:0] io_ports_0_resp_bits_rdata,\n  input         io_ports_1_req_valid,\n  input  [31:0] io_ports_1_req_bits_addr,\n  input  [7:0]  io_ports_1_req_bits_mask,\n  input  [2:0]  io_ports_1_req_bits_op,\n  input  [63:0] io_ports_1_req_bits_wdata,\n  input         io_ports_1_req_bits_memen,\n  input         io_ports_1_req_bits_wen,\n  output        io_ports_1_resp_valid,\n  output [63:0] io_ports_1_resp_bits_rdata\n);\n\ninitial begin\n  $readmemh(\"./test.txt\", memorymodule.mem);\nend\n                      endmodule\n\nbind memorymodule BindsTo_0_memorymodule BindsTo_0_memorymodule_Inst(.*);"
+    "text":"module BindsTo_0_memorymodule(\n  input         clock,\n  input  [31:0] io_ports_0_req_bits_addr,\n  output [63:0] io_ports_0_resp_bits_rdata,\n  input         io_ports_1_req_valid,\n  input  [31:0] io_ports_1_req_bits_addr,\n  input  [7:0]  io_ports_1_req_bits_mask,\n  input  [2:0]  io_ports_1_req_bits_op,\n  input  [63:0] io_ports_1_req_bits_wdata,\n  input         io_ports_1_req_bits_memen,\n  input         io_ports_1_req_bits_wen,\n  output        io_ports_1_resp_valid,\n  output [63:0] io_ports_1_resp_bits_rdata\n);\n\ninitial begin\n  $readmemh(\"./test1.txt\", memorymodule.mem);\nend\n                      endmodule\n\nbind memorymodule BindsTo_0_memorymodule BindsTo_0_memorymodule_Inst(.*);"
   },
   {
     "class":"logger.LogLevelAnnotation",
@@ -22,9 +22,13 @@
   {
     "class":"firrtl.annotations.LoadMemoryAnnotation",
     "target":"top.memorymodule.mem",
-    "fileName":"./test.txt",
+    "fileName":"./test1.txt",
     "hexOrBinary":"h",
     "originalMemoryNameOpt":"mem"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~top|Dpath>io__c2d_cp_reg_wen"
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",

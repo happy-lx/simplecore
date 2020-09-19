@@ -8,6 +8,8 @@ class difftestIO extends Bundle
 {
     val r = Output(Vec(32,UInt(64.W)))
     val pc_data = Output(UInt(64.W))
+    val rf_wen = Output(Bool())
+    val rf_cp_wen = Output(Bool())
 }
 
 class top extends Module {
@@ -21,6 +23,8 @@ class top extends Module {
 
     BoringUtils.addSink(difftestwire.r,"regs")
     BoringUtils.addSink(difftestwire.pc_data,"pc_data")
+    BoringUtils.addSink(difftestwire.rf_wen,"cp_reg_wen")
+    BoringUtils.addSink(difftestwire.rf_cp_wen,"cs_rf_wen")
 
     io.diff := difftestwire
 

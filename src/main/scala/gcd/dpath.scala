@@ -96,7 +96,7 @@ class Dpath extends Module {
     //pc update
     temp_pc_next_4 := reg_pc + 4.U
     temp_pc_jump_target := (reg_pc.asSInt() + dp_jim_ext.asSInt()).asUInt()
-    temp_pc_jr_target := (((reg_pc.asSInt() + dp_iim_ext.asSInt()) >> 1) << 1).asUInt()
+    temp_pc_jr_target := (((dp_rs1_data.asSInt() + dp_iim_ext.asSInt()) >> 1) << 1).asUInt()
     temp_pc_branch_target := (reg_pc.asSInt() + dp_bim_ext.asSInt()).asUInt()
 
     //execute 
@@ -176,6 +176,7 @@ class Dpath extends Module {
     regfile.io.wp_data := dp_wb_data
 
     BoringUtils.addSource(reg_pc,"pc_data")
+    BoringUtils.addSource(io.c2d.cp_reg_wen,"cp_reg_wen")
 
     
 }
