@@ -748,7 +748,7 @@ end // initial
 `endif // SYNTHESIS
   always @(posedge clock) begin
     if (reset) begin
-      reg_pc <= 64'h0;
+      reg_pc <= 64'h80000000;
     end else if (_T_12) begin
       if (_T_2) begin
         reg_pc <= temp_pc_next_4;

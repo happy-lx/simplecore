@@ -374,7 +374,7 @@ circuit top :
     io.c2d.cp_op2_sel is invalid @[dpath.scala 31:8]
     io.c2d.cp_op1_sel is invalid @[dpath.scala 31:8]
     io.c2d.cp_pc_sel is invalid @[dpath.scala 31:8]
-    reg reg_pc : UInt<64>, clock with : (reset => (reset, UInt<64>("h00"))) @[dpath.scala 33:25]
+    reg reg_pc : UInt<64>, clock with : (reset => (reset, UInt<64>("h080000000"))) @[dpath.scala 33:25]
     wire wire_pc_next : UInt<64> @[dpath.scala 34:28]
     io.imem.req.valid <= UInt<1>("h01") @[dpath.scala 37:23]
     node _T = bits(reg_pc, 31, 0) @[dpath.scala 38:36]
