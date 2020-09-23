@@ -40,6 +40,14 @@
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~top|CSRfile>io__isredir"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~top|CSRfile>_T_17758"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
     "target":"~top|Regfile>_T_41_0"
   },
   {

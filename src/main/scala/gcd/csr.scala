@@ -2,6 +2,7 @@ package simplecore
 
 import chisel3._
 import chisel3.util._
+import chisel3.util.experimental.BoringUtils
 
 import constants.RV64I._
 import constants.RV64M._
@@ -73,7 +74,7 @@ class CSRfile extends Module
     //当是特定的操作，并且没有异常发生，也没有阻塞的时候，才可以写
     // val wen = WireInit((io.csr_op === csr_w || io.csr_op === csr_s || io.csr_op === csr_c) && !io.hasException && !io.hasStall)
 
-    val reg_mtvec = RegInit(UInt(64.W),0.U)
+    val reg_mtvec = RegInit(UInt(64.W),MTVEC_ADDR.U)
     val reg_mepc = RegInit(UInt(64.W),0.U)
     val reg_mcause = RegInit(UInt(64.W),0.U)//默认值代表了一个异常情况，但是并不一定会触发
     val reg_mie = RegInit(0.U.asTypeOf(new MIP()))
@@ -300,7 +301,7 @@ class CSRfile extends Module
         when(csr_illegal_ins_exception)
         {
             reg_mepc := io.in_pc
-            reg_mtval := io.in_pc
+            reg_mtval := io.instruction
 
             reg_mcause := illegal_instr
             
@@ -361,6 +362,8 @@ class CSRfile extends Module
         wire_mstatus_new.mie := wire_mstatus_old.mpie
         wire_mstatus_new.mpie := true.B
         prv_now := wire_mstatus_old.mpp
+
+        reg_mstatus := wire_mstatus_new
     }
 
     when(csr_hasexception || csr_hasinterrupt || csr_ismret)
@@ -376,6 +379,8 @@ class CSRfile extends Module
         io.redir_target := wire_trap_addr
     }
 
-
+    //for difftest
+    BoringUtils.addSource(reg_mstatus.asUInt(),"mstatus")
+    BoringUtils.addSource(io.isredir,"isredir")
 }
 

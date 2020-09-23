@@ -117,6 +117,8 @@ trait CSRConstants extends PRV
 
     val csr_LSB = 20
     val csr_MSB = 31
+
+    val MTVEC_ADDR = 0x8000000cL
 }
 
 trait CpathConstants 

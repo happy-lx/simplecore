@@ -21,6 +21,16 @@ void reset_cycle(Vtop* target,int cycle)
         target->reset = 0;
     }
 }
+void print_redir(Vtop* target)
+{
+    if(target->io_diff_isredir)
+    {
+        printf("exception or mret happened , pc redirect\n");
+    }else
+    {
+        printf("exception or mret not happened , pc not redirect\n");
+    }
+}
 
 void print_regs(Vtop* target)
 {
@@ -66,6 +76,15 @@ void print_regs(Vtop* target)
         }
     }
     printf("\n");
+}
+void printcsrs(Vtop* target)
+{
+    printf("mstatus : [%lx] ",(unsigned long)target->io_diff_mstatus);
+    printf("mepc : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mepc);
+    printf("mcause : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcause);
+    printf("mtval : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtval);
+    printf("mtvec : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtvec);
+    printf("mscratch : [%lx] \n",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mscratch);
 }
 void print_pc(Vtop* target)
 {
@@ -156,7 +175,9 @@ int main(int argc,char** argv)
             print_instr(top);
             print_wbsel(top);
             print_mem(top);
+            print_redir(top);
             print_regs(top);
+            printcsrs(top);
             printf("============================================   end  ================================================\n");
         }
          

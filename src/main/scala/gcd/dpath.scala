@@ -177,6 +177,7 @@ class Dpath extends Module {
 
     BoringUtils.addSource(reg_pc,"pc_data")
     BoringUtils.addSource(io.c2d.cp_reg_wen,"cp_reg_wen")
+    // BoringUtils.addSource(io.c2d.cp_pc_sel,"pc_sel")
 
     
 }

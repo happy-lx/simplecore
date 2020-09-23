@@ -144,12 +144,12 @@ class Cpath extends Module {
     val (cs_valid_inst : Bool) :: cs_branch :: cs_op1_sel :: cs_op2_sel :: cs_alu_sel :: (cs_rf_wen : Bool) :: (cs_mem_valid : Bool) :: cs_mem_read_op :: cs_mem_write_mask :: (cs_mem_en : Bool) :: cs_wb_sel :: cs_csr_op :: cs_alu_ext :: Nil = ctr_list
 
     //branch logic 
-    val temp_pc_sel = Wire(UInt(2.W))
+    val temp_pc_sel = Wire(UInt(3.W))
     val temp_stall = Wire(Bool())
     val temp_exception = Wire(Bool())
 
     temp_pc_sel := MuxCase(pc_4,Array(
-        (temp_exception || io.d2c.isredir) -> pc_redir,
+        // (io.d2c.isredir) -> pc_redir,
         (cs_branch === BR_N) -> (pc_4),
         (cs_branch === BR_EQ) -> (Mux(io.d2c.iseq,pc_branch,pc_4)),
         (cs_branch === BR_NEQ) -> (Mux(!io.d2c.iseq,pc_branch,pc_4)),
@@ -160,6 +160,11 @@ class Cpath extends Module {
         (cs_branch === BR_J) -> pc_j,
         (cs_branch === BR_JR) -> pc_jr
     ))
+
+    when(io.d2c.isredir)
+    {
+        temp_pc_sel := pc_redir
+    }
 
     //judge stall and exception 
     //stall happens when i$ miss or d$miss 
@@ -199,7 +204,7 @@ class Cpath extends Module {
     io.c2d.shouldstall := temp_stall
 
     BoringUtils.addSource(io.c2d.cp_reg_wen,"cs_rf_wen")
-
+    // BoringUtils.addSource(io.d2c.isredir,"isredir")
 
     
 

@@ -425,15 +425,17 @@ endmodule
 module CSRfile(
   input         clock,
   input         reset,
-  input  [31:0] io_instruction,
-  input  [2:0]  io_csr_op,
-  input  [63:0] io_data_in,
-  input         io_hasException,
-  input         io_hasStall,
-  input  [63:0] io_in_pc,
-  output [63:0] io_redir_target,
-  output [63:0] io_csr_info,
-  output        io_isredir
+  input  [31:0] io__instruction,
+  input  [2:0]  io__csr_op,
+  input  [63:0] io__data_in,
+  input         io__hasException,
+  input         io__hasStall,
+  input  [63:0] io__in_pc,
+  output [63:0] io__redir_target,
+  output [63:0] io__csr_info,
+  output        io__isredir,
+  output        io_isredir,
+  output [63:0] _T_17758_0
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [63:0] _RAND_0;
@@ -528,405 +530,405 @@ module CSRfile(
   reg [63:0] _RAND_89;
   reg [63:0] _RAND_90;
 `endif // RANDOMIZE_REG_INIT
-  reg [63:0] reg_mtvec; // @[csr.scala 76:28]
-  reg [63:0] reg_mepc; // @[csr.scala 77:27]
-  reg [63:0] reg_mcause; // @[csr.scala 78:29]
-  reg  reg_mie_msi; // @[csr.scala 79:26]
-  reg  reg_mie_mti; // @[csr.scala 79:26]
-  reg  reg_mip_msi; // @[csr.scala 80:26]
-  reg  reg_mip_mti; // @[csr.scala 80:26]
-  reg [63:0] reg_mtval; // @[csr.scala 81:28]
-  reg [63:0] reg_mscratch; // @[csr.scala 82:31]
-  reg [1:0] reg_mstatus_mpp; // @[csr.scala 83:30]
-  reg  reg_mstatus_mpie; // @[csr.scala 83:30]
-  reg  reg_mstatus_mie; // @[csr.scala 83:30]
-  reg [63:0] reg_pmpcfg0; // @[csr.scala 89:30]
-  reg [63:0] reg_pmpcfg1; // @[csr.scala 90:30]
-  reg [63:0] regs_pmpaddr_0; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_1; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_2; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_3; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_4; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_5; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_6; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_7; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_8; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_9; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_10; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_11; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_12; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_13; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_14; // @[csr.scala 92:31]
-  reg [63:0] regs_pmpaddr_15; // @[csr.scala 92:31]
-  reg [63:0] reg_mcycle; // @[csr.scala 94:29]
-  reg [63:0] reg_minstret; // @[csr.scala 95:31]
-  reg [63:0] regs_mhpmcounter_0; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_1; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_2; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_3; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_4; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_5; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_6; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_7; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_8; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_9; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_10; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_11; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_12; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_13; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_14; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_15; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_16; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_17; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_18; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_19; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_20; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_21; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_22; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_23; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_24; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_25; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_26; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_27; // @[csr.scala 96:35]
-  reg [63:0] regs_mhpmcounter_28; // @[csr.scala 96:35]
-  reg [63:0] reg_mcounterinhibit; // @[csr.scala 97:38]
-  reg [63:0] regs_mhpmevet_0; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_1; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_2; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_3; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_4; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_5; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_6; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_7; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_8; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_9; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_10; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_11; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_12; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_13; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_14; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_15; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_16; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_17; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_18; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_19; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_20; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_21; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_22; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_23; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_24; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_25; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_26; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_27; // @[csr.scala 98:32]
-  reg [63:0] regs_mhpmevet_28; // @[csr.scala 98:32]
-  wire [11:0] wire_csr_index = io_instruction[31:20]; // @[csr.scala 104:49]
-  wire  _T_7 = io_csr_op == 3'h3; // @[csr.scala 107:21]
-  wire  _T_8 = io_csr_op == 3'h4; // @[csr.scala 107:44]
-  wire  _T_9 = _T_7 | _T_8; // @[csr.scala 107:31]
-  wire  _T_11 = io_instruction[19:15] == 5'h0; // @[csr.scala 107:90]
-  wire  _T_12 = _T_9 & _T_11; // @[csr.scala 107:55]
-  wire [2:0] wire_csr_op = _T_12 ? 3'h1 : io_csr_op; // @[csr.scala 108:5]
-  wire  csr_read_only = &wire_csr_index[11:10]; // @[csr.scala 120:47]
-  wire  _T_14 = wire_csr_op == 3'h2; // @[csr.scala 121:38]
-  wire  _T_15 = wire_csr_op == 3'h3; // @[csr.scala 121:63]
-  wire  _T_16 = _T_14 | _T_15; // @[csr.scala 121:48]
-  wire  _T_17 = wire_csr_op == 3'h4; // @[csr.scala 121:88]
-  wire  _T_18 = _T_16 | _T_17; // @[csr.scala 121:73]
-  wire  write_illgal = _T_18 & csr_read_only; // @[csr.scala 121:99]
-  wire [10:0] _T_28 = {3'h0,reg_mstatus_mpie,2'h0,1'h0,reg_mstatus_mie,1'h0,2'h0}; // @[csr.scala 130:42]
-  wire [63:0] _T_39 = {45'h0,4'h0,2'h0,reg_mstatus_mpp,_T_28}; // @[csr.scala 130:42]
-  wire [11:0] _T_51 = {3'h0,reg_mie_msi,1'h0,1'h0,1'h0,reg_mie_mti,1'h0,3'h0}; // @[csr.scala 134:38]
-  wire [11:0] _T_63 = {3'h0,reg_mip_msi,1'h0,1'h0,1'h0,reg_mip_mti,1'h0,3'h0}; // @[csr.scala 135:38]
-  wire  _T_64 = wire_csr_index == 12'hf11; // @[csr.scala 168:94]
-  wire  _T_65 = wire_csr_index == 12'hf12; // @[csr.scala 168:94]
-  wire  _T_66 = wire_csr_index == 12'hf13; // @[csr.scala 168:94]
-  wire  _T_67 = wire_csr_index == 12'hf14; // @[csr.scala 168:94]
-  wire  _T_68 = wire_csr_index == 12'h300; // @[csr.scala 168:94]
-  wire  _T_69 = wire_csr_index == 12'h301; // @[csr.scala 168:94]
-  wire  _T_70 = wire_csr_index == 12'h302; // @[csr.scala 168:94]
-  wire  _T_71 = wire_csr_index == 12'h303; // @[csr.scala 168:94]
-  wire  _T_72 = wire_csr_index == 12'h304; // @[csr.scala 168:94]
-  wire  _T_73 = wire_csr_index == 12'h344; // @[csr.scala 168:94]
-  wire  _T_74 = wire_csr_index == 12'h305; // @[csr.scala 168:94]
-  wire  _T_75 = wire_csr_index == 12'h306; // @[csr.scala 168:94]
-  wire  _T_76 = wire_csr_index == 12'h340; // @[csr.scala 168:94]
-  wire  _T_77 = wire_csr_index == 12'h341; // @[csr.scala 168:94]
-  wire  _T_78 = wire_csr_index == 12'h342; // @[csr.scala 168:94]
-  wire  _T_79 = wire_csr_index == 12'h343; // @[csr.scala 168:94]
-  wire  _T_80 = wire_csr_index == 12'h3a0; // @[csr.scala 168:94]
-  wire  _T_81 = wire_csr_index == 12'h3a1; // @[csr.scala 168:94]
-  wire  _T_82 = wire_csr_index == 12'hb00; // @[csr.scala 168:94]
-  wire  _T_83 = wire_csr_index == 12'hb02; // @[csr.scala 168:94]
-  wire  _T_84 = wire_csr_index == 12'h320; // @[csr.scala 168:94]
-  wire  _T_85 = wire_csr_index == 12'h3b0; // @[csr.scala 168:94]
-  wire  _T_86 = wire_csr_index == 12'h3b1; // @[csr.scala 168:94]
-  wire  _T_87 = wire_csr_index == 12'h3b2; // @[csr.scala 168:94]
-  wire  _T_88 = wire_csr_index == 12'h3b3; // @[csr.scala 168:94]
-  wire  _T_89 = wire_csr_index == 12'h3b4; // @[csr.scala 168:94]
-  wire  _T_90 = wire_csr_index == 12'h3b5; // @[csr.scala 168:94]
-  wire  _T_91 = wire_csr_index == 12'h3b6; // @[csr.scala 168:94]
-  wire  _T_92 = wire_csr_index == 12'h3b7; // @[csr.scala 168:94]
-  wire  _T_93 = wire_csr_index == 12'h3b8; // @[csr.scala 168:94]
-  wire  _T_94 = wire_csr_index == 12'h3b9; // @[csr.scala 168:94]
-  wire  _T_95 = wire_csr_index == 12'h3ba; // @[csr.scala 168:94]
-  wire  _T_96 = wire_csr_index == 12'h3bb; // @[csr.scala 168:94]
-  wire  _T_97 = wire_csr_index == 12'h3bc; // @[csr.scala 168:94]
-  wire  _T_98 = wire_csr_index == 12'h3bd; // @[csr.scala 168:94]
-  wire  _T_99 = wire_csr_index == 12'h3be; // @[csr.scala 168:94]
-  wire  _T_100 = wire_csr_index == 12'h3bf; // @[csr.scala 168:94]
-  wire  _T_101 = wire_csr_index == 12'hb03; // @[csr.scala 168:94]
-  wire  _T_102 = wire_csr_index == 12'hb04; // @[csr.scala 168:94]
-  wire  _T_103 = wire_csr_index == 12'hb05; // @[csr.scala 168:94]
-  wire  _T_104 = wire_csr_index == 12'hb06; // @[csr.scala 168:94]
-  wire  _T_105 = wire_csr_index == 12'hb07; // @[csr.scala 168:94]
-  wire  _T_106 = wire_csr_index == 12'hb08; // @[csr.scala 168:94]
-  wire  _T_107 = wire_csr_index == 12'hb09; // @[csr.scala 168:94]
-  wire  _T_108 = wire_csr_index == 12'hb0a; // @[csr.scala 168:94]
-  wire  _T_109 = wire_csr_index == 12'hb0b; // @[csr.scala 168:94]
-  wire  _T_110 = wire_csr_index == 12'hb0c; // @[csr.scala 168:94]
-  wire  _T_111 = wire_csr_index == 12'hb0d; // @[csr.scala 168:94]
-  wire  _T_112 = wire_csr_index == 12'hb0e; // @[csr.scala 168:94]
-  wire  _T_113 = wire_csr_index == 12'hb0f; // @[csr.scala 168:94]
-  wire  _T_114 = wire_csr_index == 12'hb10; // @[csr.scala 168:94]
-  wire  _T_115 = wire_csr_index == 12'hb11; // @[csr.scala 168:94]
-  wire  _T_116 = wire_csr_index == 12'hb12; // @[csr.scala 168:94]
-  wire  _T_117 = wire_csr_index == 12'hb13; // @[csr.scala 168:94]
-  wire  _T_118 = wire_csr_index == 12'hb14; // @[csr.scala 168:94]
-  wire  _T_119 = wire_csr_index == 12'hb15; // @[csr.scala 168:94]
-  wire  _T_120 = wire_csr_index == 12'hb16; // @[csr.scala 168:94]
-  wire  _T_121 = wire_csr_index == 12'hb17; // @[csr.scala 168:94]
-  wire  _T_122 = wire_csr_index == 12'hb18; // @[csr.scala 168:94]
-  wire  _T_123 = wire_csr_index == 12'hb19; // @[csr.scala 168:94]
-  wire  _T_124 = wire_csr_index == 12'hb1a; // @[csr.scala 168:94]
-  wire  _T_125 = wire_csr_index == 12'hb1b; // @[csr.scala 168:94]
-  wire  _T_126 = wire_csr_index == 12'hb1c; // @[csr.scala 168:94]
-  wire  _T_127 = wire_csr_index == 12'hb1d; // @[csr.scala 168:94]
-  wire  _T_128 = wire_csr_index == 12'hb1e; // @[csr.scala 168:94]
-  wire  _T_129 = wire_csr_index == 12'hb1f; // @[csr.scala 168:94]
-  wire  _T_130 = wire_csr_index == 12'h323; // @[csr.scala 168:94]
-  wire  _T_131 = wire_csr_index == 12'h324; // @[csr.scala 168:94]
-  wire  _T_132 = wire_csr_index == 12'h325; // @[csr.scala 168:94]
-  wire  _T_133 = wire_csr_index == 12'h326; // @[csr.scala 168:94]
-  wire  _T_134 = wire_csr_index == 12'h327; // @[csr.scala 168:94]
-  wire  _T_135 = wire_csr_index == 12'h328; // @[csr.scala 168:94]
-  wire  _T_136 = wire_csr_index == 12'h329; // @[csr.scala 168:94]
-  wire  _T_137 = wire_csr_index == 12'h32a; // @[csr.scala 168:94]
-  wire  _T_138 = wire_csr_index == 12'h32b; // @[csr.scala 168:94]
-  wire  _T_139 = wire_csr_index == 12'h32c; // @[csr.scala 168:94]
-  wire  _T_140 = wire_csr_index == 12'h32d; // @[csr.scala 168:94]
-  wire  _T_141 = wire_csr_index == 12'h32e; // @[csr.scala 168:94]
-  wire  _T_142 = wire_csr_index == 12'h32f; // @[csr.scala 168:94]
-  wire  _T_143 = wire_csr_index == 12'h330; // @[csr.scala 168:94]
-  wire  _T_144 = wire_csr_index == 12'h331; // @[csr.scala 168:94]
-  wire  _T_145 = wire_csr_index == 12'h332; // @[csr.scala 168:94]
-  wire  _T_146 = wire_csr_index == 12'h333; // @[csr.scala 168:94]
-  wire  _T_147 = wire_csr_index == 12'h334; // @[csr.scala 168:94]
-  wire  _T_148 = wire_csr_index == 12'h335; // @[csr.scala 168:94]
-  wire  _T_149 = wire_csr_index == 12'h336; // @[csr.scala 168:94]
-  wire  _T_150 = wire_csr_index == 12'h337; // @[csr.scala 168:94]
-  wire  _T_151 = wire_csr_index == 12'h338; // @[csr.scala 168:94]
-  wire  _T_152 = wire_csr_index == 12'h339; // @[csr.scala 168:94]
-  wire  _T_153 = wire_csr_index == 12'h33a; // @[csr.scala 168:94]
-  wire  _T_154 = wire_csr_index == 12'h33b; // @[csr.scala 168:94]
-  wire  _T_155 = wire_csr_index == 12'h33c; // @[csr.scala 168:94]
-  wire  _T_156 = wire_csr_index == 12'h33d; // @[csr.scala 168:94]
-  wire  _T_157 = wire_csr_index == 12'h33e; // @[csr.scala 168:94]
-  wire  _T_158 = wire_csr_index == 12'h33f; // @[csr.scala 168:94]
-  wire  _T_159 = _T_64 | _T_65; // @[csr.scala 168:113]
-  wire  _T_160 = _T_159 | _T_66; // @[csr.scala 168:113]
-  wire  _T_161 = _T_160 | _T_67; // @[csr.scala 168:113]
-  wire  _T_162 = _T_161 | _T_68; // @[csr.scala 168:113]
-  wire  _T_163 = _T_162 | _T_69; // @[csr.scala 168:113]
-  wire  _T_164 = _T_163 | _T_70; // @[csr.scala 168:113]
-  wire  _T_165 = _T_164 | _T_71; // @[csr.scala 168:113]
-  wire  _T_166 = _T_165 | _T_72; // @[csr.scala 168:113]
-  wire  _T_167 = _T_166 | _T_73; // @[csr.scala 168:113]
-  wire  _T_168 = _T_167 | _T_74; // @[csr.scala 168:113]
-  wire  _T_169 = _T_168 | _T_75; // @[csr.scala 168:113]
-  wire  _T_170 = _T_169 | _T_76; // @[csr.scala 168:113]
-  wire  _T_171 = _T_170 | _T_77; // @[csr.scala 168:113]
-  wire  _T_172 = _T_171 | _T_78; // @[csr.scala 168:113]
-  wire  _T_173 = _T_172 | _T_79; // @[csr.scala 168:113]
-  wire  _T_174 = _T_173 | _T_80; // @[csr.scala 168:113]
-  wire  _T_175 = _T_174 | _T_81; // @[csr.scala 168:113]
-  wire  _T_176 = _T_175 | _T_82; // @[csr.scala 168:113]
-  wire  _T_177 = _T_176 | _T_83; // @[csr.scala 168:113]
-  wire  _T_178 = _T_177 | _T_84; // @[csr.scala 168:113]
-  wire  _T_179 = _T_178 | _T_85; // @[csr.scala 168:113]
-  wire  _T_180 = _T_179 | _T_86; // @[csr.scala 168:113]
-  wire  _T_181 = _T_180 | _T_87; // @[csr.scala 168:113]
-  wire  _T_182 = _T_181 | _T_88; // @[csr.scala 168:113]
-  wire  _T_183 = _T_182 | _T_89; // @[csr.scala 168:113]
-  wire  _T_184 = _T_183 | _T_90; // @[csr.scala 168:113]
-  wire  _T_185 = _T_184 | _T_91; // @[csr.scala 168:113]
-  wire  _T_186 = _T_185 | _T_92; // @[csr.scala 168:113]
-  wire  _T_187 = _T_186 | _T_93; // @[csr.scala 168:113]
-  wire  _T_188 = _T_187 | _T_94; // @[csr.scala 168:113]
-  wire  _T_189 = _T_188 | _T_95; // @[csr.scala 168:113]
-  wire  _T_190 = _T_189 | _T_96; // @[csr.scala 168:113]
-  wire  _T_191 = _T_190 | _T_97; // @[csr.scala 168:113]
-  wire  _T_192 = _T_191 | _T_98; // @[csr.scala 168:113]
-  wire  _T_193 = _T_192 | _T_99; // @[csr.scala 168:113]
-  wire  _T_194 = _T_193 | _T_100; // @[csr.scala 168:113]
-  wire  _T_195 = _T_194 | _T_101; // @[csr.scala 168:113]
-  wire  _T_196 = _T_195 | _T_102; // @[csr.scala 168:113]
-  wire  _T_197 = _T_196 | _T_103; // @[csr.scala 168:113]
-  wire  _T_198 = _T_197 | _T_104; // @[csr.scala 168:113]
-  wire  _T_199 = _T_198 | _T_105; // @[csr.scala 168:113]
-  wire  _T_200 = _T_199 | _T_106; // @[csr.scala 168:113]
-  wire  _T_201 = _T_200 | _T_107; // @[csr.scala 168:113]
-  wire  _T_202 = _T_201 | _T_108; // @[csr.scala 168:113]
-  wire  _T_203 = _T_202 | _T_109; // @[csr.scala 168:113]
-  wire  _T_204 = _T_203 | _T_110; // @[csr.scala 168:113]
-  wire  _T_205 = _T_204 | _T_111; // @[csr.scala 168:113]
-  wire  _T_206 = _T_205 | _T_112; // @[csr.scala 168:113]
-  wire  _T_207 = _T_206 | _T_113; // @[csr.scala 168:113]
-  wire  _T_208 = _T_207 | _T_114; // @[csr.scala 168:113]
-  wire  _T_209 = _T_208 | _T_115; // @[csr.scala 168:113]
-  wire  _T_210 = _T_209 | _T_116; // @[csr.scala 168:113]
-  wire  _T_211 = _T_210 | _T_117; // @[csr.scala 168:113]
-  wire  _T_212 = _T_211 | _T_118; // @[csr.scala 168:113]
-  wire  _T_213 = _T_212 | _T_119; // @[csr.scala 168:113]
-  wire  _T_214 = _T_213 | _T_120; // @[csr.scala 168:113]
-  wire  _T_215 = _T_214 | _T_121; // @[csr.scala 168:113]
-  wire  _T_216 = _T_215 | _T_122; // @[csr.scala 168:113]
-  wire  _T_217 = _T_216 | _T_123; // @[csr.scala 168:113]
-  wire  _T_218 = _T_217 | _T_124; // @[csr.scala 168:113]
-  wire  _T_219 = _T_218 | _T_125; // @[csr.scala 168:113]
-  wire  _T_220 = _T_219 | _T_126; // @[csr.scala 168:113]
-  wire  _T_221 = _T_220 | _T_127; // @[csr.scala 168:113]
-  wire  _T_222 = _T_221 | _T_128; // @[csr.scala 168:113]
-  wire  _T_223 = _T_222 | _T_129; // @[csr.scala 168:113]
-  wire  _T_224 = _T_223 | _T_130; // @[csr.scala 168:113]
-  wire  _T_225 = _T_224 | _T_131; // @[csr.scala 168:113]
-  wire  _T_226 = _T_225 | _T_132; // @[csr.scala 168:113]
-  wire  _T_227 = _T_226 | _T_133; // @[csr.scala 168:113]
-  wire  _T_228 = _T_227 | _T_134; // @[csr.scala 168:113]
-  wire  _T_229 = _T_228 | _T_135; // @[csr.scala 168:113]
-  wire  _T_230 = _T_229 | _T_136; // @[csr.scala 168:113]
-  wire  _T_231 = _T_230 | _T_137; // @[csr.scala 168:113]
-  wire  _T_232 = _T_231 | _T_138; // @[csr.scala 168:113]
-  wire  _T_233 = _T_232 | _T_139; // @[csr.scala 168:113]
-  wire  _T_234 = _T_233 | _T_140; // @[csr.scala 168:113]
-  wire  _T_235 = _T_234 | _T_141; // @[csr.scala 168:113]
-  wire  _T_236 = _T_235 | _T_142; // @[csr.scala 168:113]
-  wire  _T_237 = _T_236 | _T_143; // @[csr.scala 168:113]
-  wire  _T_238 = _T_237 | _T_144; // @[csr.scala 168:113]
-  wire  _T_239 = _T_238 | _T_145; // @[csr.scala 168:113]
-  wire  _T_240 = _T_239 | _T_146; // @[csr.scala 168:113]
-  wire  _T_241 = _T_240 | _T_147; // @[csr.scala 168:113]
-  wire  _T_242 = _T_241 | _T_148; // @[csr.scala 168:113]
-  wire  _T_243 = _T_242 | _T_149; // @[csr.scala 168:113]
-  wire  _T_244 = _T_243 | _T_150; // @[csr.scala 168:113]
-  wire  _T_245 = _T_244 | _T_151; // @[csr.scala 168:113]
-  wire  _T_246 = _T_245 | _T_152; // @[csr.scala 168:113]
-  wire  _T_247 = _T_246 | _T_153; // @[csr.scala 168:113]
-  wire  _T_248 = _T_247 | _T_154; // @[csr.scala 168:113]
-  wire  _T_249 = _T_248 | _T_155; // @[csr.scala 168:113]
-  wire  _T_250 = _T_249 | _T_156; // @[csr.scala 168:113]
-  wire  _T_251 = _T_250 | _T_157; // @[csr.scala 168:113]
-  wire  legalcsrnumber = _T_251 | _T_158; // @[csr.scala 168:113]
-  wire  _T_252 = io_csr_op != 3'h0; // @[csr.scala 169:35]
-  wire  _T_253 = io_csr_op != 3'h5; // @[csr.scala 169:58]
-  wire  _T_254 = _T_252 & _T_253; // @[csr.scala 169:45]
-  wire  _T_255 = ~legalcsrnumber; // @[csr.scala 169:74]
-  wire  read_illegal = _T_254 & _T_255; // @[csr.scala 169:71]
-  wire  exception_in_csr = read_illegal | write_illgal; // @[csr.scala 171:41]
-  wire  _T_259 = ~read_illegal; // @[csr.scala 173:77]
-  wire  csr_read_enable = _T_254 & _T_259; // @[csr.scala 173:74]
-  wire  _T_264 = 12'h300 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_265 = 12'h301 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_268 = 12'h304 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_269 = 12'h344 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_270 = 12'h305 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_272 = 12'h340 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_273 = 12'h341 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_274 = 12'h342 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_275 = 12'h343 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_276 = 12'h3a0 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_277 = 12'h3a1 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_278 = 12'hb00 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_279 = 12'hb02 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_280 = 12'h320 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_281 = 12'h3b0 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_282 = 12'h3b1 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_283 = 12'h3b2 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_284 = 12'h3b3 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_285 = 12'h3b4 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_286 = 12'h3b5 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_287 = 12'h3b6 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_288 = 12'h3b7 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_289 = 12'h3b8 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_290 = 12'h3b9 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_291 = 12'h3ba == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_292 = 12'h3bb == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_293 = 12'h3bc == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_294 = 12'h3bd == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_295 = 12'h3be == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_296 = 12'h3bf == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_297 = 12'hb03 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_298 = 12'hb04 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_299 = 12'hb05 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_300 = 12'hb06 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_301 = 12'hb07 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_302 = 12'hb08 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_303 = 12'hb09 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_304 = 12'hb0a == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_305 = 12'hb0b == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_306 = 12'hb0c == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_307 = 12'hb0d == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_308 = 12'hb0e == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_309 = 12'hb0f == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_310 = 12'hb10 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_311 = 12'hb11 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_312 = 12'hb12 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_313 = 12'hb13 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_314 = 12'hb14 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_315 = 12'hb15 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_316 = 12'hb16 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_317 = 12'hb17 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_318 = 12'hb18 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_319 = 12'hb19 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_320 = 12'hb1a == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_321 = 12'hb1b == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_322 = 12'hb1c == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_323 = 12'hb1d == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_324 = 12'hb1e == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_325 = 12'hb1f == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_326 = 12'h323 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_327 = 12'h324 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_328 = 12'h325 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_329 = 12'h326 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_330 = 12'h327 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_331 = 12'h328 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_332 = 12'h329 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_333 = 12'h32a == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_334 = 12'h32b == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_335 = 12'h32c == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_336 = 12'h32d == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_337 = 12'h32e == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_338 = 12'h32f == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_339 = 12'h330 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_340 = 12'h331 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_341 = 12'h332 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_342 = 12'h333 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_343 = 12'h334 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_344 = 12'h335 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_345 = 12'h336 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_346 = 12'h337 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_347 = 12'h338 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_348 = 12'h339 == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_349 = 12'h33a == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_350 = 12'h33b == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_351 = 12'h33c == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_352 = 12'h33d == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_353 = 12'h33e == wire_csr_index; // @[csr.scala 178:61]
-  wire  _T_354 = 12'h33f == wire_csr_index; // @[csr.scala 178:61]
+  reg [63:0] reg_mtvec; // @[csr.scala 77:28]
+  reg [63:0] reg_mepc; // @[csr.scala 78:27]
+  reg [63:0] reg_mcause; // @[csr.scala 79:29]
+  reg  reg_mie_msi; // @[csr.scala 80:26]
+  reg  reg_mie_mti; // @[csr.scala 80:26]
+  reg  reg_mip_msi; // @[csr.scala 81:26]
+  reg  reg_mip_mti; // @[csr.scala 81:26]
+  reg [63:0] reg_mtval; // @[csr.scala 82:28]
+  reg [63:0] reg_mscratch; // @[csr.scala 83:31]
+  reg [1:0] reg_mstatus_mpp; // @[csr.scala 84:30]
+  reg  reg_mstatus_mpie; // @[csr.scala 84:30]
+  reg  reg_mstatus_mie; // @[csr.scala 84:30]
+  reg [63:0] reg_pmpcfg0; // @[csr.scala 90:30]
+  reg [63:0] reg_pmpcfg1; // @[csr.scala 91:30]
+  reg [63:0] regs_pmpaddr_0; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_1; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_2; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_3; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_4; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_5; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_6; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_7; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_8; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_9; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_10; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_11; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_12; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_13; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_14; // @[csr.scala 93:31]
+  reg [63:0] regs_pmpaddr_15; // @[csr.scala 93:31]
+  reg [63:0] reg_mcycle; // @[csr.scala 95:29]
+  reg [63:0] reg_minstret; // @[csr.scala 96:31]
+  reg [63:0] regs_mhpmcounter_0; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_1; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_2; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_3; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_4; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_5; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_6; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_7; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_8; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_9; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_10; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_11; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_12; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_13; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_14; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_15; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_16; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_17; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_18; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_19; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_20; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_21; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_22; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_23; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_24; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_25; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_26; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_27; // @[csr.scala 97:35]
+  reg [63:0] regs_mhpmcounter_28; // @[csr.scala 97:35]
+  reg [63:0] reg_mcounterinhibit; // @[csr.scala 98:38]
+  reg [63:0] regs_mhpmevet_0; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_1; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_2; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_3; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_4; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_5; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_6; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_7; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_8; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_9; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_10; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_11; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_12; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_13; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_14; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_15; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_16; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_17; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_18; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_19; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_20; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_21; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_22; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_23; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_24; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_25; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_26; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_27; // @[csr.scala 99:32]
+  reg [63:0] regs_mhpmevet_28; // @[csr.scala 99:32]
+  wire [11:0] wire_csr_index = io__instruction[31:20]; // @[csr.scala 105:49]
+  wire  _T_7 = io__csr_op == 3'h3; // @[csr.scala 108:21]
+  wire  _T_8 = io__csr_op == 3'h4; // @[csr.scala 108:44]
+  wire  _T_9 = _T_7 | _T_8; // @[csr.scala 108:31]
+  wire  _T_11 = io__instruction[19:15] == 5'h0; // @[csr.scala 108:90]
+  wire  _T_12 = _T_9 & _T_11; // @[csr.scala 108:55]
+  wire [2:0] wire_csr_op = _T_12 ? 3'h1 : io__csr_op; // @[csr.scala 109:5]
+  wire  csr_read_only = &wire_csr_index[11:10]; // @[csr.scala 121:47]
+  wire  _T_14 = wire_csr_op == 3'h2; // @[csr.scala 122:38]
+  wire  _T_15 = wire_csr_op == 3'h3; // @[csr.scala 122:63]
+  wire  _T_16 = _T_14 | _T_15; // @[csr.scala 122:48]
+  wire  _T_17 = wire_csr_op == 3'h4; // @[csr.scala 122:88]
+  wire  _T_18 = _T_16 | _T_17; // @[csr.scala 122:73]
+  wire  write_illgal = _T_18 & csr_read_only; // @[csr.scala 122:99]
+  wire [10:0] _T_28 = {3'h0,reg_mstatus_mpie,2'h0,1'h0,reg_mstatus_mie,1'h0,2'h0}; // @[csr.scala 131:42]
+  wire [63:0] _T_39 = {45'h0,4'h0,2'h0,reg_mstatus_mpp,_T_28}; // @[csr.scala 131:42]
+  wire [11:0] _T_51 = {3'h0,reg_mie_msi,1'h0,1'h0,1'h0,reg_mie_mti,1'h0,3'h0}; // @[csr.scala 135:38]
+  wire [11:0] _T_63 = {3'h0,reg_mip_msi,1'h0,1'h0,1'h0,reg_mip_mti,1'h0,3'h0}; // @[csr.scala 136:38]
+  wire  _T_64 = wire_csr_index == 12'hf11; // @[csr.scala 169:94]
+  wire  _T_65 = wire_csr_index == 12'hf12; // @[csr.scala 169:94]
+  wire  _T_66 = wire_csr_index == 12'hf13; // @[csr.scala 169:94]
+  wire  _T_67 = wire_csr_index == 12'hf14; // @[csr.scala 169:94]
+  wire  _T_68 = wire_csr_index == 12'h300; // @[csr.scala 169:94]
+  wire  _T_69 = wire_csr_index == 12'h301; // @[csr.scala 169:94]
+  wire  _T_70 = wire_csr_index == 12'h302; // @[csr.scala 169:94]
+  wire  _T_71 = wire_csr_index == 12'h303; // @[csr.scala 169:94]
+  wire  _T_72 = wire_csr_index == 12'h304; // @[csr.scala 169:94]
+  wire  _T_73 = wire_csr_index == 12'h344; // @[csr.scala 169:94]
+  wire  _T_74 = wire_csr_index == 12'h305; // @[csr.scala 169:94]
+  wire  _T_75 = wire_csr_index == 12'h306; // @[csr.scala 169:94]
+  wire  _T_76 = wire_csr_index == 12'h340; // @[csr.scala 169:94]
+  wire  _T_77 = wire_csr_index == 12'h341; // @[csr.scala 169:94]
+  wire  _T_78 = wire_csr_index == 12'h342; // @[csr.scala 169:94]
+  wire  _T_79 = wire_csr_index == 12'h343; // @[csr.scala 169:94]
+  wire  _T_80 = wire_csr_index == 12'h3a0; // @[csr.scala 169:94]
+  wire  _T_81 = wire_csr_index == 12'h3a1; // @[csr.scala 169:94]
+  wire  _T_82 = wire_csr_index == 12'hb00; // @[csr.scala 169:94]
+  wire  _T_83 = wire_csr_index == 12'hb02; // @[csr.scala 169:94]
+  wire  _T_84 = wire_csr_index == 12'h320; // @[csr.scala 169:94]
+  wire  _T_85 = wire_csr_index == 12'h3b0; // @[csr.scala 169:94]
+  wire  _T_86 = wire_csr_index == 12'h3b1; // @[csr.scala 169:94]
+  wire  _T_87 = wire_csr_index == 12'h3b2; // @[csr.scala 169:94]
+  wire  _T_88 = wire_csr_index == 12'h3b3; // @[csr.scala 169:94]
+  wire  _T_89 = wire_csr_index == 12'h3b4; // @[csr.scala 169:94]
+  wire  _T_90 = wire_csr_index == 12'h3b5; // @[csr.scala 169:94]
+  wire  _T_91 = wire_csr_index == 12'h3b6; // @[csr.scala 169:94]
+  wire  _T_92 = wire_csr_index == 12'h3b7; // @[csr.scala 169:94]
+  wire  _T_93 = wire_csr_index == 12'h3b8; // @[csr.scala 169:94]
+  wire  _T_94 = wire_csr_index == 12'h3b9; // @[csr.scala 169:94]
+  wire  _T_95 = wire_csr_index == 12'h3ba; // @[csr.scala 169:94]
+  wire  _T_96 = wire_csr_index == 12'h3bb; // @[csr.scala 169:94]
+  wire  _T_97 = wire_csr_index == 12'h3bc; // @[csr.scala 169:94]
+  wire  _T_98 = wire_csr_index == 12'h3bd; // @[csr.scala 169:94]
+  wire  _T_99 = wire_csr_index == 12'h3be; // @[csr.scala 169:94]
+  wire  _T_100 = wire_csr_index == 12'h3bf; // @[csr.scala 169:94]
+  wire  _T_101 = wire_csr_index == 12'hb03; // @[csr.scala 169:94]
+  wire  _T_102 = wire_csr_index == 12'hb04; // @[csr.scala 169:94]
+  wire  _T_103 = wire_csr_index == 12'hb05; // @[csr.scala 169:94]
+  wire  _T_104 = wire_csr_index == 12'hb06; // @[csr.scala 169:94]
+  wire  _T_105 = wire_csr_index == 12'hb07; // @[csr.scala 169:94]
+  wire  _T_106 = wire_csr_index == 12'hb08; // @[csr.scala 169:94]
+  wire  _T_107 = wire_csr_index == 12'hb09; // @[csr.scala 169:94]
+  wire  _T_108 = wire_csr_index == 12'hb0a; // @[csr.scala 169:94]
+  wire  _T_109 = wire_csr_index == 12'hb0b; // @[csr.scala 169:94]
+  wire  _T_110 = wire_csr_index == 12'hb0c; // @[csr.scala 169:94]
+  wire  _T_111 = wire_csr_index == 12'hb0d; // @[csr.scala 169:94]
+  wire  _T_112 = wire_csr_index == 12'hb0e; // @[csr.scala 169:94]
+  wire  _T_113 = wire_csr_index == 12'hb0f; // @[csr.scala 169:94]
+  wire  _T_114 = wire_csr_index == 12'hb10; // @[csr.scala 169:94]
+  wire  _T_115 = wire_csr_index == 12'hb11; // @[csr.scala 169:94]
+  wire  _T_116 = wire_csr_index == 12'hb12; // @[csr.scala 169:94]
+  wire  _T_117 = wire_csr_index == 12'hb13; // @[csr.scala 169:94]
+  wire  _T_118 = wire_csr_index == 12'hb14; // @[csr.scala 169:94]
+  wire  _T_119 = wire_csr_index == 12'hb15; // @[csr.scala 169:94]
+  wire  _T_120 = wire_csr_index == 12'hb16; // @[csr.scala 169:94]
+  wire  _T_121 = wire_csr_index == 12'hb17; // @[csr.scala 169:94]
+  wire  _T_122 = wire_csr_index == 12'hb18; // @[csr.scala 169:94]
+  wire  _T_123 = wire_csr_index == 12'hb19; // @[csr.scala 169:94]
+  wire  _T_124 = wire_csr_index == 12'hb1a; // @[csr.scala 169:94]
+  wire  _T_125 = wire_csr_index == 12'hb1b; // @[csr.scala 169:94]
+  wire  _T_126 = wire_csr_index == 12'hb1c; // @[csr.scala 169:94]
+  wire  _T_127 = wire_csr_index == 12'hb1d; // @[csr.scala 169:94]
+  wire  _T_128 = wire_csr_index == 12'hb1e; // @[csr.scala 169:94]
+  wire  _T_129 = wire_csr_index == 12'hb1f; // @[csr.scala 169:94]
+  wire  _T_130 = wire_csr_index == 12'h323; // @[csr.scala 169:94]
+  wire  _T_131 = wire_csr_index == 12'h324; // @[csr.scala 169:94]
+  wire  _T_132 = wire_csr_index == 12'h325; // @[csr.scala 169:94]
+  wire  _T_133 = wire_csr_index == 12'h326; // @[csr.scala 169:94]
+  wire  _T_134 = wire_csr_index == 12'h327; // @[csr.scala 169:94]
+  wire  _T_135 = wire_csr_index == 12'h328; // @[csr.scala 169:94]
+  wire  _T_136 = wire_csr_index == 12'h329; // @[csr.scala 169:94]
+  wire  _T_137 = wire_csr_index == 12'h32a; // @[csr.scala 169:94]
+  wire  _T_138 = wire_csr_index == 12'h32b; // @[csr.scala 169:94]
+  wire  _T_139 = wire_csr_index == 12'h32c; // @[csr.scala 169:94]
+  wire  _T_140 = wire_csr_index == 12'h32d; // @[csr.scala 169:94]
+  wire  _T_141 = wire_csr_index == 12'h32e; // @[csr.scala 169:94]
+  wire  _T_142 = wire_csr_index == 12'h32f; // @[csr.scala 169:94]
+  wire  _T_143 = wire_csr_index == 12'h330; // @[csr.scala 169:94]
+  wire  _T_144 = wire_csr_index == 12'h331; // @[csr.scala 169:94]
+  wire  _T_145 = wire_csr_index == 12'h332; // @[csr.scala 169:94]
+  wire  _T_146 = wire_csr_index == 12'h333; // @[csr.scala 169:94]
+  wire  _T_147 = wire_csr_index == 12'h334; // @[csr.scala 169:94]
+  wire  _T_148 = wire_csr_index == 12'h335; // @[csr.scala 169:94]
+  wire  _T_149 = wire_csr_index == 12'h336; // @[csr.scala 169:94]
+  wire  _T_150 = wire_csr_index == 12'h337; // @[csr.scala 169:94]
+  wire  _T_151 = wire_csr_index == 12'h338; // @[csr.scala 169:94]
+  wire  _T_152 = wire_csr_index == 12'h339; // @[csr.scala 169:94]
+  wire  _T_153 = wire_csr_index == 12'h33a; // @[csr.scala 169:94]
+  wire  _T_154 = wire_csr_index == 12'h33b; // @[csr.scala 169:94]
+  wire  _T_155 = wire_csr_index == 12'h33c; // @[csr.scala 169:94]
+  wire  _T_156 = wire_csr_index == 12'h33d; // @[csr.scala 169:94]
+  wire  _T_157 = wire_csr_index == 12'h33e; // @[csr.scala 169:94]
+  wire  _T_158 = wire_csr_index == 12'h33f; // @[csr.scala 169:94]
+  wire  _T_159 = _T_64 | _T_65; // @[csr.scala 169:113]
+  wire  _T_160 = _T_159 | _T_66; // @[csr.scala 169:113]
+  wire  _T_161 = _T_160 | _T_67; // @[csr.scala 169:113]
+  wire  _T_162 = _T_161 | _T_68; // @[csr.scala 169:113]
+  wire  _T_163 = _T_162 | _T_69; // @[csr.scala 169:113]
+  wire  _T_164 = _T_163 | _T_70; // @[csr.scala 169:113]
+  wire  _T_165 = _T_164 | _T_71; // @[csr.scala 169:113]
+  wire  _T_166 = _T_165 | _T_72; // @[csr.scala 169:113]
+  wire  _T_167 = _T_166 | _T_73; // @[csr.scala 169:113]
+  wire  _T_168 = _T_167 | _T_74; // @[csr.scala 169:113]
+  wire  _T_169 = _T_168 | _T_75; // @[csr.scala 169:113]
+  wire  _T_170 = _T_169 | _T_76; // @[csr.scala 169:113]
+  wire  _T_171 = _T_170 | _T_77; // @[csr.scala 169:113]
+  wire  _T_172 = _T_171 | _T_78; // @[csr.scala 169:113]
+  wire  _T_173 = _T_172 | _T_79; // @[csr.scala 169:113]
+  wire  _T_174 = _T_173 | _T_80; // @[csr.scala 169:113]
+  wire  _T_175 = _T_174 | _T_81; // @[csr.scala 169:113]
+  wire  _T_176 = _T_175 | _T_82; // @[csr.scala 169:113]
+  wire  _T_177 = _T_176 | _T_83; // @[csr.scala 169:113]
+  wire  _T_178 = _T_177 | _T_84; // @[csr.scala 169:113]
+  wire  _T_179 = _T_178 | _T_85; // @[csr.scala 169:113]
+  wire  _T_180 = _T_179 | _T_86; // @[csr.scala 169:113]
+  wire  _T_181 = _T_180 | _T_87; // @[csr.scala 169:113]
+  wire  _T_182 = _T_181 | _T_88; // @[csr.scala 169:113]
+  wire  _T_183 = _T_182 | _T_89; // @[csr.scala 169:113]
+  wire  _T_184 = _T_183 | _T_90; // @[csr.scala 169:113]
+  wire  _T_185 = _T_184 | _T_91; // @[csr.scala 169:113]
+  wire  _T_186 = _T_185 | _T_92; // @[csr.scala 169:113]
+  wire  _T_187 = _T_186 | _T_93; // @[csr.scala 169:113]
+  wire  _T_188 = _T_187 | _T_94; // @[csr.scala 169:113]
+  wire  _T_189 = _T_188 | _T_95; // @[csr.scala 169:113]
+  wire  _T_190 = _T_189 | _T_96; // @[csr.scala 169:113]
+  wire  _T_191 = _T_190 | _T_97; // @[csr.scala 169:113]
+  wire  _T_192 = _T_191 | _T_98; // @[csr.scala 169:113]
+  wire  _T_193 = _T_192 | _T_99; // @[csr.scala 169:113]
+  wire  _T_194 = _T_193 | _T_100; // @[csr.scala 169:113]
+  wire  _T_195 = _T_194 | _T_101; // @[csr.scala 169:113]
+  wire  _T_196 = _T_195 | _T_102; // @[csr.scala 169:113]
+  wire  _T_197 = _T_196 | _T_103; // @[csr.scala 169:113]
+  wire  _T_198 = _T_197 | _T_104; // @[csr.scala 169:113]
+  wire  _T_199 = _T_198 | _T_105; // @[csr.scala 169:113]
+  wire  _T_200 = _T_199 | _T_106; // @[csr.scala 169:113]
+  wire  _T_201 = _T_200 | _T_107; // @[csr.scala 169:113]
+  wire  _T_202 = _T_201 | _T_108; // @[csr.scala 169:113]
+  wire  _T_203 = _T_202 | _T_109; // @[csr.scala 169:113]
+  wire  _T_204 = _T_203 | _T_110; // @[csr.scala 169:113]
+  wire  _T_205 = _T_204 | _T_111; // @[csr.scala 169:113]
+  wire  _T_206 = _T_205 | _T_112; // @[csr.scala 169:113]
+  wire  _T_207 = _T_206 | _T_113; // @[csr.scala 169:113]
+  wire  _T_208 = _T_207 | _T_114; // @[csr.scala 169:113]
+  wire  _T_209 = _T_208 | _T_115; // @[csr.scala 169:113]
+  wire  _T_210 = _T_209 | _T_116; // @[csr.scala 169:113]
+  wire  _T_211 = _T_210 | _T_117; // @[csr.scala 169:113]
+  wire  _T_212 = _T_211 | _T_118; // @[csr.scala 169:113]
+  wire  _T_213 = _T_212 | _T_119; // @[csr.scala 169:113]
+  wire  _T_214 = _T_213 | _T_120; // @[csr.scala 169:113]
+  wire  _T_215 = _T_214 | _T_121; // @[csr.scala 169:113]
+  wire  _T_216 = _T_215 | _T_122; // @[csr.scala 169:113]
+  wire  _T_217 = _T_216 | _T_123; // @[csr.scala 169:113]
+  wire  _T_218 = _T_217 | _T_124; // @[csr.scala 169:113]
+  wire  _T_219 = _T_218 | _T_125; // @[csr.scala 169:113]
+  wire  _T_220 = _T_219 | _T_126; // @[csr.scala 169:113]
+  wire  _T_221 = _T_220 | _T_127; // @[csr.scala 169:113]
+  wire  _T_222 = _T_221 | _T_128; // @[csr.scala 169:113]
+  wire  _T_223 = _T_222 | _T_129; // @[csr.scala 169:113]
+  wire  _T_224 = _T_223 | _T_130; // @[csr.scala 169:113]
+  wire  _T_225 = _T_224 | _T_131; // @[csr.scala 169:113]
+  wire  _T_226 = _T_225 | _T_132; // @[csr.scala 169:113]
+  wire  _T_227 = _T_226 | _T_133; // @[csr.scala 169:113]
+  wire  _T_228 = _T_227 | _T_134; // @[csr.scala 169:113]
+  wire  _T_229 = _T_228 | _T_135; // @[csr.scala 169:113]
+  wire  _T_230 = _T_229 | _T_136; // @[csr.scala 169:113]
+  wire  _T_231 = _T_230 | _T_137; // @[csr.scala 169:113]
+  wire  _T_232 = _T_231 | _T_138; // @[csr.scala 169:113]
+  wire  _T_233 = _T_232 | _T_139; // @[csr.scala 169:113]
+  wire  _T_234 = _T_233 | _T_140; // @[csr.scala 169:113]
+  wire  _T_235 = _T_234 | _T_141; // @[csr.scala 169:113]
+  wire  _T_236 = _T_235 | _T_142; // @[csr.scala 169:113]
+  wire  _T_237 = _T_236 | _T_143; // @[csr.scala 169:113]
+  wire  _T_238 = _T_237 | _T_144; // @[csr.scala 169:113]
+  wire  _T_239 = _T_238 | _T_145; // @[csr.scala 169:113]
+  wire  _T_240 = _T_239 | _T_146; // @[csr.scala 169:113]
+  wire  _T_241 = _T_240 | _T_147; // @[csr.scala 169:113]
+  wire  _T_242 = _T_241 | _T_148; // @[csr.scala 169:113]
+  wire  _T_243 = _T_242 | _T_149; // @[csr.scala 169:113]
+  wire  _T_244 = _T_243 | _T_150; // @[csr.scala 169:113]
+  wire  _T_245 = _T_244 | _T_151; // @[csr.scala 169:113]
+  wire  _T_246 = _T_245 | _T_152; // @[csr.scala 169:113]
+  wire  _T_247 = _T_246 | _T_153; // @[csr.scala 169:113]
+  wire  _T_248 = _T_247 | _T_154; // @[csr.scala 169:113]
+  wire  _T_249 = _T_248 | _T_155; // @[csr.scala 169:113]
+  wire  _T_250 = _T_249 | _T_156; // @[csr.scala 169:113]
+  wire  _T_251 = _T_250 | _T_157; // @[csr.scala 169:113]
+  wire  legalcsrnumber = _T_251 | _T_158; // @[csr.scala 169:113]
+  wire  _T_252 = io__csr_op != 3'h0; // @[csr.scala 170:35]
+  wire  _T_253 = io__csr_op != 3'h5; // @[csr.scala 170:58]
+  wire  _T_254 = _T_252 & _T_253; // @[csr.scala 170:45]
+  wire  _T_255 = ~legalcsrnumber; // @[csr.scala 170:74]
+  wire  read_illegal = _T_254 & _T_255; // @[csr.scala 170:71]
+  wire  exception_in_csr = read_illegal | write_illgal; // @[csr.scala 172:41]
+  wire  _T_259 = ~read_illegal; // @[csr.scala 174:77]
+  wire  csr_read_enable = _T_254 & _T_259; // @[csr.scala 174:74]
+  wire  _T_264 = 12'h300 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_265 = 12'h301 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_268 = 12'h304 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_269 = 12'h344 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_270 = 12'h305 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_272 = 12'h340 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_273 = 12'h341 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_274 = 12'h342 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_275 = 12'h343 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_276 = 12'h3a0 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_277 = 12'h3a1 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_278 = 12'hb00 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_279 = 12'hb02 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_280 = 12'h320 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_281 = 12'h3b0 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_282 = 12'h3b1 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_283 = 12'h3b2 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_284 = 12'h3b3 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_285 = 12'h3b4 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_286 = 12'h3b5 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_287 = 12'h3b6 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_288 = 12'h3b7 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_289 = 12'h3b8 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_290 = 12'h3b9 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_291 = 12'h3ba == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_292 = 12'h3bb == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_293 = 12'h3bc == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_294 = 12'h3bd == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_295 = 12'h3be == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_296 = 12'h3bf == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_297 = 12'hb03 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_298 = 12'hb04 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_299 = 12'hb05 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_300 = 12'hb06 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_301 = 12'hb07 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_302 = 12'hb08 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_303 = 12'hb09 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_304 = 12'hb0a == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_305 = 12'hb0b == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_306 = 12'hb0c == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_307 = 12'hb0d == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_308 = 12'hb0e == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_309 = 12'hb0f == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_310 = 12'hb10 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_311 = 12'hb11 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_312 = 12'hb12 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_313 = 12'hb13 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_314 = 12'hb14 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_315 = 12'hb15 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_316 = 12'hb16 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_317 = 12'hb17 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_318 = 12'hb18 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_319 = 12'hb19 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_320 = 12'hb1a == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_321 = 12'hb1b == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_322 = 12'hb1c == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_323 = 12'hb1d == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_324 = 12'hb1e == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_325 = 12'hb1f == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_326 = 12'h323 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_327 = 12'h324 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_328 = 12'h325 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_329 = 12'h326 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_330 = 12'h327 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_331 = 12'h328 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_332 = 12'h329 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_333 = 12'h32a == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_334 = 12'h32b == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_335 = 12'h32c == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_336 = 12'h32d == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_337 = 12'h32e == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_338 = 12'h32f == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_339 = 12'h330 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_340 = 12'h331 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_341 = 12'h332 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_342 = 12'h333 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_343 = 12'h334 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_344 = 12'h335 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_345 = 12'h336 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_346 = 12'h337 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_347 = 12'h338 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_348 = 12'h339 == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_349 = 12'h33a == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_350 = 12'h33b == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_351 = 12'h33c == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_352 = 12'h33d == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_353 = 12'h33e == wire_csr_index; // @[csr.scala 179:61]
+  wire  _T_354 = 12'h33f == wire_csr_index; // @[csr.scala 179:61]
   wire [63:0] _T_9289 = _T_264 ? _T_39 : 64'h0; // @[Mux.scala 27:72]
   wire [63:0] _T_9290 = _T_265 ? 64'h8000000000001100 : 64'h0; // @[Mux.scala 27:72]
-  wire [63:0] _T_40 = {{52'd0}, _T_51}; // @[csr.scala 134:38 csr.scala 134:38]
+  wire [63:0] _T_40 = {{52'd0}, _T_51}; // @[csr.scala 135:38 csr.scala 135:38]
   wire [63:0] _T_9293 = _T_268 ? _T_40 : 64'h0; // @[Mux.scala 27:72]
-  wire [63:0] _T_52 = {{52'd0}, _T_63}; // @[csr.scala 135:38 csr.scala 135:38]
+  wire [63:0] _T_52 = {{52'd0}, _T_63}; // @[csr.scala 136:38 csr.scala 136:38]
   wire [63:0] _T_9294 = _T_269 ? _T_52 : 64'h0; // @[Mux.scala 27:72]
   wire [63:0] _T_9295 = _T_270 ? reg_mtvec : 64'h0; // @[Mux.scala 27:72]
   wire [63:0] _T_9297 = _T_272 ? reg_mscratch : 64'h0; // @[Mux.scala 27:72]
@@ -1099,39 +1101,53 @@ module CSRfile(
   wire [63:0] _T_9471 = _T_9470 | _T_9377; // @[Mux.scala 27:72]
   wire [63:0] _T_9472 = _T_9471 | _T_9378; // @[Mux.scala 27:72]
   wire [63:0] _T_9473 = _T_9472 | _T_9379; // @[Mux.scala 27:72]
-  wire [63:0] csr_read_data = csr_read_enable ? _T_9473 : 64'h0; // @[csr.scala 183:5]
-  wire  _T_9475 = io_csr_op == 3'h2; // @[csr.scala 192:20]
-  wire [63:0] _T_9477 = io_data_in | csr_read_data; // @[csr.scala 193:46]
-  wire [63:0] _T_9479 = ~csr_read_data; // @[csr.scala 194:49]
-  wire [63:0] _T_9480 = io_data_in & _T_9479; // @[csr.scala 194:46]
+  wire [63:0] csr_read_data = csr_read_enable ? _T_9473 : 64'h0; // @[csr.scala 184:5]
+  wire  _T_9475 = io__csr_op == 3'h2; // @[csr.scala 193:20]
+  wire [63:0] _T_9477 = io__data_in | csr_read_data; // @[csr.scala 194:46]
+  wire [63:0] _T_9479 = ~csr_read_data; // @[csr.scala 195:49]
+  wire [63:0] _T_9480 = io__data_in & _T_9479; // @[csr.scala 195:46]
   wire [63:0] _T_9481 = _T_7 ? _T_9480 : csr_read_data; // @[Mux.scala 98:16]
   wire [63:0] _T_9482 = _T_8 ? _T_9477 : _T_9481; // @[Mux.scala 98:16]
-  wire [63:0] csr_write_data = _T_9475 ? io_data_in : _T_9482; // @[Mux.scala 98:16]
-  wire  _T_9483 = ~write_illgal; // @[csr.scala 197:19]
-  wire  _T_9484 = _T_9483 & legalcsrnumber; // @[csr.scala 197:33]
-  wire  _T_9485 = ~io_hasException; // @[csr.scala 197:54]
-  wire  _T_9486 = _T_9484 & _T_9485; // @[csr.scala 197:51]
-  wire  _T_9487 = ~io_hasStall; // @[csr.scala 197:74]
-  wire  csr_wen = _T_9486 & _T_9487; // @[csr.scala 197:71]
-  wire [63:0] _T_10110 = {csr_write_data[63:2], 2'h0}; // @[csr.scala 223:66]
-  wire  csr_illegal_ins_exception = exception_in_csr | io_hasException; // @[csr.scala 257:54]
-  wire  _T_17711 = io_csr_op == 3'h5; // @[csr.scala 259:34]
-  wire  _T_17712 = wire_csr_index == 12'h0; // @[csr.scala 259:66]
-  wire  csr_isecall = _T_17711 & _T_17712; // @[csr.scala 259:47]
-  wire  _T_17714 = wire_csr_index == 12'h1; // @[csr.scala 260:67]
-  wire  csr_isebreak = _T_17711 & _T_17714; // @[csr.scala 260:48]
-  wire  csr_ismret = _T_17711 & _T_70; // @[csr.scala 261:46]
-  wire  _T_17717 = csr_illegal_ins_exception | csr_isecall; // @[csr.scala 263:54]
-  wire  csr_hasexception = _T_17717 | csr_isebreak; // @[csr.scala 263:69]
-  wire  _T_17724 = _T_9487 & _T_9485; // @[csr.scala 276:23]
-  wire [63:0] _T_17726 = reg_minstret + 64'h1; // @[csr.scala 278:38]
-  wire  _T_17727 = reg_mip_mti & reg_mie_mti; // @[csr.scala 283:22]
-  wire  csr_hasinterrupt = _T_17727 & reg_mstatus_mie; // @[csr.scala 283:37]
-  wire [1:0] prv_now = csr_ismret ? reg_mstatus_mpp : 2'h3; // @[csr.scala 357:5]
-  wire  _T_17736 = csr_hasexception | csr_hasinterrupt; // @[csr.scala 366:27]
-  assign io_redir_target = _T_17736 ? reg_mtvec : reg_mepc; // @[csr.scala 360:25 csr.scala 376:25]
-  assign io_csr_info = csr_read_enable ? _T_9473 : 64'h0; // @[csr.scala 187:17]
-  assign io_isredir = _T_17736 | csr_ismret; // @[csr.scala 368:20 csr.scala 371:20]
+  wire [63:0] csr_write_data = _T_9475 ? io__data_in : _T_9482; // @[Mux.scala 98:16]
+  wire  _T_9483 = ~write_illgal; // @[csr.scala 198:19]
+  wire  _T_9484 = _T_9483 & legalcsrnumber; // @[csr.scala 198:33]
+  wire  _T_9485 = ~io__hasException; // @[csr.scala 198:54]
+  wire  _T_9486 = _T_9484 & _T_9485; // @[csr.scala 198:51]
+  wire  _T_9487 = ~io__hasStall; // @[csr.scala 198:74]
+  wire  csr_wen = _T_9486 & _T_9487; // @[csr.scala 198:71]
+  wire  _GEN_3 = _T_264 ? csr_write_data[7] : reg_mstatus_mpie; // @[csr.scala 204:9]
+  wire [63:0] _T_10110 = {csr_write_data[63:2], 2'h0}; // @[csr.scala 224:66]
+  wire  _GEN_92 = csr_wen ? _GEN_3 : reg_mstatus_mpie; // @[csr.scala 202:5]
+  wire  csr_illegal_ins_exception = exception_in_csr | io__hasException; // @[csr.scala 258:54]
+  wire  _T_17711 = io__csr_op == 3'h5; // @[csr.scala 260:34]
+  wire  _T_17712 = wire_csr_index == 12'h0; // @[csr.scala 260:66]
+  wire  csr_isecall = _T_17711 & _T_17712; // @[csr.scala 260:47]
+  wire  _T_17714 = wire_csr_index == 12'h1; // @[csr.scala 261:67]
+  wire  csr_isebreak = _T_17711 & _T_17714; // @[csr.scala 261:48]
+  wire  csr_ismret = _T_17711 & _T_70; // @[csr.scala 262:46]
+  wire  _T_17717 = csr_illegal_ins_exception | csr_isecall; // @[csr.scala 264:54]
+  wire  csr_hasexception = _T_17717 | csr_isebreak; // @[csr.scala 264:69]
+  wire  _T_17724 = _T_9487 & _T_9485; // @[csr.scala 277:23]
+  wire [63:0] _T_17726 = reg_minstret + 64'h1; // @[csr.scala 279:38]
+  wire  _T_17727 = reg_mip_mti & reg_mie_mti; // @[csr.scala 284:22]
+  wire  csr_hasinterrupt = _T_17727 & reg_mstatus_mie; // @[csr.scala 284:37]
+  wire  _GEN_188 = csr_isebreak ? reg_mstatus_mie : reg_mstatus_mpie; // @[csr.scala 327:9]
+  wire [1:0] prv_now = csr_ismret ? reg_mstatus_mpp : 2'h3; // @[csr.scala 358:5]
+  wire  _GEN_215 = csr_isecall ? reg_mstatus_mie : _GEN_188; // @[csr.scala 315:9]
+  wire  _GEN_242 = csr_illegal_ins_exception ? reg_mstatus_mie : _GEN_215; // @[csr.scala 302:9]
+  wire  _GEN_197 = csr_isebreak ? _GEN_242 : _GEN_92; // @[csr.scala 327:9]
+  wire  _GEN_224 = csr_isecall ? _GEN_242 : _GEN_197; // @[csr.scala 315:9]
+  wire  _GEN_251 = csr_illegal_ins_exception ? _GEN_242 : _GEN_224; // @[csr.scala 302:9]
+  wire  _GEN_275 = csr_hasexception ? _GEN_251 : _GEN_92; // @[csr.scala 298:5]
+  wire  _GEN_299 = csr_hasinterrupt ? reg_mstatus_mie : _GEN_275; // @[csr.scala 341:5]
+  wire  _GEN_322 = csr_ismret | _GEN_299; // @[csr.scala 358:5]
+  wire  _T_17736 = csr_hasexception | csr_hasinterrupt; // @[csr.scala 369:27]
+  wire [63:0] _T_17758 = {45'h0,4'h0,2'h0,reg_mstatus_mpp,_T_28}; // @[csr.scala 383:45]
+  assign io__redir_target = _T_17736 ? reg_mtvec : reg_mepc; // @[csr.scala 361:25 csr.scala 379:25]
+  assign io__csr_info = csr_read_enable ? _T_9473 : 64'h0; // @[csr.scala 188:17]
+  assign io__isredir = _T_17736 | csr_ismret; // @[csr.scala 371:20 csr.scala 374:20]
+  assign io_isredir = io__isredir;
+  assign _T_17758_0 = _T_39;
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -1358,11 +1374,11 @@ end // initial
 `endif // SYNTHESIS
   always @(posedge clock) begin
     if (reset) begin
-      reg_mtvec <= 64'h0;
+      reg_mtvec <= 64'h8000000c;
     end else if (csr_wen) begin
       if (_T_270) begin
         if (_T_9475) begin
-          reg_mtvec <= io_data_in;
+          reg_mtvec <= io__data_in;
         end else if (_T_8) begin
           reg_mtvec <= _T_9477;
         end else if (_T_7) begin
@@ -1377,14 +1393,14 @@ end // initial
     if (reset) begin
       reg_mepc <= 64'h0;
     end else if (csr_hasinterrupt) begin
-      reg_mepc <= io_in_pc;
+      reg_mepc <= io__in_pc;
     end else if (csr_hasexception) begin
       if (csr_illegal_ins_exception) begin
-        reg_mepc <= io_in_pc;
+        reg_mepc <= io__in_pc;
       end else if (csr_isecall) begin
-        reg_mepc <= io_in_pc;
+        reg_mepc <= io__in_pc;
       end else if (csr_isebreak) begin
-        reg_mepc <= io_in_pc;
+        reg_mepc <= io__in_pc;
       end else if (csr_wen) begin
         if (_T_273) begin
           reg_mepc <= _T_10110;
@@ -1409,7 +1425,7 @@ end // initial
       end else if (csr_wen) begin
         if (_T_274) begin
           if (_T_9475) begin
-            reg_mcause <= io_data_in;
+            reg_mcause <= io__data_in;
           end else if (_T_8) begin
             reg_mcause <= _T_9477;
           end else if (_T_7) begin
@@ -1424,7 +1440,7 @@ end // initial
     end else if (csr_wen) begin
       if (_T_274) begin
         if (_T_9475) begin
-          reg_mcause <= io_data_in;
+          reg_mcause <= io__data_in;
         end else if (_T_8) begin
           reg_mcause <= _T_9477;
         end else if (_T_7) begin
@@ -1465,14 +1481,14 @@ end // initial
     if (reset) begin
       reg_mtval <= 64'h0;
     end else if (csr_hasinterrupt) begin
-      reg_mtval <= io_in_pc;
+      reg_mtval <= io__in_pc;
     end else if (csr_hasexception) begin
       if (csr_illegal_ins_exception) begin
-        reg_mtval <= io_in_pc;
+        reg_mtval <= {{32'd0}, io__instruction};
       end else if (csr_isecall) begin
-        reg_mtval <= io_in_pc;
+        reg_mtval <= io__in_pc;
       end else if (csr_isebreak) begin
-        reg_mtval <= io_in_pc;
+        reg_mtval <= io__in_pc;
       end
     end
     if (reset) begin
@@ -1480,7 +1496,7 @@ end // initial
     end else if (csr_wen) begin
       if (_T_272) begin
         if (_T_9475) begin
-          reg_mscratch <= io_data_in;
+          reg_mscratch <= io__data_in;
         end else if (_T_8) begin
           reg_mscratch <= _T_9477;
         end else if (_T_7) begin
@@ -1494,84 +1510,54 @@ end // initial
     end
     if (reset) begin
       reg_mstatus_mpp <= 2'h0;
-    end else if (csr_hasinterrupt) begin
-      if (!(csr_ismret)) begin
-        reg_mstatus_mpp <= 2'h3;
-      end
-    end else if (csr_hasexception) begin
-      if (csr_illegal_ins_exception) begin
-        if (csr_illegal_ins_exception) begin
-          if (!(csr_ismret)) begin
-            reg_mstatus_mpp <= 2'h3;
-          end
-        end else if (csr_isecall) begin
-          if (!(csr_ismret)) begin
-            reg_mstatus_mpp <= 2'h3;
-          end
-        end else if (csr_isebreak) begin
-          if (!(csr_ismret)) begin
-            reg_mstatus_mpp <= 2'h3;
-          end
+    end else if (!(csr_ismret)) begin
+      if (csr_hasinterrupt) begin
+        if (!(csr_ismret)) begin
+          reg_mstatus_mpp <= 2'h3;
         end
-      end else if (csr_isecall) begin
+      end else if (csr_hasexception) begin
         if (csr_illegal_ins_exception) begin
-          reg_mstatus_mpp <= prv_now;
+          if (csr_illegal_ins_exception) begin
+            if (!(csr_ismret)) begin
+              reg_mstatus_mpp <= 2'h3;
+            end
+          end else if (csr_isecall) begin
+            if (!(csr_ismret)) begin
+              reg_mstatus_mpp <= 2'h3;
+            end
+          end else if (csr_isebreak) begin
+            if (!(csr_ismret)) begin
+              reg_mstatus_mpp <= 2'h3;
+            end
+          end
         end else if (csr_isecall) begin
-          reg_mstatus_mpp <= prv_now;
+          if (csr_illegal_ins_exception) begin
+            reg_mstatus_mpp <= prv_now;
+          end else if (csr_isecall) begin
+            reg_mstatus_mpp <= prv_now;
+          end else if (csr_isebreak) begin
+            reg_mstatus_mpp <= prv_now;
+          end
         end else if (csr_isebreak) begin
-          reg_mstatus_mpp <= prv_now;
-        end
-      end else if (csr_isebreak) begin
-        if (csr_illegal_ins_exception) begin
-          reg_mstatus_mpp <= prv_now;
-        end else if (csr_isecall) begin
-          reg_mstatus_mpp <= prv_now;
-        end else if (csr_isebreak) begin
-          reg_mstatus_mpp <= prv_now;
+          if (csr_illegal_ins_exception) begin
+            reg_mstatus_mpp <= prv_now;
+          end else if (csr_isecall) begin
+            reg_mstatus_mpp <= prv_now;
+          end else if (csr_isebreak) begin
+            reg_mstatus_mpp <= prv_now;
+          end
         end
       end
     end
     if (reset) begin
       reg_mstatus_mpie <= 1'h0;
-    end else if (csr_hasinterrupt) begin
-      reg_mstatus_mpie <= reg_mstatus_mie;
-    end else if (csr_hasexception) begin
-      if (csr_illegal_ins_exception) begin
-        if (csr_illegal_ins_exception) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isecall) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isebreak) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end
-      end else if (csr_isecall) begin
-        if (csr_illegal_ins_exception) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isecall) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isebreak) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end
-      end else if (csr_isebreak) begin
-        if (csr_illegal_ins_exception) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isecall) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end else if (csr_isebreak) begin
-          reg_mstatus_mpie <= reg_mstatus_mie;
-        end
-      end else if (csr_wen) begin
-        if (_T_264) begin
-          reg_mstatus_mpie <= csr_write_data[7];
-        end
-      end
-    end else if (csr_wen) begin
-      if (_T_264) begin
-        reg_mstatus_mpie <= csr_write_data[7];
-      end
+    end else begin
+      reg_mstatus_mpie <= _GEN_322;
     end
     if (reset) begin
       reg_mstatus_mie <= 1'h0;
+    end else if (csr_ismret) begin
+      reg_mstatus_mie <= reg_mstatus_mpie;
     end else if (csr_hasinterrupt) begin
       reg_mstatus_mie <= 1'h0;
     end else if (csr_hasexception) begin
@@ -2199,6 +2185,8 @@ module Dpath(
   output        io__dmem_req_bits_wen,
   input  [63:0] io__dmem_resp_bits_rdata,
   output        io_c2d_cp_reg_wen,
+  output        io_isredir,
+  output [63:0] _T_17758,
   output [63:0] reg_pc_0,
   output [63:0] _T_41_0_0,
   output [63:0] _T_41_0_1,
@@ -2283,15 +2271,17 @@ module Dpath(
   wire [63:0] dp_alu_io_res; // @[dpath.scala 119:24]
   wire  csr_clock; // @[dpath.scala 145:21]
   wire  csr_reset; // @[dpath.scala 145:21]
-  wire [31:0] csr_io_instruction; // @[dpath.scala 145:21]
-  wire [2:0] csr_io_csr_op; // @[dpath.scala 145:21]
-  wire [63:0] csr_io_data_in; // @[dpath.scala 145:21]
-  wire  csr_io_hasException; // @[dpath.scala 145:21]
-  wire  csr_io_hasStall; // @[dpath.scala 145:21]
-  wire [63:0] csr_io_in_pc; // @[dpath.scala 145:21]
-  wire [63:0] csr_io_redir_target; // @[dpath.scala 145:21]
-  wire [63:0] csr_io_csr_info; // @[dpath.scala 145:21]
+  wire [31:0] csr_io__instruction; // @[dpath.scala 145:21]
+  wire [2:0] csr_io__csr_op; // @[dpath.scala 145:21]
+  wire [63:0] csr_io__data_in; // @[dpath.scala 145:21]
+  wire  csr_io__hasException; // @[dpath.scala 145:21]
+  wire  csr_io__hasStall; // @[dpath.scala 145:21]
+  wire [63:0] csr_io__in_pc; // @[dpath.scala 145:21]
+  wire [63:0] csr_io__redir_target; // @[dpath.scala 145:21]
+  wire [63:0] csr_io__csr_info; // @[dpath.scala 145:21]
+  wire  csr_io__isredir; // @[dpath.scala 145:21]
   wire  csr_io_isredir; // @[dpath.scala 145:21]
+  wire [63:0] csr__T_17758_0; // @[dpath.scala 145:21]
   reg [63:0] reg_pc; // @[dpath.scala 33:25]
   wire [31:0] dp_instr = io__imem_resp_bits_rdata[31:0]; // @[dpath.scala 43:52]
   wire  _T_2 = io__c2d_cp_pc_sel == 3'h0; // @[dpath.scala 56:27]
@@ -2318,7 +2308,7 @@ module Dpath(
   wire [42:0] _T_32 = dp_jim[19] ? 43'h7ffffffffff : 43'h0; // @[Bitwise.scala 72:12]
   wire [63:0] _T_50 = {_T_32,dp_instr[31],dp_instr[19:12],dp_instr[20],dp_instr[30:21],1'h0}; // @[dpath.scala 98:64]
   wire [63:0] temp_pc_jump_target = $signed(reg_pc) + $signed(_T_50); // @[dpath.scala 98:74]
-  wire [63:0] temp_pc_redirect_target = csr_io_redir_target; // @[dpath.scala 52:39 dpath.scala 154:29]
+  wire [63:0] temp_pc_redirect_target = csr_io__redir_target; // @[dpath.scala 52:39 dpath.scala 154:29]
   wire  _T_12 = ~io__c2d_shouldstall; // @[dpath.scala 63:10]
   wire [4:0] dp_rs1_addr = dp_instr[19:15]; // @[dpath.scala 69:31]
   wire [4:0] dp_rd_addr = dp_instr[11:7]; // @[dpath.scala 71:31]
@@ -2350,7 +2340,7 @@ module Dpath(
   wire  _T_90 = io__c2d_cp_wb_sel == 2'h1; // @[dpath.scala 163:27]
   wire  _T_91 = io__c2d_cp_wb_sel == 2'h2; // @[dpath.scala 164:27]
   wire  _T_92 = io__c2d_cp_wb_sel == 2'h3; // @[dpath.scala 165:27]
-  wire [63:0] _T_93 = _T_92 ? csr_io_csr_info : dp_alu_io_res; // @[Mux.scala 98:16]
+  wire [63:0] _T_93 = _T_92 ? csr_io__csr_info : dp_alu_io_res; // @[Mux.scala 98:16]
   wire [63:0] _T_94 = _T_91 ? temp_pc_next_4 : _T_93; // @[Mux.scala 98:16]
   wire [63:0] _T_95 = _T_90 ? io__dmem_resp_bits_rdata : _T_94; // @[Mux.scala 98:16]
   wire  _T_97 = ~io__c2d_hasexception; // @[dpath.scala 168:10]
@@ -2407,21 +2397,23 @@ module Dpath(
   CSRfile csr ( // @[dpath.scala 145:21]
     .clock(csr_clock),
     .reset(csr_reset),
-    .io_instruction(csr_io_instruction),
-    .io_csr_op(csr_io_csr_op),
-    .io_data_in(csr_io_data_in),
-    .io_hasException(csr_io_hasException),
-    .io_hasStall(csr_io_hasStall),
-    .io_in_pc(csr_io_in_pc),
-    .io_redir_target(csr_io_redir_target),
-    .io_csr_info(csr_io_csr_info),
-    .io_isredir(csr_io_isredir)
+    .io__instruction(csr_io__instruction),
+    .io__csr_op(csr_io__csr_op),
+    .io__data_in(csr_io__data_in),
+    .io__hasException(csr_io__hasException),
+    .io__hasStall(csr_io__hasStall),
+    .io__in_pc(csr_io__in_pc),
+    .io__redir_target(csr_io__redir_target),
+    .io__csr_info(csr_io__csr_info),
+    .io__isredir(csr_io__isredir),
+    .io_isredir(csr_io_isredir),
+    ._T_17758_0(csr__T_17758_0)
   );
   assign io__d2c_instr = io__imem_resp_bits_rdata[31:0]; // @[dpath.scala 45:18]
   assign io__d2c_islt = $signed(_T_83) < $signed(_T_84); // @[dpath.scala 130:17]
   assign io__d2c_isltu = dp_op1_src < dp_op2_src; // @[dpath.scala 131:18]
   assign io__d2c_iseq = dp_op1_src == dp_op2_src; // @[dpath.scala 132:17]
-  assign io__d2c_isredir = csr_io_isredir; // @[dpath.scala 156:20]
+  assign io__d2c_isredir = csr_io__isredir; // @[dpath.scala 156:20]
   assign io__imem_req_bits_addr = reg_pc[31:0]; // @[dpath.scala 38:27]
   assign io__dmem_req_valid = io__c2d_cp_mem_en; // @[dpath.scala 135:23]
   assign io__dmem_req_bits_addr = dp_alu_io_res[31:0]; // @[dpath.scala 136:27]
@@ -2431,6 +2423,8 @@ module Dpath(
   assign io__dmem_req_bits_memen = io__c2d_cp_mem_en; // @[dpath.scala 140:28]
   assign io__dmem_req_bits_wen = io__c2d_cp_mem_wen; // @[dpath.scala 141:26]
   assign io_c2d_cp_reg_wen = io__c2d_cp_reg_wen;
+  assign io_isredir = csr_io_isredir;
+  assign _T_17758 = csr__T_17758_0;
   assign reg_pc_0 = reg_pc;
   assign _T_41_0_0 = regfile__T_41_0_0;
   assign _T_41_0_1 = regfile__T_41_0_1;
@@ -2476,12 +2470,12 @@ module Dpath(
   assign dp_alu_io_res_ext_op = io__c2d_cp_alu_ext_sel; // @[dpath.scala 125:26]
   assign csr_clock = clock;
   assign csr_reset = reset;
-  assign csr_io_instruction = io__imem_resp_bits_rdata[31:0]; // @[dpath.scala 147:24]
-  assign csr_io_csr_op = io__c2d_cp_csr_op; // @[dpath.scala 148:19]
-  assign csr_io_data_in = dp_alu_io_res; // @[dpath.scala 149:20]
-  assign csr_io_hasException = io__c2d_hasexception; // @[dpath.scala 150:25]
-  assign csr_io_hasStall = io__c2d_shouldstall; // @[dpath.scala 151:21]
-  assign csr_io_in_pc = reg_pc; // @[dpath.scala 152:18]
+  assign csr_io__instruction = io__imem_resp_bits_rdata[31:0]; // @[dpath.scala 147:24]
+  assign csr_io__csr_op = io__c2d_cp_csr_op; // @[dpath.scala 148:19]
+  assign csr_io__data_in = dp_alu_io_res; // @[dpath.scala 149:20]
+  assign csr_io__hasException = io__c2d_hasexception; // @[dpath.scala 150:25]
+  assign csr_io__hasStall = io__c2d_shouldstall; // @[dpath.scala 151:21]
+  assign csr_io__in_pc = reg_pc; // @[dpath.scala 152:18]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -3290,54 +3284,50 @@ module Cpath(
   wire [2:0] _T_1109 = _T_7 ? 3'h0 : _T_1108; // @[Lookup.scala 33:37]
   wire [2:0] _T_1110 = _T_5 ? 3'h0 : _T_1109; // @[Lookup.scala 33:37]
   wire [2:0] _T_1111 = _T_3 ? 3'h0 : _T_1110; // @[Lookup.scala 33:37]
-  wire  temp_exception = ~cs_valid_inst; // @[cpath.scala 169:46]
-  wire  _T_1112 = temp_exception | io_d2c_isredir; // @[cpath.scala 152:25]
-  wire  _T_1113 = cs_branch == 4'h0; // @[cpath.scala 153:20]
-  wire  _T_1114 = cs_branch == 4'h1; // @[cpath.scala 154:20]
-  wire [2:0] _T_1115 = io_d2c_iseq ? 3'h2 : 3'h0; // @[cpath.scala 154:38]
-  wire  _T_1116 = cs_branch == 4'h2; // @[cpath.scala 155:20]
-  wire  _T_1117 = ~io_d2c_iseq; // @[cpath.scala 155:40]
-  wire [2:0] _T_1118 = _T_1117 ? 3'h2 : 3'h0; // @[cpath.scala 155:39]
-  wire  _T_1119 = cs_branch == 4'h5; // @[cpath.scala 156:20]
-  wire  _T_1120 = ~io_d2c_islt; // @[cpath.scala 156:39]
-  wire [2:0] _T_1121 = _T_1120 ? 3'h2 : 3'h0; // @[cpath.scala 156:38]
-  wire  _T_1122 = cs_branch == 4'h6; // @[cpath.scala 157:20]
-  wire  _T_1123 = ~io_d2c_isltu; // @[cpath.scala 157:40]
-  wire [2:0] _T_1124 = _T_1123 ? 3'h2 : 3'h0; // @[cpath.scala 157:39]
-  wire  _T_1125 = cs_branch == 4'h3; // @[cpath.scala 158:20]
-  wire [2:0] _T_1126 = io_d2c_islt ? 3'h2 : 3'h0; // @[cpath.scala 158:38]
-  wire  _T_1127 = cs_branch == 4'h4; // @[cpath.scala 159:20]
-  wire [2:0] _T_1128 = io_d2c_isltu ? 3'h2 : 3'h0; // @[cpath.scala 159:39]
-  wire  _T_1129 = cs_branch == 4'h7; // @[cpath.scala 160:20]
-  wire  _T_1130 = cs_branch == 4'h8; // @[cpath.scala 161:20]
-  wire [2:0] _T_1131 = _T_1130 ? 3'h3 : 3'h0; // @[Mux.scala 98:16]
-  wire [2:0] _T_1132 = _T_1129 ? 3'h1 : _T_1131; // @[Mux.scala 98:16]
-  wire [2:0] _T_1133 = _T_1127 ? _T_1128 : _T_1132; // @[Mux.scala 98:16]
-  wire [2:0] _T_1134 = _T_1125 ? _T_1126 : _T_1133; // @[Mux.scala 98:16]
-  wire [2:0] _T_1135 = _T_1122 ? _T_1124 : _T_1134; // @[Mux.scala 98:16]
-  wire [2:0] _T_1136 = _T_1119 ? _T_1121 : _T_1135; // @[Mux.scala 98:16]
-  wire [2:0] _T_1137 = _T_1116 ? _T_1118 : _T_1136; // @[Mux.scala 98:16]
-  wire [2:0] _T_1138 = _T_1114 ? _T_1115 : _T_1137; // @[Mux.scala 98:16]
-  wire [2:0] _T_1139 = _T_1113 ? 3'h0 : _T_1138; // @[Mux.scala 98:16]
-  wire [2:0] _T_1140 = _T_1112 ? 3'h4 : _T_1139; // @[Mux.scala 98:16]
-  wire  _T_1142 = ~cs_mem_valid; // @[cpath.scala 166:45]
-  wire  _T_1143 = cs_mem_valid & io_dmem_resp_valid; // @[cpath.scala 166:76]
-  wire  _T_1144 = _T_1142 | _T_1143; // @[cpath.scala 166:59]
-  wire [1:0] temp_pc_sel = _T_1140[1:0]; // @[cpath.scala 147:27 cpath.scala 151:17]
-  assign io_c2d_cp_pc_sel = {{1'd0}, temp_pc_sel}; // @[cpath.scala 185:33]
-  assign io_c2d_cp_op1_sel = _T_1 ? 2'h0 : _T_371; // @[cpath.scala 186:33]
-  assign io_c2d_cp_op2_sel = _T_1 ? 2'h0 : _T_445; // @[cpath.scala 187:33]
-  assign io_c2d_cp_alu_sel = _T_1 ? 5'h0 : _T_519; // @[cpath.scala 188:33]
-  assign io_c2d_cp_reg_wen = _T_1 | _T_593; // @[cpath.scala 189:33]
-  assign io_c2d_cp_mem_en = _T_1 ? 1'h0 : _T_667; // @[cpath.scala 190:33]
-  assign io_c2d_cp_mem_read_op = _T_1 ? 3'h0 : _T_741; // @[cpath.scala 191:33]
-  assign io_c2d_cp_mem_write_mask = _T_1 ? 8'h1 : _T_815; // @[cpath.scala 192:33]
-  assign io_c2d_cp_mem_wen = _T_1 ? 1'h0 : _T_889; // @[cpath.scala 193:33]
-  assign io_c2d_cp_alu_ext_sel = _T_1 ? 3'h0 : _T_1111; // @[cpath.scala 194:33]
-  assign io_c2d_cp_wb_sel = _T_1 ? 2'h2 : _T_963; // @[cpath.scala 195:33]
-  assign io_c2d_cp_csr_op = _T_1 ? 3'h0 : _T_1037; // @[cpath.scala 196:33]
-  assign io_c2d_hasexception = ~cs_valid_inst; // @[cpath.scala 198:25]
-  assign io_c2d_shouldstall = ~_T_1144; // @[cpath.scala 199:24]
+  wire  _T_1112 = cs_branch == 4'h0; // @[cpath.scala 153:20]
+  wire  _T_1113 = cs_branch == 4'h1; // @[cpath.scala 154:20]
+  wire [2:0] _T_1114 = io_d2c_iseq ? 3'h2 : 3'h0; // @[cpath.scala 154:38]
+  wire  _T_1115 = cs_branch == 4'h2; // @[cpath.scala 155:20]
+  wire  _T_1116 = ~io_d2c_iseq; // @[cpath.scala 155:40]
+  wire [2:0] _T_1117 = _T_1116 ? 3'h2 : 3'h0; // @[cpath.scala 155:39]
+  wire  _T_1118 = cs_branch == 4'h5; // @[cpath.scala 156:20]
+  wire  _T_1119 = ~io_d2c_islt; // @[cpath.scala 156:39]
+  wire [2:0] _T_1120 = _T_1119 ? 3'h2 : 3'h0; // @[cpath.scala 156:38]
+  wire  _T_1121 = cs_branch == 4'h6; // @[cpath.scala 157:20]
+  wire  _T_1122 = ~io_d2c_isltu; // @[cpath.scala 157:40]
+  wire [2:0] _T_1123 = _T_1122 ? 3'h2 : 3'h0; // @[cpath.scala 157:39]
+  wire  _T_1124 = cs_branch == 4'h3; // @[cpath.scala 158:20]
+  wire [2:0] _T_1125 = io_d2c_islt ? 3'h2 : 3'h0; // @[cpath.scala 158:38]
+  wire  _T_1126 = cs_branch == 4'h4; // @[cpath.scala 159:20]
+  wire [2:0] _T_1127 = io_d2c_isltu ? 3'h2 : 3'h0; // @[cpath.scala 159:39]
+  wire  _T_1128 = cs_branch == 4'h7; // @[cpath.scala 160:20]
+  wire  _T_1129 = cs_branch == 4'h8; // @[cpath.scala 161:20]
+  wire [2:0] _T_1130 = _T_1129 ? 3'h3 : 3'h0; // @[Mux.scala 98:16]
+  wire [2:0] _T_1131 = _T_1128 ? 3'h1 : _T_1130; // @[Mux.scala 98:16]
+  wire [2:0] _T_1132 = _T_1126 ? _T_1127 : _T_1131; // @[Mux.scala 98:16]
+  wire [2:0] _T_1133 = _T_1124 ? _T_1125 : _T_1132; // @[Mux.scala 98:16]
+  wire [2:0] _T_1134 = _T_1121 ? _T_1123 : _T_1133; // @[Mux.scala 98:16]
+  wire [2:0] _T_1135 = _T_1118 ? _T_1120 : _T_1134; // @[Mux.scala 98:16]
+  wire [2:0] _T_1136 = _T_1115 ? _T_1117 : _T_1135; // @[Mux.scala 98:16]
+  wire [2:0] _T_1137 = _T_1113 ? _T_1114 : _T_1136; // @[Mux.scala 98:16]
+  wire [2:0] _T_1138 = _T_1112 ? 3'h0 : _T_1137; // @[Mux.scala 98:16]
+  wire  _T_1140 = ~cs_mem_valid; // @[cpath.scala 171:45]
+  wire  _T_1141 = cs_mem_valid & io_dmem_resp_valid; // @[cpath.scala 171:76]
+  wire  _T_1142 = _T_1140 | _T_1141; // @[cpath.scala 171:59]
+  assign io_c2d_cp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1138; // @[cpath.scala 190:33]
+  assign io_c2d_cp_op1_sel = _T_1 ? 2'h0 : _T_371; // @[cpath.scala 191:33]
+  assign io_c2d_cp_op2_sel = _T_1 ? 2'h0 : _T_445; // @[cpath.scala 192:33]
+  assign io_c2d_cp_alu_sel = _T_1 ? 5'h0 : _T_519; // @[cpath.scala 193:33]
+  assign io_c2d_cp_reg_wen = _T_1 | _T_593; // @[cpath.scala 194:33]
+  assign io_c2d_cp_mem_en = _T_1 ? 1'h0 : _T_667; // @[cpath.scala 195:33]
+  assign io_c2d_cp_mem_read_op = _T_1 ? 3'h0 : _T_741; // @[cpath.scala 196:33]
+  assign io_c2d_cp_mem_write_mask = _T_1 ? 8'h1 : _T_815; // @[cpath.scala 197:33]
+  assign io_c2d_cp_mem_wen = _T_1 ? 1'h0 : _T_889; // @[cpath.scala 198:33]
+  assign io_c2d_cp_alu_ext_sel = _T_1 ? 3'h0 : _T_1111; // @[cpath.scala 199:33]
+  assign io_c2d_cp_wb_sel = _T_1 ? 2'h2 : _T_963; // @[cpath.scala 200:33]
+  assign io_c2d_cp_csr_op = _T_1 ? 3'h0 : _T_1037; // @[cpath.scala 201:33]
+  assign io_c2d_hasexception = ~cs_valid_inst; // @[cpath.scala 203:25]
+  assign io_c2d_shouldstall = ~_T_1142; // @[cpath.scala 204:24]
   assign io_c2d_cp_reg_wen_0 = io_c2d_cp_reg_wen;
 endmodule
 module memorymodule(
@@ -3706,6 +3696,8 @@ module core(
   input         clock,
   input         reset,
   output        io_c2d_cp_reg_wen,
+  output        io_isredir,
+  output [63:0] _T_17758,
   output [63:0] reg_pc,
   output        io_c2d_cp_reg_wen_0,
   output [63:0] _T_41_0,
@@ -3773,6 +3765,8 @@ module core(
   wire  dpath_io__dmem_req_bits_wen; // @[core.scala 20:23]
   wire [63:0] dpath_io__dmem_resp_bits_rdata; // @[core.scala 20:23]
   wire  dpath_io_c2d_cp_reg_wen; // @[core.scala 20:23]
+  wire  dpath_io_isredir; // @[core.scala 20:23]
+  wire [63:0] dpath__T_17758; // @[core.scala 20:23]
   wire [63:0] dpath_reg_pc_0; // @[core.scala 20:23]
   wire [63:0] dpath__T_41_0_0; // @[core.scala 20:23]
   wire [63:0] dpath__T_41_0_1; // @[core.scala 20:23]
@@ -3872,6 +3866,8 @@ module core(
     .io__dmem_req_bits_wen(dpath_io__dmem_req_bits_wen),
     .io__dmem_resp_bits_rdata(dpath_io__dmem_resp_bits_rdata),
     .io_c2d_cp_reg_wen(dpath_io_c2d_cp_reg_wen),
+    .io_isredir(dpath_io_isredir),
+    ._T_17758(dpath__T_17758),
     .reg_pc_0(dpath_reg_pc_0),
     ._T_41_0_0(dpath__T_41_0_0),
     ._T_41_0_1(dpath__T_41_0_1),
@@ -3944,6 +3940,8 @@ module core(
     .io_ports_1_resp_bits_rdata(mymem_io_ports_1_resp_bits_rdata)
   );
   assign io_c2d_cp_reg_wen = dpath_io_c2d_cp_reg_wen;
+  assign io_isredir = dpath_io_isredir;
+  assign _T_17758 = dpath__T_17758;
   assign reg_pc = dpath_reg_pc_0;
   assign io_c2d_cp_reg_wen_0 = cpath_io_c2d_cp_reg_wen_0;
   assign _T_41_0 = dpath__T_41_0_0;
@@ -4049,49 +4047,55 @@ module top(
   output [63:0] io_diff_r_31,
   output [63:0] io_diff_pc_data,
   output        io_diff_rf_wen,
-  output        io_diff_rf_cp_wen
+  output        io_diff_rf_cp_wen,
+  output [63:0] io_diff_mstatus,
+  output        io_diff_isredir
 );
-  wire  mycore_clock; // @[top.scala 20:24]
-  wire  mycore_reset; // @[top.scala 20:24]
-  wire  mycore_io_c2d_cp_reg_wen; // @[top.scala 20:24]
-  wire [63:0] mycore_reg_pc; // @[top.scala 20:24]
-  wire  mycore_io_c2d_cp_reg_wen_0; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_0; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_1; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_2; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_3; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_4; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_5; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_6; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_7; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_8; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_9; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_10; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_11; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_12; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_13; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_14; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_15; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_16; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_17; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_18; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_19; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_20; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_21; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_22; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_23; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_24; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_25; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_26; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_27; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_28; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_29; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_30; // @[top.scala 20:24]
-  wire [63:0] mycore__T_41_31; // @[top.scala 20:24]
-  core mycore ( // @[top.scala 20:24]
+  wire  mycore_clock; // @[top.scala 23:24]
+  wire  mycore_reset; // @[top.scala 23:24]
+  wire  mycore_io_c2d_cp_reg_wen; // @[top.scala 23:24]
+  wire  mycore_io_isredir; // @[top.scala 23:24]
+  wire [63:0] mycore__T_17758; // @[top.scala 23:24]
+  wire [63:0] mycore_reg_pc; // @[top.scala 23:24]
+  wire  mycore_io_c2d_cp_reg_wen_0; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_0; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_1; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_2; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_3; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_4; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_5; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_6; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_7; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_8; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_9; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_10; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_11; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_12; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_13; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_14; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_15; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_16; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_17; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_18; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_19; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_20; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_21; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_22; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_23; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_24; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_25; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_26; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_27; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_28; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_29; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_30; // @[top.scala 23:24]
+  wire [63:0] mycore__T_41_31; // @[top.scala 23:24]
+  core mycore ( // @[top.scala 23:24]
     .clock(mycore_clock),
     .reset(mycore_reset),
     .io_c2d_cp_reg_wen(mycore_io_c2d_cp_reg_wen),
+    .io_isredir(mycore_io_isredir),
+    ._T_17758(mycore__T_17758),
     .reg_pc(mycore_reg_pc),
     .io_c2d_cp_reg_wen_0(mycore_io_c2d_cp_reg_wen_0),
     ._T_41_0(mycore__T_41_0),
@@ -4127,41 +4131,43 @@ module top(
     ._T_41_30(mycore__T_41_30),
     ._T_41_31(mycore__T_41_31)
   );
-  assign io_diff_r_0 = mycore__T_41_0; // @[top.scala 29:13]
-  assign io_diff_r_1 = mycore__T_41_1; // @[top.scala 29:13]
-  assign io_diff_r_2 = mycore__T_41_2; // @[top.scala 29:13]
-  assign io_diff_r_3 = mycore__T_41_3; // @[top.scala 29:13]
-  assign io_diff_r_4 = mycore__T_41_4; // @[top.scala 29:13]
-  assign io_diff_r_5 = mycore__T_41_5; // @[top.scala 29:13]
-  assign io_diff_r_6 = mycore__T_41_6; // @[top.scala 29:13]
-  assign io_diff_r_7 = mycore__T_41_7; // @[top.scala 29:13]
-  assign io_diff_r_8 = mycore__T_41_8; // @[top.scala 29:13]
-  assign io_diff_r_9 = mycore__T_41_9; // @[top.scala 29:13]
-  assign io_diff_r_10 = mycore__T_41_10; // @[top.scala 29:13]
-  assign io_diff_r_11 = mycore__T_41_11; // @[top.scala 29:13]
-  assign io_diff_r_12 = mycore__T_41_12; // @[top.scala 29:13]
-  assign io_diff_r_13 = mycore__T_41_13; // @[top.scala 29:13]
-  assign io_diff_r_14 = mycore__T_41_14; // @[top.scala 29:13]
-  assign io_diff_r_15 = mycore__T_41_15; // @[top.scala 29:13]
-  assign io_diff_r_16 = mycore__T_41_16; // @[top.scala 29:13]
-  assign io_diff_r_17 = mycore__T_41_17; // @[top.scala 29:13]
-  assign io_diff_r_18 = mycore__T_41_18; // @[top.scala 29:13]
-  assign io_diff_r_19 = mycore__T_41_19; // @[top.scala 29:13]
-  assign io_diff_r_20 = mycore__T_41_20; // @[top.scala 29:13]
-  assign io_diff_r_21 = mycore__T_41_21; // @[top.scala 29:13]
-  assign io_diff_r_22 = mycore__T_41_22; // @[top.scala 29:13]
-  assign io_diff_r_23 = mycore__T_41_23; // @[top.scala 29:13]
-  assign io_diff_r_24 = mycore__T_41_24; // @[top.scala 29:13]
-  assign io_diff_r_25 = mycore__T_41_25; // @[top.scala 29:13]
-  assign io_diff_r_26 = mycore__T_41_26; // @[top.scala 29:13]
-  assign io_diff_r_27 = mycore__T_41_27; // @[top.scala 29:13]
-  assign io_diff_r_28 = mycore__T_41_28; // @[top.scala 29:13]
-  assign io_diff_r_29 = mycore__T_41_29; // @[top.scala 29:13]
-  assign io_diff_r_30 = mycore__T_41_30; // @[top.scala 29:13]
-  assign io_diff_r_31 = mycore__T_41_31; // @[top.scala 29:13]
-  assign io_diff_pc_data = mycore_reg_pc; // @[top.scala 29:13]
-  assign io_diff_rf_wen = mycore_io_c2d_cp_reg_wen; // @[top.scala 29:13]
-  assign io_diff_rf_cp_wen = mycore_io_c2d_cp_reg_wen_0; // @[top.scala 29:13]
+  assign io_diff_r_0 = mycore__T_41_0; // @[top.scala 35:13]
+  assign io_diff_r_1 = mycore__T_41_1; // @[top.scala 35:13]
+  assign io_diff_r_2 = mycore__T_41_2; // @[top.scala 35:13]
+  assign io_diff_r_3 = mycore__T_41_3; // @[top.scala 35:13]
+  assign io_diff_r_4 = mycore__T_41_4; // @[top.scala 35:13]
+  assign io_diff_r_5 = mycore__T_41_5; // @[top.scala 35:13]
+  assign io_diff_r_6 = mycore__T_41_6; // @[top.scala 35:13]
+  assign io_diff_r_7 = mycore__T_41_7; // @[top.scala 35:13]
+  assign io_diff_r_8 = mycore__T_41_8; // @[top.scala 35:13]
+  assign io_diff_r_9 = mycore__T_41_9; // @[top.scala 35:13]
+  assign io_diff_r_10 = mycore__T_41_10; // @[top.scala 35:13]
+  assign io_diff_r_11 = mycore__T_41_11; // @[top.scala 35:13]
+  assign io_diff_r_12 = mycore__T_41_12; // @[top.scala 35:13]
+  assign io_diff_r_13 = mycore__T_41_13; // @[top.scala 35:13]
+  assign io_diff_r_14 = mycore__T_41_14; // @[top.scala 35:13]
+  assign io_diff_r_15 = mycore__T_41_15; // @[top.scala 35:13]
+  assign io_diff_r_16 = mycore__T_41_16; // @[top.scala 35:13]
+  assign io_diff_r_17 = mycore__T_41_17; // @[top.scala 35:13]
+  assign io_diff_r_18 = mycore__T_41_18; // @[top.scala 35:13]
+  assign io_diff_r_19 = mycore__T_41_19; // @[top.scala 35:13]
+  assign io_diff_r_20 = mycore__T_41_20; // @[top.scala 35:13]
+  assign io_diff_r_21 = mycore__T_41_21; // @[top.scala 35:13]
+  assign io_diff_r_22 = mycore__T_41_22; // @[top.scala 35:13]
+  assign io_diff_r_23 = mycore__T_41_23; // @[top.scala 35:13]
+  assign io_diff_r_24 = mycore__T_41_24; // @[top.scala 35:13]
+  assign io_diff_r_25 = mycore__T_41_25; // @[top.scala 35:13]
+  assign io_diff_r_26 = mycore__T_41_26; // @[top.scala 35:13]
+  assign io_diff_r_27 = mycore__T_41_27; // @[top.scala 35:13]
+  assign io_diff_r_28 = mycore__T_41_28; // @[top.scala 35:13]
+  assign io_diff_r_29 = mycore__T_41_29; // @[top.scala 35:13]
+  assign io_diff_r_30 = mycore__T_41_30; // @[top.scala 35:13]
+  assign io_diff_r_31 = mycore__T_41_31; // @[top.scala 35:13]
+  assign io_diff_pc_data = mycore_reg_pc; // @[top.scala 35:13]
+  assign io_diff_rf_wen = mycore_io_c2d_cp_reg_wen; // @[top.scala 35:13]
+  assign io_diff_rf_cp_wen = mycore_io_c2d_cp_reg_wen_0; // @[top.scala 35:13]
+  assign io_diff_mstatus = mycore__T_17758; // @[top.scala 35:13]
+  assign io_diff_isredir = mycore_io_isredir; // @[top.scala 35:13]
   assign mycore_clock = clock;
   assign mycore_reset = reset;
 endmodule

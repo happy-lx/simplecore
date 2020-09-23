@@ -28,7 +28,8 @@ VL_MODULE(Vtop) {
     VL_IN8(reset,0,0);
     VL_OUT8(io_diff_rf_wen,0,0);
     VL_OUT8(io_diff_rf_cp_wen,0,0);
-    //char	__VpadToAlign4[4];
+    VL_OUT8(io_diff_isredir,0,0);
+    //char	__VpadToAlign5[3];
     VL_OUT64(io_diff_r_0,63,0);
     VL_OUT64(io_diff_r_1,63,0);
     VL_OUT64(io_diff_r_2,63,0);
@@ -62,12 +63,14 @@ VL_MODULE(Vtop) {
     VL_OUT64(io_diff_r_30,63,0);
     VL_OUT64(io_diff_r_31,63,0);
     VL_OUT64(io_diff_pc_data,63,0);
+    VL_OUT64(io_diff_mstatus,63,0);
     
     // LOCAL SIGNALS
     // Internals; generally not touched by application code
     VL_SIG8(v__DOT__mycore__DOT__dpath_io___05Fd2c_islt,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath_io___05Fd2c_isltu,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath_io___05Fd2c_iseq,0,0);
+    VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_pc_sel,2,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_op1_sel,1,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_op2_sel,1,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_alu_sel,4,0);
@@ -78,6 +81,7 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_alu_ext_sel,2,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_wb_sel,1,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath_io_c2d_cp_csr_op,2,0);
+    VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr_io___05Fisredir,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_msi,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_mti,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mip_msi,0,0);
@@ -92,6 +96,7 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__read_illegal,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_read_enable,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_wen,0,0);
+    VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___GEN_92,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_illegal_ins_exception,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isecall,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isebreak,0,0);
@@ -99,6 +104,7 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_hasexception,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_hasinterrupt,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__prv_now,1,0);
+    VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___GEN_242,0,0);
     VL_SIG8(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_17736,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_162,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_valid_inst,0,0);
@@ -106,8 +112,7 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_659,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_667,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_mem_valid,0,0);
-    VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1140,2,0);
-    VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1144,0,0);
+    VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1142,0,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_96_data,7,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_98_data,7,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_100_data,7,0);
@@ -120,12 +125,12 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_122_data,7,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_124_data,7,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_126_data,7,0);
-    //char	__VpadToAlign331[5];
+    VL_SIG16(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_28,10,0);
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT___T_82,65,0,3);
-    //char	__VpadToAlign348[4];
+    //char	__VpadToAlign356[4];
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT__dp_alu__DOT___T_39,127,0,4);
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT__dp_alu__DOT___T_115,64,0,3);
-    //char	__VpadToAlign380[4];
+    //char	__VpadToAlign388[4];
     VL_SIG64(v__DOT__mycore__DOT__mymem_io_ports_0_resp_bits_rdata,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__regfile_io_rp1_data,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__regfile_io_rp2_data,63,0);
@@ -255,6 +260,7 @@ VL_MODULE(Vtop) {
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__regs_mhpmevet_26,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__regs_mhpmevet_27,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__regs_mhpmevet_28,63,0);
+    VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_39,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_9473,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_read_data,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_9477,63,0);
@@ -267,11 +273,11 @@ VL_MODULE(Vtop) {
     // LOCAL VARIABLES
     // Internals; generally not touched by application code
     VL_SIG8(__Vclklast__TOP__clock,0,0);
-    //char	__VpadToAlign16778941[3];
+    //char	__VpadToAlign16778957[3];
     
     // INTERNAL VARIABLES
     // Internals; generally not touched by application code
-    //char	__VpadToAlign16778948[4];
+    //char	__VpadToAlign16778964[4];
     Vtop__Syms*	__VlSymsp;		// Symbol table
     
     // PARAMETERS
@@ -311,6 +317,7 @@ VL_MODULE(Vtop) {
     static void	_initial__TOP__1(Vtop__Syms* __restrict vlSymsp);
     static void	_sequent__TOP__10(Vtop__Syms* __restrict vlSymsp);
     static void	_sequent__TOP__12(Vtop__Syms* __restrict vlSymsp);
+    static void	_sequent__TOP__14(Vtop__Syms* __restrict vlSymsp);
     static void	_sequent__TOP__2(Vtop__Syms* __restrict vlSymsp);
     static void	_sequent__TOP__4(Vtop__Syms* __restrict vlSymsp);
     static void	_sequent__TOP__6(Vtop__Syms* __restrict vlSymsp);
