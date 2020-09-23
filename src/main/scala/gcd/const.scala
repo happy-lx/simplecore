@@ -183,6 +183,15 @@ object Cause
     val s_ext_interrupt     = 9.U(64.W)
     val m_ext_interrupt     = 11.U(64.W) 
 
+    val intr_priority_table = Seq(
+        m_ext_interrupt,
+        m_soft_interrupt,
+        m_timer_interrupt,
+        s_ext_interrupt,
+        s_soft_interrupt,
+        s_timer_interrupt
+    )
+
     //exception
     val instr_addr_misalign =   0.U(64.W)
     val instr_access_falut =    1.U(64.W)
@@ -198,7 +207,79 @@ object Cause
     val instr_page_fault =      12.U(64.W)
     val load_page_fault =       13.U(64.W)
     val store_page_fault =      15.U(64.W)
+
+    val exc_priority_table = Seq(
+        breakpoint,
+        instr_page_fault,
+        instr_access_falut,
+        illegal_instr,
+        instr_addr_misalign,
+        ecall_m,
+        ecall_s,
+        ecall_u,
+        store_addr_misalign,
+        load_addr_misalign,
+        store_page_fault,
+        load_page_fault,
+        store_access_fault,
+        load_access_fault
+    )
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants
+trait CSRmap
+{
+    //machine mode infomation registers
+    val mvendorid = 0xf11
+    val marchid = 0xf12
+    val mimpid = 0xf13
+    val mhartid = 0xf14
+
+    //machine mode trap setup registers
+    val mstatus = 0x300
+    val misa = 0x301
+    val medelege = 0x302
+    val midelege = 0x303
+    val mie = 0x304
+    val mtvec = 0x305
+    val mcounteren = 0x306
+    
+    //machine mode trap handling registers
+    val mscratch = 0x340
+    val mepc = 0x341
+    val mcause = 0x342
+    val mtval = 0x343
+    val mip = 0x344
+
+    //machine mode physical memory protection 
+    val pmpcfg0 = 0x3a0
+    val pmpcfg1 = 0x3a1
+    val pmpaddr0 = 0x3b0
+    val pmpaddr1 = 0x3b1
+    val pmpaddr3 = 0x3b2
+    val pmpaddr4 = 0x3b3
+    val pmpaddr5 = 0x3b4
+    val pmpaddr6 = 0x3b5
+    val pmpaddr7 = 0x3b6
+    val pmpaddr8 = 0x3b7
+    val pmpaddr9 = 0x3b8
+    val pmpaddr10 = 0x3b9
+    val pmpaddr11 = 0x3ba
+    val pmpaddr12 = 0x3bb
+    val pmpaddr13 = 0x3bc
+    val pmpaddr14 = 0x3bd
+    val pmpaddr15 = 0x3be
+
+    //machine mode timers
+    val mcycle = 0xb00
+    val minstret = 0xb02
+    val mhpmcounter_start = 0xb03
+    val mhpmcounter_number = 29
+    val mcounterinhibit = 0x320
+    val mhpmevent_start = 0x323
+    val mhpmevent_number = 29
+    
+
+}
+
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap
 {}

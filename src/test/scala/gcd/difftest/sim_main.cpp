@@ -108,7 +108,7 @@ int main(int argc , char** argv)
         print_info(info_nemu,1);
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 
-        if(core->coreGetcycle_time() == (system_word)3)
+        if(core->coreGetcycle_time() == (system_word)4)
         {
             break;
         }
