@@ -78,7 +78,7 @@ object RV64I
     def CSRRWI =    BitPat("b????????_????????_?101????_?1110011")
     
     //privilige instr
-    def EBREAK =  BitPat("b00000000_00010000_01010000_01110011")
+    def EBREAK =  BitPat("b00000000_00010000_00000000_01110011")
     def ECALL =   BitPat("b00000000_00000000_00000000_01110011")
     def WFI =     BitPat("b00010000_01010000_00000000_01110011")
     def SRET =    BitPat("b00010000_00100000_00000000_01110011")

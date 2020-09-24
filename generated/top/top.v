@@ -2622,7 +2622,7 @@ module Cpath(
   wire  _T_105 = 32'h6073 == _T_2; // @[Lookup.scala 31:38]
   wire  _T_107 = 32'h1073 == _T_2; // @[Lookup.scala 31:38]
   wire  _T_109 = 32'h5073 == _T_2; // @[Lookup.scala 31:38]
-  wire  _T_111 = 32'h105073 == io_d2c_instr; // @[Lookup.scala 31:38]
+  wire  _T_111 = 32'h100073 == io_d2c_instr; // @[Lookup.scala 31:38]
   wire  _T_113 = 32'h73 == io_d2c_instr; // @[Lookup.scala 31:38]
   wire  _T_115 = 32'h10500073 == io_d2c_instr; // @[Lookup.scala 31:38]
   wire  _T_117 = 32'h10200073 == io_d2c_instr; // @[Lookup.scala 31:38]
