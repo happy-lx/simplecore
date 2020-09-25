@@ -151,7 +151,7 @@ class Cpath extends Module {
     val (cs_valid_inst : Bool) :: cs_branch :: cs_op1_sel :: cs_op2_sel :: cs_alu_sel :: (cs_rf_wen : Bool) :: (cs_mem_valid : Bool) :: cs_mem_read_op :: cs_mem_write_mask :: (cs_mem_en : Bool) :: cs_wb_sel :: cs_csr_op :: cs_alu_ext :: (cs_is_fencei : Bool) :: (cs_rs1_en : Bool) :: (cs_rs2_en : Bool) :: Nil = ctr_list
 
     //branch logic depends on exe's branch logic 
-    val cs_exe_branch = RegInit(0.U(4.W))
+    val cs_exe_branch = RegInit(BR_N)
 
     cs_exe_branch := cs_branch
     
@@ -168,6 +168,11 @@ class Cpath extends Module {
         (cs_exe_branch === BR_J) -> pc_j,
         (cs_exe_branch === BR_JR) -> pc_jr
     ))
+
+    when(io.d2c.isredir)
+    {
+        temp_pc_sel := pc_redir
+    }
 
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
     //control hazard kills if and dec stages 
