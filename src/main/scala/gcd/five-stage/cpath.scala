@@ -109,12 +109,13 @@ class Cpath extends Module {
                 SH      -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_SIM   ,ALU_ADD   ,rf_wr_N    ,Y , op_x       ,mask_hb          , mem_wr_Y     , wback_X   ,csr_x,   alu_res_noext  ,  N   ,  Y   , N),
                 SW      -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_SIM   ,ALU_ADD   ,rf_wr_N    ,Y , op_x       ,mask_w          , mem_wr_Y     , wback_X   ,csr_x,   alu_res_noext  ,  N   ,  Y   , N),
 
-                BEQ     -> List(    Y  ,     BR_EQ  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
-                BGE     -> List(    Y  ,     BR_GE  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
-                BGEU    -> List(    Y  ,     BR_GEU  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
-                BLT     -> List(    Y  ,     BR_LT  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
-                BLTU    -> List(    Y  ,     BR_LTU  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
-                BNE     -> List(    Y  ,     BR_NEQ  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                //op1-sel and op2-sel of branch is only for data hazard detect ,no alu operation will happen
+                BEQ     -> List(    Y  ,     BR_EQ  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                BGE     -> List(    Y  ,     BR_GE  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                BGEU    -> List(    Y  ,     BR_GEU  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                BLT     -> List(    Y  ,     BR_LT  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                BLTU    -> List(    Y  ,     BR_LTU  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
+                BNE     -> List(    Y  ,     BR_NEQ  ,  OP1_RS1 , OP2_RS2   ,ALU_X   ,rf_wr_N    ,N , op_x       ,mask_x          , mem_wr_N     , wback_X   ,csr_x,   alu_res_x  ,  N   ,  Y   , Y),
 
                 CSRRC   -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_X   ,ALU_CP1   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_csrout   ,csr_c,   alu_res_x  ,  N   ,  Y   , N),
                 CSRRCI  -> List(    Y  ,     BR_N  ,  OP1_Z , OP2_X   ,ALU_CP1   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_csrout   ,csr_c,   alu_res_x  ,  N   ,  N   , N),
@@ -174,6 +175,9 @@ class Cpath extends Module {
         temp_pc_sel := pc_redir
     }
 
+    val temp_is_csr = (cs_csr_op =/= csr_x && cs_csr_op =/= csr_prv)
+    val cs_reg_exe_is_csr = RegNext(temp_is_csr)
+
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
     //control hazard kills if and dec stages 
     //maybe there will be a control hazard clear and a mem's exception ,but the second one is prior to the first
@@ -220,7 +224,7 @@ class Cpath extends Module {
 
     val cs_reg_exe_rd_addr = RegNext(cs_wire_dec_rd_addr)
 
-    when(cs_reg_exe_is_load)
+    when(cs_reg_exe_is_load || cs_reg_exe_is_csr)
     {
         when((cs_reg_exe_rd_addr === cs_wire_dec_rs1_addr && cs_rs1_en) || (cs_reg_exe_rd_addr === cs_wire_dec_rs2_addr && cs_rs2_en))
         {

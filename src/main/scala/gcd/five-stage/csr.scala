@@ -59,6 +59,7 @@ class CSRIO extends Bundle
     val hasException = Input(Bool())
     val hasStall = Input(Bool())
     val in_pc = Input(UInt(64.W))
+    val is_retire = Input(Bool())
 
     val redir_target = Output(UInt(64.W))
     val csr_info = Output(UInt(64.W))
@@ -270,11 +271,11 @@ class CSRfile extends Module
         reg_mip.mti := true.B
     }
 
-    when(!io.hasStall)
-    {
-        reg_mtime := reg_mtime + 1.U
-    }
-    when(!io.hasStall && !io.hasException)
+    
+    reg_mtime := reg_mtime + 1.U
+    reg_mcycle := reg_mcycle + 1.U
+    
+    when(io.is_retire)
     {
         reg_minstret := reg_minstret + 1.U
     }
