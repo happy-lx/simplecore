@@ -13,7 +13,7 @@
   },
   {
     "class":"firrtl.options.TargetDirAnnotation",
-    "directory":"generated/top"
+    "directory":"generated/fivestage"
   },
   {
     "class":"firrtl.EmitCircuitAnnotation",
@@ -28,15 +28,19 @@
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
-    "target":"~top|Cpath>io_c2d_cp_reg_wen"
+    "target":"~top|Cpath>cs_valid_inst"
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
-    "target":"~top|Dpath>io__c2d_cp_reg_wen"
+    "target":"~top|Dpath>dp_wb_reg_instr"
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
-    "target":"~top|Dpath>reg_pc"
+    "target":"~top|CSRfile>io__is_retire"
+  },
+  {
+    "class":"firrtl.transforms.DontTouchAnnotation",
+    "target":"~top|Dpath>dp_wb_reg_pc"
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
@@ -44,7 +48,7 @@
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
-    "target":"~top|CSRfile>_T_17758"
+    "target":"~top|CSRfile>_T_17756"
   },
   {
     "class":"firrtl.transforms.DontTouchAnnotation",
@@ -180,6 +184,6 @@
   },
   {
     "class":"firrtl.transforms.BlackBoxTargetDirAnno",
-    "targetDir":"generated/top"
+    "targetDir":"generated/fivestage"
   }
 ]

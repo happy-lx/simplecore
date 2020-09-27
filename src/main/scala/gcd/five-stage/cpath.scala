@@ -177,7 +177,7 @@ class Cpath extends Module {
     }
 
     val temp_is_csr = ((cs_csr_op =/= csr_x) && (cs_csr_op =/= csr_prv))
-    val cs_reg_exe_is_csr = RegNext(temp_is_csr)
+    val cs_reg_exe_is_csr = RegNext(temp_is_csr,false.B)
 
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
     //control hazard kills if and dec stages 
@@ -204,7 +204,7 @@ class Cpath extends Module {
         cs_wire_control_hazard := false.B
     }
 
-    when(!io.imem.resp.valid || cs_is_fencei || RegNext(cs_is_fencei))
+    when(!io.imem.resp.valid || cs_is_fencei || RegNext(cs_is_fencei,false.B))
     {
         cs_wire_if_kill := true.B
     }.otherwise
@@ -217,13 +217,13 @@ class Cpath extends Module {
     val temp_wire_dec_is_load = cs_mem_valid && !cs_mem_en
 
     //cs_reg_exe_is_load indicates instruction in exe stage is or not a load
-    val cs_reg_exe_is_load = RegNext(temp_wire_dec_is_load)
+    val cs_reg_exe_is_load = RegNext(temp_wire_dec_is_load,false.B)
 
     val cs_wire_dec_rs1_addr = io.d2c.instr(rs1_MSB,rs1_LSB)
     val cs_wire_dec_rs2_addr = io.d2c.instr(rs2_MSB,rs2_LSB)
     val cs_wire_dec_rd_addr  = io.d2c.instr(rd_MSB,rd_LSB)
 
-    val cs_reg_exe_rd_addr = RegNext(cs_wire_dec_rd_addr)
+    val cs_reg_exe_rd_addr = RegNext(cs_wire_dec_rd_addr,0.U(5.W))
 
     when(cs_reg_exe_is_load || cs_reg_exe_is_csr)
     {
@@ -241,17 +241,17 @@ class Cpath extends Module {
 
     //pipeline kill 
     //might be a problem
-    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.resp.valid)
-    val cs_reg_exe_exception = RegNext(cs_wire_dec_exception)
-    val cs_reg_mem_exception = RegNext(cs_reg_exe_exception)
+    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.resp.valid,false.B)
+    val cs_reg_exe_exception = RegNext(cs_wire_dec_exception,false.B)
+    val cs_reg_mem_exception = RegNext(cs_reg_exe_exception,false.B)
 
     io.c2d.hasexception := cs_reg_mem_exception
 
     cs_wire_pipeline_kill := io.d2c.isredir
 
     //pipeline stall for d$ miss
-    val cs_reg_exe_mem_valid = RegNext(cs_mem_valid)
-    val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid)
+    val cs_reg_exe_mem_valid = RegNext(cs_mem_valid,false.B)
+    val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
 
     cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.resp.valid))
     io.c2d.shouldstall := cs_wire_pipeline_stall
@@ -278,6 +278,6 @@ class Cpath extends Module {
     io.c2d.cp_pipeline_kill := cs_wire_pipeline_kill
     io.c2d.cp_pipeline_stall := cs_wire_pipeline_stall
 
-    
+    BoringUtils.addSource(cs_valid_inst,"cs_valid_inst")
 
 }

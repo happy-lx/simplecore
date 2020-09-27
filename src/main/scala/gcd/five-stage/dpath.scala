@@ -67,7 +67,7 @@ class Dpath extends Module {
     //excepiton in the init cycle for the first instruction is zero
     val reg_dec_instr = RegInit(NOP)
     val reg_dec_instr_valid = RegInit(false.B)
-    val reg_dec_pc = RegInit(0.U(64.W))
+    val reg_dec_pc = RegInit(STARTADDR)
     // reg_dec_instr := reg_dec_instr
 
     //update pc 
@@ -218,7 +218,7 @@ class Dpath extends Module {
     val dp_exe_reg_wb_sel = RegInit(0.U(2.W))
     val dp_exe_reg_csr_op = RegInit(0.U(csr_op_sz))
     
-    val dp_exe_reg_pc = RegInit(0.U(64.W))
+    val dp_exe_reg_pc = RegInit(STARTADDR)
     
     val dp_exe_reg_instr_valid = RegInit(false.B)
 
@@ -381,7 +381,7 @@ class Dpath extends Module {
     val dp_mem_reg_mem_write_mask   = RegInit(0.U(8.W))
     val dp_mem_reg_mem_wen          = RegInit(false.B)
     val dp_mem_reg_csr_op           = RegInit(0.U(csr_op_sz))
-    val dp_mem_reg_pc               = RegInit(0.U(64.W))
+    val dp_mem_reg_pc               = RegInit(STARTADDR)
     val dp_mem_reg_alu_out          = RegInit(0.U(64.W))
     val dp_mem_reg_wb_sel           = RegInit(0.U(2.W))
 
@@ -468,6 +468,8 @@ class Dpath extends Module {
     //wb's regs
     val dp_wb_reg_wb_data = RegInit(0.U(64.W))
     val dp_wb_reg_instr_valid = RegInit(false.B)
+    val dp_wb_reg_pc = RegInit(STARTADDR)
+    val dp_wb_reg_instr = RegInit(NOP)
 
     //connect mem and write back stage
     when(io.c2d.cp_pipeline_stall)
@@ -476,12 +478,16 @@ class Dpath extends Module {
         dp_wb_reg_rf_wen      := false.B
         dp_wb_reg_wb_data     := 0.U(64.W)
         dp_wb_reg_instr_valid := false.B
+        dp_wb_reg_pc          := dp_mem_reg_pc
+        dp_wb_reg_instr       := dp_mem_reg_instr
     }.otherwise
     {
         dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
         dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
         dp_wb_reg_wb_data     := dp_wire_mem_memstageout
         dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
+        dp_wb_reg_pc          := dp_mem_reg_pc
+        dp_wb_reg_instr       := dp_mem_reg_instr
     }
 
     //Write back stage
@@ -497,7 +503,8 @@ class Dpath extends Module {
 
     csr.io.is_retire := dp_wb_reg_instr_valid
 
-    BoringUtils.addSource(reg_if_pc,"pc_data")
+    BoringUtils.addSource(dp_wb_reg_pc,"pc_data")
     BoringUtils.addSource(csr.io.is_retire,"is_retire")
+    BoringUtils.addSource(dp_wb_reg_instr,"dp_wb_reg_instr")
     
 }

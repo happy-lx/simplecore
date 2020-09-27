@@ -9,20 +9,17 @@ double sc_time_stamp()
 {
     return main_time;
 }
-void reset_cycle(Vtop* target,int cycle)
-{
-    for(int i=0;i<cycle;i++)
-    {
-        target->reset = 1;
-        target->clock = 0;
-        target->eval();
-        target->clock = 1;
-        target->eval();
-        target->reset = 0;
-    }
-}
+
 void print_redir(Vtop* target)
 {
+    if(target->v__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_exception)
+    {
+        printf("detect a illegal instruction excepiton in mem stage\n");
+    }else
+    {
+        printf("no excepiton detected in mem stage\n");
+    }
+
     if(target->io_diff_isredir)
     {
         printf("exception or mret happened , pc redirect\n");
@@ -88,13 +85,15 @@ void printcsrs(Vtop* target)
 }
 void print_pc(Vtop* target)
 {
-    printf("pc :[%lx]\n",(unsigned long)target->io_diff_pc_data);    
+    printf("pc (in instruction fetch stage) :[%lx]\n",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__reg_if_pc);    
+
+    printf("pc (in write back stage) :[%lx]\n",(unsigned long)target->io_diff_pc_data);    
 }
 
 void print_valid(Vtop* target)
 {
-    printf("is valid ? ");
-    if(target -> v__DOT__mycore__DOT__cpath__DOT__cs_valid_inst)
+    printf("is valid (in decode stage) ? ");
+    if(target -> io_diff_is_valid)
     {
         printf("[Y]");
     }else
@@ -106,7 +105,7 @@ void print_valid(Vtop* target)
 }
 void print_mem(Vtop* target)
 {
-    for(int i=0;i<16;i++)
+    for(int i=0;i<32;i++)
     {
         printf("mem[0x%x]: 0x%x\n",(unsigned int)i,(unsigned int)target->v__DOT__mycore__DOT__mymem__DOT__mem[i]);
     }
@@ -114,39 +113,84 @@ void print_mem(Vtop* target)
 
 void print_instr(Vtop* target)
 {
-    printf("instruction: %lx\n",(unsigned long)target->v__DOT__mycore__DOT__mymem_io_ports_0_resp_bits_rdata);
+    printf("instruction (in write back stage): %lx\n",(unsigned long)target->io_diff_instr_in_wb);
 }
 
 void print_wbsel(Vtop* target)
 {
-    printf("wbsel: [%x]\n pc_4: [%lx]\n",(unsigned)target->v__DOT__mycore__DOT__cpath_io_c2d_cp_wb_sel,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__temp_pc_next_4);
+    // printf("wbsel: [%x]\n pc_4: [%lx]\n",(unsigned)target->v__DOT__mycore__DOT__cpath_io_c2d_cp_wb_sel,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__temp_pc_next_4);
+}
+void print_retire(Vtop* target)
+{
+    if(target->io_diff_is_retire)
+    {
+        printf("a legal instruction will commit \n");
+    }else
+    {
+        printf("no legal instruction will commit \n");
+    }
 }
 void print_rfen(Vtop* target)
 {
-    if(target->io_diff_rf_wen)
-    {
-        printf("rf_wen is true\n");
-    }else
-    {
-        printf("rf_wen is false\n");
-    }
+    // if(target->io_diff_rf_wen)
+    // {
+    //     printf("rf_wen is true\n");
+    // }else
+    // {
+    //     printf("rf_wen is false\n");
+    // }
 
-    if(target->io_diff_rf_cp_wen)
-    {
-        printf("rf_wen from cpath is true\n");
-    }else
-    {
-        printf("rf_wen from cpath is false\n");
-    }
-    if(target->v__DOT__mycore__DOT__cpath_io_c2d_cp_reg_wen)
-    {
-        printf("rf_wen local is true\n");
-    }else
-    {
-        printf("rf_wen local is false\n");
-    }
+    // if(target->io_diff_rf_cp_wen)
+    // {
+    //     printf("rf_wen from cpath is true\n");
+    // }else
+    // {
+    //     printf("rf_wen from cpath is false\n");
+    // }
+    // if(target->v__DOT__mycore__DOT__cpath_io_c2d_cp_reg_wen)
+    // {
+    //     printf("rf_wen local is true\n");
+    // }else
+    // {
+    //     printf("rf_wen local is false\n");
+    // }
     
     
+}
+void put_to_pipeline(Vtop* target,int cycle)
+{
+    for(int i=0;i<cycle;i++)
+    {
+        target->clock = 0;
+        target->eval();
+        target->clock = 1;
+        target->eval();
+    }
+}
+
+void reset_cycle(Vtop* target,int cycle)
+{
+    for(int i=0;i<cycle;i++)
+    {
+        target->reset = 1;
+        target->clock = 0;
+        target->eval();
+        target->clock = 1;
+        target->eval();
+            printf("in init cycle \n");
+            print_valid(target);
+            print_pc(target);
+            // print_rfen(top);
+            print_instr(target);
+            print_wbsel(target);
+            print_mem(target);
+            print_redir(target);
+            print_retire(target);
+            print_regs(target);
+            printcsrs(target);
+            printf("============================================   end  ================================================\n");
+        target->reset = 0;
+    }
 }
 
 int main(int argc,char** argv)
@@ -156,6 +200,8 @@ int main(int argc,char** argv)
     Vtop* top = new Vtop();
 
     reset_cycle(top,1);
+
+    // put_to_pipeline(top,4);
     
     while(!Verilated::gotFinish())
     {
@@ -171,11 +217,12 @@ int main(int argc,char** argv)
             printf("in cycle %d:\n",(int)main_time / 20);
             print_valid(top);
             print_pc(top);
-            print_rfen(top);
+            // print_rfen(top);
             print_instr(top);
             print_wbsel(top);
             print_mem(top);
             print_redir(top);
+            print_retire(top);
             print_regs(top);
             printcsrs(top);
             printf("============================================   end  ================================================\n");

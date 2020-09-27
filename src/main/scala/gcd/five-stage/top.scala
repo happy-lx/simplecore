@@ -11,6 +11,8 @@ class difftestIO extends Bundle
     val mstatus = Output(UInt(64.W))
     val isredir = Output(Bool())
     val is_retire = Output(Bool())
+    val instr_in_wb = Output(UInt(32.W))
+    val is_valid = Output(Bool())
     // val pc_sel = Output(Bool())
 }
 
@@ -29,6 +31,8 @@ class top extends Module {
     BoringUtils.addSink(difftestwire.isredir,"isredir")
     BoringUtils.addSink(difftestwire.is_retire,"is_retire")
     // BoringUtils.addSink(difftestwire.pc_sel,"pc_sel")
+    BoringUtils.addSink(difftestwire.instr_in_wb,"dp_wb_reg_instr")
+    BoringUtils.addSink(difftestwire.is_valid,"cs_valid_inst")
 
     io.diff := difftestwire
 
