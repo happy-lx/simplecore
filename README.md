@@ -4,18 +4,18 @@
 
 ### 目标
 
-支持RV64IMZicsr指令集，实现M态，实现五级流水线，运行RT-Thread.:smile:
+支持`RV64IMZicsr`指令集，实现M态，实现五级流水线，运行RT-Thread.:smile:
 
 ### 当前进度
 
 + 写完单周期的代码
 + 写完五级流水线代码
 + 完成csr模块，没有实现时钟中断
-+ 利用`loadMemoryFromFile`和`verilator`和`nemu`测试了算术运算，分支，load，store，跳转,csr相关等指令，测试通过
++ 利用`loadMemoryFromFile`和`verilator`和`nemu`对单周期代码涉及到的`RV64IMZicsr`指令集中的所有指令进行测试，测试通过
 
 ### 问题列表
 
-+ [x] 代码主要借鉴sodor，其代码的访存模块有bug，数据通路和控制通路一起连接到内存，导致有覆盖的问题，编译出来的verilog代码跟自己想法不一样
++ [x] 代码主要借鉴`sodor`，其代码的访存模块有bug，数据通路和控制通路一起连接到内存，导致有覆盖的问题，编译出来的verilog代码跟自己想法不一样
 + [ ] 总线有点不太理解
 + [ ] csr模块对时钟中断的支持不太理解，手册上提到用`mtime`和`mtimecmp`两个`memory-mapped register`，但是在寄存器编号上没有找到这两个寄存器，不是很清楚这两个寄存器的具体使用方式
 
