@@ -86,7 +86,7 @@ class Cpath extends Module {
                 SRA     -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_SRA   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_noext  ,  N   ,  Y   , Y),
                 SRAI    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_SRA   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_noext  ,  N   ,  Y   , N),
                 SRAIW   -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_SRAW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , N),
-                SRAW    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_SRAW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , Y,
+                SRAW    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_SRAW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , Y),
                 SRL     -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_SRL   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_noext  ,  N   ,  Y   , Y),
                 SRLI    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_SRL   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_noext  ,  N   ,  Y   , N),
                 SRLIW   -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_SRLW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , N),
@@ -145,10 +145,11 @@ class Cpath extends Module {
                 DIVU    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_DIVU   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_noext  ,  N   ,  Y   , Y),
                 DIVUW   -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_DIVUW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , Y),
                 DIVW    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_RS2   ,ALU_DIVW   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_aluout   ,csr_x,   alu_res_ws  ,  N   ,  Y   , Y)
-            )
-
+            
+                
+    
     )
-
+    )
     val (cs_valid_inst : Bool) :: cs_branch :: cs_op1_sel :: cs_op2_sel :: cs_alu_sel :: (cs_rf_wen : Bool) :: (cs_mem_valid : Bool) :: cs_mem_read_op :: cs_mem_write_mask :: (cs_mem_en : Bool) :: cs_wb_sel :: cs_csr_op :: cs_alu_ext :: (cs_is_fencei : Bool) :: (cs_rs1_en : Bool) :: (cs_rs2_en : Bool) :: Nil = ctr_list
 
     //branch logic depends on exe's branch logic 
@@ -175,7 +176,7 @@ class Cpath extends Module {
         temp_pc_sel := pc_redir
     }
 
-    val temp_is_csr = (cs_csr_op =/= csr_x && cs_csr_op =/= csr_prv)
+    val temp_is_csr = ((cs_csr_op =/= csr_x) && (cs_csr_op =/= csr_prv))
     val cs_reg_exe_is_csr = RegNext(temp_is_csr)
 
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
@@ -218,9 +219,9 @@ class Cpath extends Module {
     //cs_reg_exe_is_load indicates instruction in exe stage is or not a load
     val cs_reg_exe_is_load = RegNext(temp_wire_dec_is_load)
 
-    val cs_wire_dec_rs1_addr = io.d2c.instruction(r1_MSB,r1_LSB)
-    val cs_wire_dec_rs2_addr = io.d2c.instruction(r2_MSB,r2_LSB)
-    val cs_wire_dec_rd_addr  = io.d2c.instruction(rd_MSB,rd_LSB)
+    val cs_wire_dec_rs1_addr = io.d2c.instr(rs1_MSB,rs1_LSB)
+    val cs_wire_dec_rs2_addr = io.d2c.instr(rs2_MSB,rs2_LSB)
+    val cs_wire_dec_rd_addr  = io.d2c.instr(rd_MSB,rd_LSB)
 
     val cs_reg_exe_rd_addr = RegNext(cs_wire_dec_rd_addr)
 
@@ -239,11 +240,12 @@ class Cpath extends Module {
     }
 
     //pipeline kill 
-    val cs_wire_dec_exception = !cs_valid_inst
+    //might be a problem
+    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.resp.valid)
     val cs_reg_exe_exception = RegNext(cs_wire_dec_exception)
     val cs_reg_mem_exception = RegNext(cs_reg_exe_exception)
 
-    io.d2c.hasexception := cs_reg_mem_exception
+    io.c2d.hasexception := cs_reg_mem_exception
 
     cs_wire_pipeline_kill := io.d2c.isredir
 
@@ -252,29 +254,29 @@ class Cpath extends Module {
     val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid)
 
     cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.resp.valid))
-    io.d2c.shouldstall := cs_wire_pipeline_stall
+    io.c2d.shouldstall := cs_wire_pipeline_stall
 
     //assgin inside signal to output
     
 
-    io.d2c.cp_pc_sel := temp_wire_dec_is_load
-    io.d2c.cp_op1_sel := cs_op1_sel
-    io.d2c.cp_op2_sel := cs_op2_sel
-    io.d2c.cp_alu_sel := cs_alu_sel
-    io.d2c.cp_reg_wen := cs_rf_wen
-    io.d2c.cp_mem_en := cs_mem_valid
-    io.d2c.cp_mem_read_op := cs_mem_read_op
-    io.d2c.cp_mem_write_mask := cs_mem_write_mask
-    io.d2c.cp_mem_wen := cs_mem_en
-    io.d2c.cp_alu_ext_sel := cs_alu_ext
-    io.d2c.cp_wb_sel := cs_wb_sel
-    io.d2c.cp_csr_op := cs_csr_op
+    io.c2d.cp_pc_sel := temp_pc_sel
+    io.c2d.cp_op1_sel := cs_op1_sel
+    io.c2d.cp_op2_sel := cs_op2_sel
+    io.c2d.cp_alu_sel := cs_alu_sel
+    io.c2d.cp_reg_wen := cs_rf_wen
+    io.c2d.cp_mem_en := cs_mem_valid
+    io.c2d.cp_mem_read_op := cs_mem_read_op
+    io.c2d.cp_mem_write_mask := cs_mem_write_mask
+    io.c2d.cp_mem_wen := cs_mem_en
+    io.c2d.cp_alu_ext_sel := cs_alu_ext
+    io.c2d.cp_wb_sel := cs_wb_sel
+    io.c2d.cp_csr_op := cs_csr_op
 
-    io.d2c.cp_control_hazard := cs_wire_control_hazard
-    io.d2c.cp_if_kill := cs_wire_if_kill
-    io.d2c.cp_data_hazard := cs_wire_data_hazard
-    io.d2c.cp_pipeline_kill := cs_wire_pipeline_kill
-    io.d2c.cp_pipeline_stall := cs_wire_pipeline_stall
+    io.c2d.cp_control_hazard := cs_wire_control_hazard
+    io.c2d.cp_if_kill := cs_wire_if_kill
+    io.c2d.cp_data_hazard := cs_wire_data_hazard
+    io.c2d.cp_pipeline_kill := cs_wire_pipeline_kill
+    io.c2d.cp_pipeline_stall := cs_wire_pipeline_stall
 
     
 

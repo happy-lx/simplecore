@@ -53,7 +53,7 @@ class Dpath extends Module {
 
     //the pc_sel from cpath is always for if stage
     wire_pc_next := MuxCase(wire_pc_next_4,Array(
-        (io.c2d.cp_pc_sel === pc_4) -> wire_pc_next_4,
+        (io.c2d.cp_pc_sel === pc_4)     -> wire_pc_next_4,
         (io.c2d.cp_pc_sel === pc_redir) -> wire_pc_redirect_target,
         (io.c2d.cp_pc_sel === pc_j)     -> wire_pc_jump_target,
         (io.c2d.cp_pc_sel === pc_jr)    -> wire_pc_jr_target,
@@ -94,7 +94,7 @@ class Dpath extends Module {
             reg_if_pc := reg_if_pc
             reg_dec_instr_valid := true.B
             reg_dec_pc := reg_dec_pc
-        }.elsewhen(io.c2d.cp_contrl_hazard)
+        }.elsewhen(io.c2d.cp_control_hazard)
         {
             reg_dec_instr := NOP
             reg_if_pc := wire_pc_next
@@ -117,7 +117,7 @@ class Dpath extends Module {
 
 
     //send instruction to cpath to decode 
-    io.c2d.instr := reg_dec_instr
+    io.d2c.instr := reg_dec_instr
 
     //signal decoded from cpath is accessed in dec stage
 
@@ -160,7 +160,7 @@ class Dpath extends Module {
     val dp_wb_reg_rd_addr  = RegInit(0.U(5.W))
 
     val dp_exe_reg_rf_wen = RegInit(false.B)
-    val dp_mem_reg_rd_wen = RegInit(false.B)
+    val dp_mem_reg_rf_wen = RegInit(false.B)
     val dp_wb_reg_rf_wen  = RegInit(false.B)
 
     val dp_exe_reg_op1_source = Reg(UInt(64.W))
@@ -181,7 +181,7 @@ class Dpath extends Module {
         (io.c2d.cp_op1_sel === OP1_U)   -> dp_dec_uim_ext,
         //the the op1_sel is op1_rs1
         (dp_dec_rs1_addr === dp_exe_reg_rd_addr && !dp_dec_rs1_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs1_addr === dp_mem_reg_rd_addr && !dp_dec_rs1_addr && dp_mem_reg_rd_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs1_addr === dp_mem_reg_rd_addr && !dp_dec_rs1_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
         (dp_dec_rs1_addr === dp_wb_reg_rd_addr && !dp_dec_rs1_addr && dp_wb_reg_rf_wen) -> dp_reg_wb_wbdata
     ))
 
@@ -194,8 +194,8 @@ class Dpath extends Module {
 
     dp_dec_wire_op2_source := MuxCase(dp_dec_wire_op2_temp,Array(
         (dp_dec_rs2_addr === dp_exe_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_mem_reg_rd_wen) -> dp_wire_mem_memstageout,
-        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_wb_reg_rf_wen) -> dp_reg_wb_wbdata
+        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_wb_reg_rf_wen)   -> dp_reg_wb_wbdata
     ))
 
     //rs2_data will be used when there is a store so rs2_data is also need a by-pass
@@ -204,8 +204,8 @@ class Dpath extends Module {
 
     dp_dec_wire_rs2_data := MuxCase(dp_dec_rs2_data,Array(
         (dp_dec_rs2_addr === dp_exe_reg_rd_addr && !dp_dec_rs2_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && !dp_dec_rs2_addr && dp_mem_reg_rd_wen) -> dp_wire_mem_memstageout,
-        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && !dp_dec_rs2_addr && dp_wb_reg_rf_wen) -> dp_reg_wb_wbdata
+        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && !dp_dec_rs2_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && !dp_dec_rs2_addr && dp_wb_reg_rf_wen)   -> dp_reg_wb_wbdata
     ))
 
     //signal define used after dec stage
@@ -298,11 +298,11 @@ class Dpath extends Module {
             dp_exe_reg_rs1_data := 0.U(64.W)
             dp_exe_reg_wb_sel := 0.U(2.W)
 
-        }.elsewhen(io.c2d.cp_contrl_hazard)
+        }.elsewhen(io.c2d.cp_control_hazard)
         {
             dp_exe_reg_instr_valid := false.B
             dp_exe_reg_instr := NOP
-            dp_exe_reg_rd_addr := 0.U(5.W)0.U(64.W)
+            dp_exe_reg_rd_addr := 0.U(5.W)
             dp_exe_reg_rf_wen := false.B
             dp_exe_reg_op1_source := 0.U(64.W)
             dp_exe_reg_op2_source := 0.U(64.W)
@@ -384,7 +384,6 @@ class Dpath extends Module {
     val dp_mem_reg_pc               = RegInit(0.U(64.W))
     val dp_mem_reg_alu_out          = RegInit(0.U(64.W))
     val dp_mem_reg_wb_sel           = RegInit(0.U(2.W))
-    val dp_mem_reg_rf_wen           = RegInit(false.B)
 
     //connect exe with mem
     when(io.c2d.cp_pipeline_kill)
@@ -496,8 +495,9 @@ class Dpath extends Module {
     regfile.io.wp := dp_wb_reg_rd_addr
     regfile.io.wp_data := dp_wb_reg_wb_data
 
-    csr.io.isretire := dp_wb_reg_instr_valid
+    csr.io.is_retire := dp_wb_reg_instr_valid
 
-
+    BoringUtils.addSource(reg_if_pc,"pc_data")
+    BoringUtils.addSource(csr.io.is_retire,"is_retire")
     
 }
