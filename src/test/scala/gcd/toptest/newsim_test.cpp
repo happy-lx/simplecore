@@ -89,6 +89,17 @@ void print_pc(Vtop* target)
 
     printf("pc (in write back stage) :[%lx]\n",(unsigned long)target->io_diff_pc_data);    
 }
+void print_rf_valid(Vtop* target)
+{
+    if(target->v__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_rf_wen)
+    {
+        printf("the instruction in write back stage will write reg file\n");
+    }else
+    {
+        printf("the instruction in write back stage will not  write reg file\n");
+    }
+    
+}
 
 void print_valid(Vtop* target)
 {
@@ -183,6 +194,7 @@ void reset_cycle(Vtop* target,int cycle)
             // print_rfen(top);
             print_instr(target);
             print_wbsel(target);
+            print_rf_valid(target);
             print_mem(target);
             print_redir(target);
             print_retire(target);
@@ -220,6 +232,7 @@ int main(int argc,char** argv)
             // print_rfen(top);
             print_instr(top);
             print_wbsel(top);
+            print_rf_valid(top);
             print_mem(top);
             print_redir(top);
             print_retire(top);
