@@ -7,8 +7,21 @@
 #include "nemuresult.h"
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
+
+
+#define RED  \033[1;31;40m
+#define DONE \033[0m
+#define GREEN \033[1;32;40m
 
 vluint64_t main_time = 0;
+
+const char* RegRef[REGNUM+1] = {
+    "$0" , "ra" , "sp" , "gp" , "tp" ,"t0" , "t1" , "t2" , "s0" , "s1" , "a0" , "a1" , "a2",
+    "a3" , "a4" , "a5" , "a6" , "a7" , "s2" , "s3" ,"s4" ,"s5" ,"s6" ,"s7" ,"s8" ,"s9" ,"s10" ,
+    "s11" ,"t3" ,"t4" ,"t5" ,"t6" ,"pc" 
+};
+
 double sc_time_stamp()
 {
     return main_time;
@@ -30,43 +43,63 @@ void print_info(reg_info* target,int flag)
 
     for(int i=0;i<32;i++)
     {
-        if(i == 0)
-        {
-            printf("$x%d : [%lx] ",i,(unsigned long)target->regs[i]);
-        }else if(i == 1)
-        {
-            printf("$ra : [%lx] ",(unsigned long)target->regs[i]);
-        }else if(i == 2)
-        {
-            printf("$sp : [%lx] ",(unsigned long)target->regs[i]);
-        }else if(i == 3)
-        {
-            printf("$gp : [%lx] ",(unsigned long)target->regs[i]);
-        }else if(i == 4)
-        {
-            printf("$tp : [%lx] ",(unsigned long)target->regs[i]);
-        }else if( (i>=5 && i<=7) || (i>=28 && i<=31))
-        {
-            printf("$t%d : [%lx] ",temp_cnt++,(unsigned long)target->regs[i]);
-        }else if(i == 8)
-        {
-            printf("$fp : [%lx] ",(unsigned long)target->regs[i]);
-        }else if( (i == 9) || (i>=18 && i<=27))
-        {
-            printf("$s%d : [%lx] ",save_cnt++,(unsigned long)target->regs[i]);
-        }else if( (i>=10 && i<=11) || (i>=12 && i<=17))
-        {
-            printf("$a%d : [%lx] ",arg_cnt++,(unsigned long)target->regs[i]);
-        }
+        // if(i == 0)
+        // {
+        //     printf("$x%d : [%lx] ",i,(unsigned long)target->regs[i]);
+        // }else if(i == 1)
+        // {
+        //     printf("$ra : [%lx] ",(unsigned long)target->regs[i]);
+        // }else if(i == 2)
+        // {
+        //     printf("$sp : [%lx] ",(unsigned long)target->regs[i]);
+        // }else if(i == 3)
+        // {
+        //     printf("$gp : [%lx] ",(unsigned long)target->regs[i]);
+        // }else if(i == 4)
+        // {
+        //     printf("$tp : [%lx] ",(unsigned long)target->regs[i]);
+        // }else if( (i>=5 && i<=7) || (i>=28 && i<=31))
+        // {
+        //     printf("$t%d : [%lx] ",temp_cnt++,(unsigned long)target->regs[i]);
+        // }else if(i == 8)
+        // {
+        //     printf("$fp : [%lx] ",(unsigned long)target->regs[i]);
+        // }else if( (i == 9) || (i>=18 && i<=27))
+        // {
+        //     printf("$s%d : [%lx] ",save_cnt++,(unsigned long)target->regs[i]);
+        // }else if( (i>=10 && i<=11) || (i>=12 && i<=17))
+        // {
+        //     printf("$a%d : [%lx] ",arg_cnt++,(unsigned long)target->regs[i]);
+        // }
         
-        
-        if(i%10 == 0)
+        printf("%s: 0x%016lx ",RegRef[i],(unsigned long)target->regs[i]);
+
+        if(i%3 == 0)
         {
             printf("\n");
         }
     }
-    printf("$pc : [%lx]",target->pc);
+    printf("pc : 0x%016lx",target->pc);
     printf("\n");
+}
+
+
+
+void getDiff(reg_info* nemu, reg_info* core)
+{
+    for(int i=0;i<REGNUM ;i++)
+    {
+        if(core->regs[i] != nemu->regs[i])
+        {
+            printf("core's %s: 0x%016lx \n",RegRef[i],(unsigned long)core->regs[i]);
+            printf("nemu's %s: 0x%016lx \n",RegRef[i],(unsigned long)nemu->regs[i]);
+        }
+    }
+    if(core->pc != nemu->pc)
+    {
+        printf("core's pc: 0x%016lx \n",(unsigned long)core->pc);
+        printf("nemu's pc: 0x%016lx \n",(unsigned long)nemu->pc);
+    }
 }
 
 int main(int argc , char** argv)
@@ -114,9 +147,23 @@ int main(int argc , char** argv)
 
         print_info(info_core,0);
         print_info(info_nemu,1);
+
+        int has_error = memcmp(info_core,info_nemu,sizeof(system_word)*(REGNUM + 1));//compare the 32 common register and pc 
+        if(has_error)
+        {
+            printf("\033[1;31;40m[ERROR] core's regs is not equal with nemu's regs \033[0m \n");
+            getDiff(info_nemu,info_core);
+
+        }else
+        {
+            printf("\033[1;32;40m[PASS] core's regs is equal with nemu's regs \033[0m \n");
+        }
+        
+
+
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 
-        if(nemu->getCycle() == (system_word)8)
+        if(nemu->getCycle() == (system_word)100)
         {
             break;
         }

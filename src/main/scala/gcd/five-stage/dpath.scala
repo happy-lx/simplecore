@@ -173,16 +173,16 @@ class Dpath extends Module {
 
     val dp_wire_exe_aluout = WireInit(0.U(64.W))
     val dp_wire_mem_memstageout = WireInit(0.U(64.W))
-    val dp_reg_wb_wbdata = RegInit(0.U(64.W))
+    val dp_wb_reg_wb_data = RegInit(0.U(64.W))
     
     //to soulve data hazard and get the op1_source and op2_source
     dp_dec_wire_op1_source := MuxCase(dp_dec_rs1_data,Array(
         (io.c2d.cp_op1_sel === OP1_Z)   -> dp_dec_zim_ext,
         (io.c2d.cp_op1_sel === OP1_U)   -> dp_dec_uim_ext,
         //the the op1_sel is op1_rs1
-        (dp_dec_rs1_addr === dp_exe_reg_rd_addr && !dp_dec_rs1_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs1_addr === dp_mem_reg_rd_addr && !dp_dec_rs1_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
-        (dp_dec_rs1_addr === dp_wb_reg_rd_addr && !dp_dec_rs1_addr && dp_wb_reg_rf_wen) -> dp_reg_wb_wbdata
+        (dp_dec_rs1_addr === dp_exe_reg_rd_addr && dp_dec_rs1_addr =/= 0.U && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
+        (dp_dec_rs1_addr === dp_mem_reg_rd_addr && dp_dec_rs1_addr =/= 0.U && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs1_addr === dp_wb_reg_rd_addr && dp_dec_rs1_addr =/= 0.U && dp_wb_reg_rf_wen) -> dp_wb_reg_wb_data
     ))
 
     dp_dec_wire_op2_temp := MuxCase(dp_dec_rs2_data,Array(
@@ -193,9 +193,9 @@ class Dpath extends Module {
     ))
 
     dp_dec_wire_op2_source := MuxCase(dp_dec_wire_op2_temp,Array(
-        (dp_dec_rs2_addr === dp_exe_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
-        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && !dp_dec_rs2_addr && dp_wb_reg_rf_wen)   -> dp_reg_wb_wbdata
+        (dp_dec_rs2_addr === dp_exe_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && dp_dec_rs2_addr =/= 0.U && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
+        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && dp_dec_rs2_addr =/= 0.U && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && io.c2d.cp_op2_sel === OP2_RS2 && dp_dec_rs2_addr =/= 0.U && dp_wb_reg_rf_wen)   -> dp_wb_reg_wb_data
     ))
 
     //rs2_data will be used when there is a store so rs2_data is also need a by-pass
@@ -203,9 +203,9 @@ class Dpath extends Module {
     val dp_dec_wire_rs2_data = Wire(UInt(64.W))
 
     dp_dec_wire_rs2_data := MuxCase(dp_dec_rs2_data,Array(
-        (dp_dec_rs2_addr === dp_exe_reg_rd_addr && !dp_dec_rs2_addr && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
-        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && !dp_dec_rs2_addr && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
-        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && !dp_dec_rs2_addr && dp_wb_reg_rf_wen)   -> dp_reg_wb_wbdata
+        (dp_dec_rs2_addr === dp_exe_reg_rd_addr && dp_dec_rs2_addr =/= 0.U && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
+        (dp_dec_rs2_addr === dp_mem_reg_rd_addr && dp_dec_rs2_addr =/= 0.U && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
+        (dp_dec_rs2_addr === dp_wb_reg_rd_addr && dp_dec_rs2_addr =/= 0.U && dp_wb_reg_rf_wen)   -> dp_wb_reg_wb_data
     ))
 
     //signal define used after dec stage
@@ -444,7 +444,7 @@ class Dpath extends Module {
     io.dmem.req.bits.op := dp_mem_reg_mem_read_op
     io.dmem.req.bits.wdata := dp_mem_reg_rs2_data
     io.dmem.req.bits.memen := dp_mem_reg_mem_en
-    io.dmem.req.bits.wen := dp_exe_reg_mem_wen
+    io.dmem.req.bits.wen := dp_mem_reg_mem_wen
 
     val csr = Module(new CSRfile)
 
@@ -466,7 +466,7 @@ class Dpath extends Module {
     ))
 
     //wb's regs
-    val dp_wb_reg_wb_data = RegInit(0.U(64.W))
+    // val dp_wb_reg_wb_data = RegInit(0.U(64.W))
     val dp_wb_reg_instr_valid = RegInit(false.B)
     val dp_wb_reg_pc = RegInit(STARTADDR)
     val dp_wb_reg_instr = RegInit(NOP)
