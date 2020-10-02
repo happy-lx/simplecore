@@ -55,6 +55,10 @@ int main(int argc,char** argv)
     output.open("result.txt",ios::out);
     for(int i=0;i<instructions.size();i++)
     {
+        if(i % 4 == 0 && i != 0)
+        {
+            output << endl;
+        }
         output << instructions[i] << endl;
     }
 

@@ -278,6 +278,50 @@ class Cpath extends Module {
     io.c2d.cp_pipeline_kill := cs_wire_pipeline_kill
     io.c2d.cp_pipeline_stall := cs_wire_pipeline_stall
 
+    //when control hazard happens or pipeline kill happens 
+    //no need to passforward 
+    when(cs_wire_pipeline_kill)
+    {
+        cs_exe_branch       := BR_N
+        cs_reg_exe_is_csr   := N
+        cs_reg_exe_is_load  := N
+        cs_reg_exe_rd_addr  := 0.U(5.W)
+        cs_reg_exe_exception:= N
+        cs_reg_mem_exception:= N
+        cs_reg_exe_mem_valid:= N
+        cs_reg_mem_mem_valid:= N
+
+    }.elsewhen(cs_wire_pipeline_stall)
+    {
+        cs_exe_branch       := cs_exe_branch
+        cs_reg_exe_is_csr   := cs_reg_exe_is_csr
+        cs_reg_exe_is_load  := cs_reg_exe_is_load
+        cs_reg_exe_rd_addr  := cs_reg_exe_rd_addr
+        cs_reg_exe_exception:= cs_reg_exe_exception
+        cs_reg_mem_exception:= cs_reg_mem_exception
+        cs_reg_exe_mem_valid:= cs_reg_exe_mem_valid
+        cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
+    }.otherwise
+    {
+        when(cs_wire_data_hazard)
+        {
+            cs_exe_branch       := BR_N
+            cs_reg_exe_is_csr   := N
+            cs_reg_exe_is_load  := N
+            cs_reg_exe_rd_addr  := 0.U(5.W)
+            cs_reg_exe_exception:= N
+            cs_reg_exe_mem_valid:= N
+        }.elsewhen(cs_wire_control_hazard)
+        {
+            cs_exe_branch       := BR_N
+            cs_reg_exe_is_csr   := N
+            cs_reg_exe_is_load  := N
+            cs_reg_exe_rd_addr  := 0.U(5.W)
+            cs_reg_exe_exception:= N
+            cs_reg_exe_mem_valid:= N
+        }
+    }
+
     BoringUtils.addSource(cs_valid_inst,"cs_valid_inst")
 
 }

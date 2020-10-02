@@ -145,6 +145,8 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1366,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_is_load,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_rd_addr,4,0);
+    VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1369,0,0);
+    VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1374,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT___T_1376,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_exception,0,0);
     VL_SIG8(v__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_exception,0,0);
@@ -164,18 +166,19 @@ VL_MODULE(Vtop) {
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_124_data,7,0);
     VL_SIG8(v__DOT__mycore__DOT__mymem__DOT__mem___05FT_126_data,7,0);
     VL_SIG16(v__DOT__mycore__DOT__dpath__DOT__csr__DOT___T_28,10,0);
+    //char	__VpadToAlign390[2];
     VL_SIG(v__DOT__mycore__DOT__dpath__DOT__reg_dec_instr,31,0);
+    //char	__VpadToAlign396[4];
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT__dp_dec_iim_ext,65,0,3);
     VL_SIG(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_instr,31,0);
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT___GEN_96,65,0,3);
     VL_SIG(v__DOT__mycore__DOT__dpath__DOT__dp_mem_reg_instr,31,0);
     VL_SIG(v__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_instr,31,0);
-    //char	__VpadToAlign428[4];
+    //char	__VpadToAlign436[4];
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT__dp_alu__DOT___T_39,127,0,4);
     VL_SIGW(v__DOT__mycore__DOT__dpath__DOT__dp_alu__DOT___T_115,64,0,3);
-    //char	__VpadToAlign460[4];
+    //char	__VpadToAlign468[4];
     VL_SIG64(v__DOT__mycore__DOT__mymem_io_ports_1_resp_bits_rdata,63,0);
-    VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__regfile_io_rp1_data,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__regfile_io_rp2_data,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_alu_io_res,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__reg_if_pc,63,0);
@@ -183,12 +186,11 @@ VL_MODULE(Vtop) {
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_pc,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_bim_ext,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__wire_pc_branch_target,63,0);
-    VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_rs1_data,63,0);
+    VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_op1_source,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_iim_ext,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_jim_ext,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__wire_pc_jump_target,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__reg_dec_pc,63,0);
-    VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_op1_source,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_op2_source,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_wb_data,63,0);
     VL_SIG64(v__DOT__mycore__DOT__dpath__DOT__dp_mem_reg_alu_out,63,0);
@@ -329,11 +331,11 @@ VL_MODULE(Vtop) {
     // LOCAL VARIABLES
     // Internals; generally not touched by application code
     VL_SIG8(__Vclklast__TOP__clock,0,0);
-    //char	__VpadToAlign16779133[3];
+    //char	__VpadToAlign16779125[3];
     
     // INTERNAL VARIABLES
     // Internals; generally not touched by application code
-    //char	__VpadToAlign16779140[4];
+    //char	__VpadToAlign16779132[4];
     Vtop__Syms*	__VlSymsp;		// Symbol table
     
     // PARAMETERS

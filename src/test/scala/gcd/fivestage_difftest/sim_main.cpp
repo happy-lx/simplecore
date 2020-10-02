@@ -139,7 +139,17 @@ int main(int argc , char** argv)
             }
             core->coreStep(1);
         }
+        //if there is a branch or jump or exception
+        //the instruction which causes branch , jump , exeception
+        //will set the retire signal in write back stage
+        //but there will be a bunch of nop instruction
+        //which has a feature that the pc is zero
+        //but interrupt is not useful in this way
         core->coreStep(1);
+        while(core->getTop()->io_diff_pc_data == (unsigned long)0)
+        {
+            core->coreStep(1);
+        }
         nemu->step(1);
         
         core->coreGetRegs(info_core);
@@ -159,7 +169,7 @@ int main(int argc , char** argv)
             printf("\033[1;32;40m[PASS] core's regs is equal with nemu's regs \033[0m \n");
         }
         
-
+        printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
 
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 

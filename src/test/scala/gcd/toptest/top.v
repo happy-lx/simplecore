@@ -2245,13 +2245,13 @@ module Dpath(
   reg [31:0] _RAND_13;
   reg [31:0] _RAND_14;
   reg [63:0] _RAND_15;
-  reg [63:0] _RAND_16;
-  reg [31:0] _RAND_17;
-  reg [63:0] _RAND_18;
-  reg [31:0] _RAND_19;
+  reg [31:0] _RAND_16;
+  reg [63:0] _RAND_17;
+  reg [31:0] _RAND_18;
+  reg [63:0] _RAND_19;
   reg [63:0] _RAND_20;
   reg [63:0] _RAND_21;
-  reg [63:0] _RAND_22;
+  reg [31:0] _RAND_22;
   reg [31:0] _RAND_23;
   reg [31:0] _RAND_24;
   reg [31:0] _RAND_25;
@@ -2262,16 +2262,15 @@ module Dpath(
   reg [31:0] _RAND_30;
   reg [31:0] _RAND_31;
   reg [31:0] _RAND_32;
-  reg [31:0] _RAND_33;
-  reg [63:0] _RAND_34;
+  reg [63:0] _RAND_33;
+  reg [31:0] _RAND_34;
   reg [31:0] _RAND_35;
   reg [31:0] _RAND_36;
   reg [31:0] _RAND_37;
   reg [31:0] _RAND_38;
   reg [31:0] _RAND_39;
-  reg [31:0] _RAND_40;
-  reg [63:0] _RAND_41;
-  reg [31:0] _RAND_42;
+  reg [63:0] _RAND_40;
+  reg [31:0] _RAND_41;
 `endif // RANDOMIZE_REG_INIT
   wire  regfile_clock; // @[dpath.scala 128:25]
   wire [4:0] regfile_io_rp1; // @[dpath.scala 128:25]
@@ -2313,26 +2312,26 @@ module Dpath(
   wire [63:0] regfile__T_41_0_29; // @[dpath.scala 128:25]
   wire [63:0] regfile__T_41_0_30; // @[dpath.scala 128:25]
   wire [63:0] regfile__T_41_0_31; // @[dpath.scala 128:25]
-  wire [63:0] dp_alu_io_input1; // @[dpath.scala 360:24]
-  wire [63:0] dp_alu_io_input2; // @[dpath.scala 360:24]
-  wire [4:0] dp_alu_io_op; // @[dpath.scala 360:24]
-  wire [2:0] dp_alu_io_res_ext_op; // @[dpath.scala 360:24]
-  wire [63:0] dp_alu_io_res; // @[dpath.scala 360:24]
-  wire  csr_clock; // @[dpath.scala 449:21]
-  wire  csr_reset; // @[dpath.scala 449:21]
-  wire [31:0] csr_io__instruction; // @[dpath.scala 449:21]
-  wire [2:0] csr_io__csr_op; // @[dpath.scala 449:21]
-  wire [63:0] csr_io__data_in; // @[dpath.scala 449:21]
-  wire  csr_io__hasException; // @[dpath.scala 449:21]
-  wire  csr_io__hasStall; // @[dpath.scala 449:21]
-  wire [63:0] csr_io__in_pc; // @[dpath.scala 449:21]
-  wire  csr_io__is_retire; // @[dpath.scala 449:21]
-  wire [63:0] csr_io__redir_target; // @[dpath.scala 449:21]
-  wire [63:0] csr_io__csr_info; // @[dpath.scala 449:21]
-  wire  csr_io__isredir; // @[dpath.scala 449:21]
-  wire  csr_io_isredir; // @[dpath.scala 449:21]
-  wire  csr_io_is_retire; // @[dpath.scala 449:21]
-  wire [63:0] csr__T_17756_0; // @[dpath.scala 449:21]
+  wire [63:0] dp_alu_io_input1; // @[dpath.scala 361:24]
+  wire [63:0] dp_alu_io_input2; // @[dpath.scala 361:24]
+  wire [4:0] dp_alu_io_op; // @[dpath.scala 361:24]
+  wire [2:0] dp_alu_io_res_ext_op; // @[dpath.scala 361:24]
+  wire [63:0] dp_alu_io_res; // @[dpath.scala 361:24]
+  wire  csr_clock; // @[dpath.scala 450:21]
+  wire  csr_reset; // @[dpath.scala 450:21]
+  wire [31:0] csr_io__instruction; // @[dpath.scala 450:21]
+  wire [2:0] csr_io__csr_op; // @[dpath.scala 450:21]
+  wire [63:0] csr_io__data_in; // @[dpath.scala 450:21]
+  wire  csr_io__hasException; // @[dpath.scala 450:21]
+  wire  csr_io__hasStall; // @[dpath.scala 450:21]
+  wire [63:0] csr_io__in_pc; // @[dpath.scala 450:21]
+  wire  csr_io__is_retire; // @[dpath.scala 450:21]
+  wire [63:0] csr_io__redir_target; // @[dpath.scala 450:21]
+  wire [63:0] csr_io__csr_info; // @[dpath.scala 450:21]
+  wire  csr_io__isredir; // @[dpath.scala 450:21]
+  wire  csr_io_isredir; // @[dpath.scala 450:21]
+  wire  csr_io_is_retire; // @[dpath.scala 450:21]
+  wire [63:0] csr__T_17756_0; // @[dpath.scala 450:21]
   reg [63:0] reg_if_pc; // @[dpath.scala 35:28]
   wire [63:0] wire_pc_next_4 = reg_if_pc + 64'h4; // @[dpath.scala 52:33]
   wire  _T_3 = io_c2d_cp_pc_sel == 3'h0; // @[dpath.scala 56:27]
@@ -2342,15 +2341,15 @@ module Dpath(
   wire  _T_7 = io_c2d_cp_pc_sel == 3'h2; // @[dpath.scala 60:27]
   reg [63:0] dp_exe_reg_pc; // @[dpath.scala 221:32]
   reg [63:0] dp_exe_reg_bim_ext; // @[dpath.scala 227:37]
-  wire [63:0] wire_pc_branch_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_bim_ext); // @[dpath.scala 356:91]
-  reg [63:0] dp_exe_reg_rs1_data; // @[dpath.scala 228:38]
+  wire [63:0] wire_pc_branch_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_bim_ext); // @[dpath.scala 357:91]
+  reg [63:0] dp_exe_reg_op1_source; // @[dpath.scala 166:36]
   reg [63:0] dp_exe_reg_iim_ext; // @[dpath.scala 226:37]
-  wire [63:0] _T_121 = $signed(dp_exe_reg_rs1_data) + $signed(dp_exe_reg_iim_ext); // @[dpath.scala 355:58]
-  wire [62:0] _T_122 = _T_121[63:1]; // @[dpath.scala 355:89]
-  wire [63:0] wire_pc_jr_target = {$signed(_T_122), 1'h0}; // @[dpath.scala 355:107]
+  wire [63:0] _T_121 = $signed(dp_exe_reg_op1_source) + $signed(dp_exe_reg_iim_ext); // @[dpath.scala 356:60]
+  wire [62:0] _T_122 = _T_121[63:1]; // @[dpath.scala 356:91]
+  wire [63:0] wire_pc_jr_target = {$signed(_T_122), 1'h0}; // @[dpath.scala 356:109]
   reg [63:0] dp_exe_reg_jim_ext; // @[dpath.scala 225:37]
   wire [63:0] wire_pc_jump_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_jim_ext); // @[dpath.scala 354:89]
-  wire [63:0] wire_pc_redirect_target = csr_io__redir_target; // @[dpath.scala 44:39 dpath.scala 458:29]
+  wire [63:0] wire_pc_redirect_target = csr_io__redir_target; // @[dpath.scala 44:39 dpath.scala 459:29]
   wire [31:0] wire_if_instr = io_imem_resp_bits_rdata[31:0]; // @[dpath.scala 64:57]
   reg [31:0] reg_dec_instr; // @[dpath.scala 68:32]
   reg  reg_dec_instr_valid; // @[dpath.scala 69:38]
@@ -2383,7 +2382,6 @@ module Dpath(
   reg  dp_exe_reg_rf_wen; // @[dpath.scala 162:36]
   reg  dp_mem_reg_rf_wen; // @[dpath.scala 163:36]
   reg  dp_wb_reg_rf_wen; // @[dpath.scala 164:36]
-  reg [63:0] dp_exe_reg_op1_source; // @[dpath.scala 166:36]
   reg [63:0] dp_exe_reg_op2_source; // @[dpath.scala 167:36]
   reg [31:0] dp_exe_reg_instr; // @[dpath.scala 172:35]
   reg [63:0] dp_wb_reg_wb_data; // @[dpath.scala 176:36]
@@ -2399,15 +2397,15 @@ module Dpath(
   wire  _T_58 = dp_dec_rs1_addr == dp_wb_reg_rd_addr; // @[dpath.scala 185:26]
   wire  _T_60 = _T_58 & _T_51; // @[dpath.scala 185:48]
   wire  _T_61 = _T_60 & dp_wb_reg_rf_wen; // @[dpath.scala 185:75]
-  reg [1:0] dp_mem_reg_wb_sel; // @[dpath.scala 386:46]
-  wire  _T_137 = dp_mem_reg_wb_sel == 2'h0; // @[dpath.scala 462:28]
-  reg [63:0] dp_mem_reg_alu_out; // @[dpath.scala 385:46]
-  wire  _T_138 = dp_mem_reg_wb_sel == 2'h1; // @[dpath.scala 463:28]
-  wire  _T_139 = dp_mem_reg_wb_sel == 2'h2; // @[dpath.scala 464:28]
-  reg [63:0] dp_mem_reg_pc; // @[dpath.scala 384:46]
-  wire [63:0] _T_141 = dp_mem_reg_pc + 64'h4; // @[dpath.scala 464:62]
-  wire  _T_142 = dp_mem_reg_wb_sel == 2'h3; // @[dpath.scala 465:28]
-  wire [63:0] dp_wire_exe_aluout = dp_alu_io_res; // @[dpath.scala 368:24]
+  reg [1:0] dp_mem_reg_wb_sel; // @[dpath.scala 387:46]
+  wire  _T_137 = dp_mem_reg_wb_sel == 2'h0; // @[dpath.scala 463:28]
+  reg [63:0] dp_mem_reg_alu_out; // @[dpath.scala 386:46]
+  wire  _T_138 = dp_mem_reg_wb_sel == 2'h1; // @[dpath.scala 464:28]
+  wire  _T_139 = dp_mem_reg_wb_sel == 2'h2; // @[dpath.scala 465:28]
+  reg [63:0] dp_mem_reg_pc; // @[dpath.scala 385:46]
+  wire [63:0] _T_141 = dp_mem_reg_pc + 64'h4; // @[dpath.scala 465:62]
+  wire  _T_142 = dp_mem_reg_wb_sel == 2'h3; // @[dpath.scala 466:28]
+  wire [63:0] dp_wire_exe_aluout = dp_alu_io_res; // @[dpath.scala 369:24]
   wire  _T_67 = io_c2d_cp_op2_sel == 2'h0; // @[dpath.scala 189:28]
   wire  _T_68 = io_c2d_cp_op2_sel == 2'h1; // @[dpath.scala 190:28]
   wire  _T_69 = io_c2d_cp_op2_sel == 2'h2; // @[dpath.scala 191:28]
@@ -2450,17 +2448,17 @@ module Dpath(
   wire [65:0] _GEN_56 = io_c2d_cp_data_hazard ? 66'h0 : _GEN_36; // @[dpath.scala 279:9]
   wire [65:0] _GEN_76 = io_c2d_cp_pipeline_stall ? {{2'd0}, dp_exe_reg_iim_ext} : _GEN_56; // @[dpath.scala 255:5]
   wire [65:0] _GEN_96 = io_c2d_cp_pipeline_kill ? 66'h0 : _GEN_76; // @[dpath.scala 233:5]
-  reg [31:0] dp_mem_reg_instr; // @[dpath.scala 376:46]
-  reg  dp_mem_reg_instr_valid; // @[dpath.scala 377:46]
-  reg [63:0] dp_mem_reg_rs2_data; // @[dpath.scala 378:46]
-  reg  dp_mem_reg_mem_en; // @[dpath.scala 379:46]
-  reg [2:0] dp_mem_reg_mem_read_op; // @[dpath.scala 380:46]
-  reg [7:0] dp_mem_reg_mem_write_mask; // @[dpath.scala 381:46]
-  reg  dp_mem_reg_mem_wen; // @[dpath.scala 382:46]
-  reg [2:0] dp_mem_reg_csr_op; // @[dpath.scala 383:46]
-  reg  dp_wb_reg_instr_valid; // @[dpath.scala 470:40]
-  reg [63:0] dp_wb_reg_pc; // @[dpath.scala 471:31]
-  reg [31:0] dp_wb_reg_instr; // @[dpath.scala 472:34]
+  reg [31:0] dp_mem_reg_instr; // @[dpath.scala 377:46]
+  reg  dp_mem_reg_instr_valid; // @[dpath.scala 378:46]
+  reg [63:0] dp_mem_reg_rs2_data; // @[dpath.scala 379:46]
+  reg  dp_mem_reg_mem_en; // @[dpath.scala 380:46]
+  reg [2:0] dp_mem_reg_mem_read_op; // @[dpath.scala 381:46]
+  reg [7:0] dp_mem_reg_mem_write_mask; // @[dpath.scala 382:46]
+  reg  dp_mem_reg_mem_wen; // @[dpath.scala 383:46]
+  reg [2:0] dp_mem_reg_csr_op; // @[dpath.scala 384:46]
+  reg  dp_wb_reg_instr_valid; // @[dpath.scala 471:40]
+  reg [63:0] dp_wb_reg_pc; // @[dpath.scala 472:31]
+  reg [31:0] dp_wb_reg_instr; // @[dpath.scala 473:34]
   Regfile regfile ( // @[dpath.scala 128:25]
     .clock(regfile_clock),
     .io_rp1(regfile_io_rp1),
@@ -2503,14 +2501,14 @@ module Dpath(
     ._T_41_0_30(regfile__T_41_0_30),
     ._T_41_0_31(regfile__T_41_0_31)
   );
-  alu_module dp_alu ( // @[dpath.scala 360:24]
+  alu_module dp_alu ( // @[dpath.scala 361:24]
     .io_input1(dp_alu_io_input1),
     .io_input2(dp_alu_io_input2),
     .io_op(dp_alu_io_op),
     .io_res_ext_op(dp_alu_io_res_ext_op),
     .io_res(dp_alu_io_res)
   );
-  CSRfile csr ( // @[dpath.scala 449:21]
+  CSRfile csr ( // @[dpath.scala 450:21]
     .clock(csr_clock),
     .reset(csr_reset),
     .io__instruction(csr_io__instruction),
@@ -2528,18 +2526,18 @@ module Dpath(
     ._T_17756_0(csr__T_17756_0)
   );
   assign io_d2c_instr = reg_dec_instr; // @[dpath.scala 120:18]
-  assign io_d2c_islt = $signed(dp_exe_reg_op1_source) < $signed(dp_exe_reg_op2_source); // @[dpath.scala 371:17]
-  assign io_d2c_isltu = dp_exe_reg_op1_source < dp_exe_reg_op2_source; // @[dpath.scala 372:18]
-  assign io_d2c_iseq = dp_exe_reg_op1_source == dp_exe_reg_op2_source; // @[dpath.scala 373:17]
-  assign io_d2c_isredir = csr_io__isredir; // @[dpath.scala 459:20]
+  assign io_d2c_islt = $signed(dp_exe_reg_op1_source) < $signed(dp_exe_reg_op2_source); // @[dpath.scala 372:17]
+  assign io_d2c_isltu = dp_exe_reg_op1_source < dp_exe_reg_op2_source; // @[dpath.scala 373:18]
+  assign io_d2c_iseq = dp_exe_reg_op1_source == dp_exe_reg_op2_source; // @[dpath.scala 374:17]
+  assign io_d2c_isredir = csr_io__isredir; // @[dpath.scala 460:20]
   assign io_imem_req_bits_addr = reg_if_pc[31:0]; // @[dpath.scala 47:27]
-  assign io_dmem_req_valid = dp_mem_reg_mem_en; // @[dpath.scala 441:23]
-  assign io_dmem_req_bits_addr = dp_mem_reg_alu_out[31:0]; // @[dpath.scala 442:27]
-  assign io_dmem_req_bits_mask = dp_mem_reg_mem_write_mask; // @[dpath.scala 443:27]
-  assign io_dmem_req_bits_op = dp_mem_reg_mem_read_op; // @[dpath.scala 444:25]
-  assign io_dmem_req_bits_wdata = dp_mem_reg_rs2_data; // @[dpath.scala 445:28]
-  assign io_dmem_req_bits_memen = dp_mem_reg_mem_en; // @[dpath.scala 446:28]
-  assign io_dmem_req_bits_wen = dp_mem_reg_mem_wen; // @[dpath.scala 447:26]
+  assign io_dmem_req_valid = dp_mem_reg_mem_en; // @[dpath.scala 442:23]
+  assign io_dmem_req_bits_addr = dp_mem_reg_alu_out[31:0]; // @[dpath.scala 443:27]
+  assign io_dmem_req_bits_mask = dp_mem_reg_mem_write_mask; // @[dpath.scala 444:27]
+  assign io_dmem_req_bits_op = dp_mem_reg_mem_read_op; // @[dpath.scala 445:25]
+  assign io_dmem_req_bits_wdata = dp_mem_reg_rs2_data; // @[dpath.scala 446:28]
+  assign io_dmem_req_bits_memen = dp_mem_reg_mem_en; // @[dpath.scala 447:28]
+  assign io_dmem_req_bits_wen = dp_mem_reg_mem_wen; // @[dpath.scala 448:26]
   assign io_isredir = csr_io_isredir;
   assign io_is_retire = csr_io_is_retire;
   assign _T_17756 = csr__T_17756_0;
@@ -2580,22 +2578,22 @@ module Dpath(
   assign regfile_clock = clock;
   assign regfile_io_rp1 = reg_dec_instr[19:15]; // @[dpath.scala 130:20]
   assign regfile_io_rp2 = reg_dec_instr[24:20]; // @[dpath.scala 131:20]
-  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 501:19]
-  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 502:24]
-  assign regfile_io_wp_en = dp_wb_reg_rf_wen; // @[dpath.scala 496:26 dpath.scala 499:26]
-  assign dp_alu_io_input1 = dp_exe_reg_op1_source; // @[dpath.scala 362:22]
-  assign dp_alu_io_input2 = dp_exe_reg_op2_source; // @[dpath.scala 363:22]
-  assign dp_alu_io_op = dp_exe_reg_alu_sel; // @[dpath.scala 365:18]
-  assign dp_alu_io_res_ext_op = dp_exe_reg_alu_ext_sel; // @[dpath.scala 366:26]
+  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 502:19]
+  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 503:24]
+  assign regfile_io_wp_en = dp_wb_reg_rf_wen & dp_wb_reg_instr_valid; // @[dpath.scala 497:26 dpath.scala 500:26]
+  assign dp_alu_io_input1 = dp_exe_reg_op1_source; // @[dpath.scala 363:22]
+  assign dp_alu_io_input2 = dp_exe_reg_op2_source; // @[dpath.scala 364:22]
+  assign dp_alu_io_op = dp_exe_reg_alu_sel; // @[dpath.scala 366:18]
+  assign dp_alu_io_res_ext_op = dp_exe_reg_alu_ext_sel; // @[dpath.scala 367:26]
   assign csr_clock = clock;
   assign csr_reset = reset;
-  assign csr_io__instruction = dp_mem_reg_instr; // @[dpath.scala 451:24]
-  assign csr_io__csr_op = dp_mem_reg_csr_op; // @[dpath.scala 452:19]
-  assign csr_io__data_in = dp_mem_reg_alu_out; // @[dpath.scala 453:20]
-  assign csr_io__hasException = io_c2d_hasexception; // @[dpath.scala 454:25]
-  assign csr_io__hasStall = io_c2d_shouldstall; // @[dpath.scala 455:21]
-  assign csr_io__in_pc = dp_mem_reg_pc; // @[dpath.scala 456:18]
-  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 504:22]
+  assign csr_io__instruction = dp_mem_reg_instr; // @[dpath.scala 452:24]
+  assign csr_io__csr_op = dp_mem_reg_csr_op; // @[dpath.scala 453:19]
+  assign csr_io__data_in = dp_mem_reg_alu_out; // @[dpath.scala 454:20]
+  assign csr_io__hasException = io_c2d_hasexception; // @[dpath.scala 455:25]
+  assign csr_io__hasStall = io_c2d_shouldstall; // @[dpath.scala 456:21]
+  assign csr_io__in_pc = dp_mem_reg_pc; // @[dpath.scala 457:18]
+  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 505:22]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -2638,7 +2636,7 @@ initial begin
   _RAND_2 = {2{`RANDOM}};
   dp_exe_reg_bim_ext = _RAND_2[63:0];
   _RAND_3 = {2{`RANDOM}};
-  dp_exe_reg_rs1_data = _RAND_3[63:0];
+  dp_exe_reg_op1_source = _RAND_3[63:0];
   _RAND_4 = {2{`RANDOM}};
   dp_exe_reg_iim_ext = _RAND_4[63:0];
   _RAND_5 = {2{`RANDOM}};
@@ -2662,61 +2660,59 @@ initial begin
   _RAND_14 = {1{`RANDOM}};
   dp_wb_reg_rf_wen = _RAND_14[0:0];
   _RAND_15 = {2{`RANDOM}};
-  dp_exe_reg_op1_source = _RAND_15[63:0];
-  _RAND_16 = {2{`RANDOM}};
-  dp_exe_reg_op2_source = _RAND_16[63:0];
-  _RAND_17 = {1{`RANDOM}};
-  dp_exe_reg_instr = _RAND_17[31:0];
-  _RAND_18 = {2{`RANDOM}};
-  dp_wb_reg_wb_data = _RAND_18[63:0];
-  _RAND_19 = {1{`RANDOM}};
-  dp_mem_reg_wb_sel = _RAND_19[1:0];
+  dp_exe_reg_op2_source = _RAND_15[63:0];
+  _RAND_16 = {1{`RANDOM}};
+  dp_exe_reg_instr = _RAND_16[31:0];
+  _RAND_17 = {2{`RANDOM}};
+  dp_wb_reg_wb_data = _RAND_17[63:0];
+  _RAND_18 = {1{`RANDOM}};
+  dp_mem_reg_wb_sel = _RAND_18[1:0];
+  _RAND_19 = {2{`RANDOM}};
+  dp_mem_reg_alu_out = _RAND_19[63:0];
   _RAND_20 = {2{`RANDOM}};
-  dp_mem_reg_alu_out = _RAND_20[63:0];
+  dp_mem_reg_pc = _RAND_20[63:0];
   _RAND_21 = {2{`RANDOM}};
-  dp_mem_reg_pc = _RAND_21[63:0];
-  _RAND_22 = {2{`RANDOM}};
-  dp_exe_reg_rs2_data = _RAND_22[63:0];
+  dp_exe_reg_rs2_data = _RAND_21[63:0];
+  _RAND_22 = {1{`RANDOM}};
+  dp_exe_reg_alu_sel = _RAND_22[4:0];
   _RAND_23 = {1{`RANDOM}};
-  dp_exe_reg_alu_sel = _RAND_23[4:0];
+  dp_exe_reg_mem_en = _RAND_23[0:0];
   _RAND_24 = {1{`RANDOM}};
-  dp_exe_reg_mem_en = _RAND_24[0:0];
+  dp_exe_reg_mem_read_op = _RAND_24[2:0];
   _RAND_25 = {1{`RANDOM}};
-  dp_exe_reg_mem_read_op = _RAND_25[2:0];
+  dp_exe_reg_mem_write_mask = _RAND_25[7:0];
   _RAND_26 = {1{`RANDOM}};
-  dp_exe_reg_mem_write_mask = _RAND_26[7:0];
+  dp_exe_reg_mem_wen = _RAND_26[0:0];
   _RAND_27 = {1{`RANDOM}};
-  dp_exe_reg_mem_wen = _RAND_27[0:0];
+  dp_exe_reg_alu_ext_sel = _RAND_27[2:0];
   _RAND_28 = {1{`RANDOM}};
-  dp_exe_reg_alu_ext_sel = _RAND_28[2:0];
+  dp_exe_reg_wb_sel = _RAND_28[1:0];
   _RAND_29 = {1{`RANDOM}};
-  dp_exe_reg_wb_sel = _RAND_29[1:0];
+  dp_exe_reg_csr_op = _RAND_29[2:0];
   _RAND_30 = {1{`RANDOM}};
-  dp_exe_reg_csr_op = _RAND_30[2:0];
+  dp_exe_reg_instr_valid = _RAND_30[0:0];
   _RAND_31 = {1{`RANDOM}};
-  dp_exe_reg_instr_valid = _RAND_31[0:0];
+  dp_mem_reg_instr = _RAND_31[31:0];
   _RAND_32 = {1{`RANDOM}};
-  dp_mem_reg_instr = _RAND_32[31:0];
-  _RAND_33 = {1{`RANDOM}};
-  dp_mem_reg_instr_valid = _RAND_33[0:0];
-  _RAND_34 = {2{`RANDOM}};
-  dp_mem_reg_rs2_data = _RAND_34[63:0];
+  dp_mem_reg_instr_valid = _RAND_32[0:0];
+  _RAND_33 = {2{`RANDOM}};
+  dp_mem_reg_rs2_data = _RAND_33[63:0];
+  _RAND_34 = {1{`RANDOM}};
+  dp_mem_reg_mem_en = _RAND_34[0:0];
   _RAND_35 = {1{`RANDOM}};
-  dp_mem_reg_mem_en = _RAND_35[0:0];
+  dp_mem_reg_mem_read_op = _RAND_35[2:0];
   _RAND_36 = {1{`RANDOM}};
-  dp_mem_reg_mem_read_op = _RAND_36[2:0];
+  dp_mem_reg_mem_write_mask = _RAND_36[7:0];
   _RAND_37 = {1{`RANDOM}};
-  dp_mem_reg_mem_write_mask = _RAND_37[7:0];
+  dp_mem_reg_mem_wen = _RAND_37[0:0];
   _RAND_38 = {1{`RANDOM}};
-  dp_mem_reg_mem_wen = _RAND_38[0:0];
+  dp_mem_reg_csr_op = _RAND_38[2:0];
   _RAND_39 = {1{`RANDOM}};
-  dp_mem_reg_csr_op = _RAND_39[2:0];
-  _RAND_40 = {1{`RANDOM}};
-  dp_wb_reg_instr_valid = _RAND_40[0:0];
-  _RAND_41 = {2{`RANDOM}};
-  dp_wb_reg_pc = _RAND_41[63:0];
-  _RAND_42 = {1{`RANDOM}};
-  dp_wb_reg_instr = _RAND_42[31:0];
+  dp_wb_reg_instr_valid = _RAND_39[0:0];
+  _RAND_40 = {2{`RANDOM}};
+  dp_wb_reg_pc = _RAND_40[63:0];
+  _RAND_41 = {1{`RANDOM}};
+  dp_wb_reg_instr = _RAND_41[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -2800,17 +2796,35 @@ end // initial
         dp_exe_reg_bim_ext <= dp_dec_bim_ext;
       end
     end
-    if (reset) begin
-      dp_exe_reg_rs1_data <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_rs1_data <= 64'h0;
+    if (io_c2d_cp_pipeline_kill) begin
+      dp_exe_reg_op1_source <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
       if (io_c2d_cp_data_hazard) begin
-        dp_exe_reg_rs1_data <= 64'h0;
+        dp_exe_reg_op1_source <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
-        dp_exe_reg_rs1_data <= 64'h0;
+        dp_exe_reg_op1_source <= 64'h0;
+      end else if (_T_48) begin
+        dp_exe_reg_op1_source <= dp_dec_zim_ext;
+      end else if (_T_49) begin
+        dp_exe_reg_op1_source <= dp_dec_uim_ext;
+      end else if (_T_53) begin
+        dp_exe_reg_op1_source <= dp_wire_exe_aluout;
+      end else if (_T_57) begin
+        if (_T_137) begin
+          dp_exe_reg_op1_source <= dp_mem_reg_alu_out;
+        end else if (_T_138) begin
+          dp_exe_reg_op1_source <= io_dmem_resp_bits_rdata;
+        end else if (_T_139) begin
+          dp_exe_reg_op1_source <= _T_141;
+        end else if (_T_142) begin
+          dp_exe_reg_op1_source <= csr_io__csr_info;
+        end else begin
+          dp_exe_reg_op1_source <= dp_mem_reg_alu_out;
+        end
+      end else if (_T_61) begin
+        dp_exe_reg_op1_source <= dp_wb_reg_wb_data;
       end else begin
-        dp_exe_reg_rs1_data <= regfile_io_rp1_data;
+        dp_exe_reg_op1_source <= regfile_io_rp1_data;
       end
     end
     if (reset) begin
@@ -2921,37 +2935,6 @@ end // initial
       dp_wb_reg_rf_wen <= 1'h0;
     end else begin
       dp_wb_reg_rf_wen <= dp_mem_reg_rf_wen;
-    end
-    if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_op1_source <= 64'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
-        dp_exe_reg_op1_source <= 64'h0;
-      end else if (io_c2d_cp_control_hazard) begin
-        dp_exe_reg_op1_source <= 64'h0;
-      end else if (_T_48) begin
-        dp_exe_reg_op1_source <= dp_dec_zim_ext;
-      end else if (_T_49) begin
-        dp_exe_reg_op1_source <= dp_dec_uim_ext;
-      end else if (_T_53) begin
-        dp_exe_reg_op1_source <= dp_wire_exe_aluout;
-      end else if (_T_57) begin
-        if (_T_137) begin
-          dp_exe_reg_op1_source <= dp_mem_reg_alu_out;
-        end else if (_T_138) begin
-          dp_exe_reg_op1_source <= io_dmem_resp_bits_rdata;
-        end else if (_T_139) begin
-          dp_exe_reg_op1_source <= _T_141;
-        end else if (_T_142) begin
-          dp_exe_reg_op1_source <= csr_io__csr_info;
-        end else begin
-          dp_exe_reg_op1_source <= dp_mem_reg_alu_out;
-        end
-      end else if (_T_61) begin
-        dp_exe_reg_op1_source <= dp_wb_reg_wb_data;
-      end else begin
-        dp_exe_reg_op1_source <= regfile_io_rp1_data;
-      end
     end
     if (io_c2d_cp_pipeline_kill) begin
       dp_exe_reg_op2_source <= 64'h0;
@@ -3295,7 +3278,7 @@ module Cpath(
   wire [31:0] _T = io_d2c_instr & 32'h7f; // @[Lookup.scala 31:38]
   wire  _T_1 = 32'h6f == _T; // @[Lookup.scala 31:38]
   wire [31:0] _T_2 = io_d2c_instr & 32'h707f; // @[Lookup.scala 31:38]
-  wire  _T_3 = 32'h2067 == _T_2; // @[Lookup.scala 31:38]
+  wire  _T_3 = 32'h67 == _T_2; // @[Lookup.scala 31:38]
   wire  _T_5 = 32'h3 == _T_2; // @[Lookup.scala 31:38]
   wire  _T_7 = 32'h4003 == _T_2; // @[Lookup.scala 31:38]
   wire  _T_9 = 32'h3003 == _T_2; // @[Lookup.scala 31:38]
@@ -4169,6 +4152,7 @@ module Cpath(
   wire  _T_1362 = cs_csr_op != 3'h5; // @[cpath.scala 179:60]
   wire  temp_is_csr = _T_1361 & _T_1362; // @[cpath.scala 179:46]
   reg  cs_reg_exe_is_csr; // @[cpath.scala 180:36]
+  wire  cs_wire_control_hazard = temp_pc_sel != 3'h0; // @[cpath.scala 199:22]
   reg  _T_1366; // @[cpath.scala 207:56]
   wire  _T_1368 = ~cs_mem_en; // @[cpath.scala 217:49]
   wire  temp_wire_dec_is_load = cs_mem_valid & _T_1368; // @[cpath.scala 217:46]
@@ -4183,6 +4167,7 @@ module Cpath(
   wire  _T_1372 = cs_reg_exe_rd_addr == cs_wire_dec_rs2_addr; // @[cpath.scala 230:96]
   wire  _T_1373 = _T_1372 & cs_rs2_en; // @[cpath.scala 230:121]
   wire  _T_1374 = _T_1371 | _T_1373; // @[cpath.scala 230:73]
+  wire  cs_wire_data_hazard = _T_1369 & _T_1374; // @[cpath.scala 229:5]
   wire  _T_1375 = ~cs_valid_inst; // @[cpath.scala 244:33]
   reg  _T_1376; // @[cpath.scala 244:58]
   wire  cs_wire_dec_exception = _T_1375 & _T_1376; // @[cpath.scala 244:48]
@@ -4193,6 +4178,7 @@ module Cpath(
   wire  _T_1377 = ~cs_reg_mem_mem_valid; // @[cpath.scala 256:34]
   wire  _T_1378 = cs_reg_mem_mem_valid & io_dmem_resp_valid; // @[cpath.scala 256:82]
   wire  _T_1379 = _T_1377 | _T_1378; // @[cpath.scala 256:57]
+  wire  cs_wire_pipeline_stall = ~_T_1379; // @[cpath.scala 256:31]
   assign io_c2d_cp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1360; // @[cpath.scala 262:22]
   assign io_c2d_cp_op1_sel = _T_1 ? 2'h0 : _T_371; // @[cpath.scala 263:23]
   assign io_c2d_cp_op2_sel = _T_1 ? 2'h0 : _T_445; // @[cpath.scala 264:23]
@@ -4278,111 +4264,127 @@ end // initial
   always @(posedge clock) begin
     if (reset) begin
       cs_exe_branch <= 4'h0;
-    end else if (_T_1) begin
-      cs_exe_branch <= 4'h7;
-    end else if (_T_3) begin
-      cs_exe_branch <= 4'h8;
-    end else if (_T_5) begin
+    end else if (io_d2c_isredir) begin
       cs_exe_branch <= 4'h0;
-    end else if (_T_7) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_9) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_11) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_13) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_15) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_17) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_19) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_21) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_23) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_25) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_27) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_29) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_31) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_33) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_35) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_37) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_39) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_41) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_43) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_45) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_47) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_49) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_51) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_53) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_55) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_57) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_59) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_61) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_63) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_65) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_67) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_69) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_71) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_73) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_75) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_77) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_79) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_81) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_83) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_85) begin
-      cs_exe_branch <= 4'h0;
-    end else if (_T_87) begin
-      cs_exe_branch <= 4'h1;
-    end else if (_T_89) begin
-      cs_exe_branch <= 4'h5;
-    end else if (_T_91) begin
-      cs_exe_branch <= 4'h6;
-    end else if (_T_93) begin
-      cs_exe_branch <= 4'h3;
-    end else if (_T_95) begin
-      cs_exe_branch <= 4'h4;
-    end else if (_T_97) begin
-      cs_exe_branch <= 4'h2;
-    end else begin
-      cs_exe_branch <= 4'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_exe_branch <= 4'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_1) begin
+        cs_exe_branch <= 4'h7;
+      end else if (_T_3) begin
+        cs_exe_branch <= 4'h8;
+      end else if (_T_5) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_7) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_9) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_11) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_13) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_15) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_17) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_19) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_21) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_23) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_25) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_27) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_29) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_31) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_33) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_35) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_37) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_39) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_41) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_43) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_45) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_47) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_49) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_51) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_53) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_55) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_57) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_59) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_61) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_63) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_65) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_67) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_69) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_71) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_73) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_75) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_77) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_79) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_81) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_83) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_85) begin
+        cs_exe_branch <= 4'h0;
+      end else if (_T_87) begin
+        cs_exe_branch <= 4'h1;
+      end else if (_T_89) begin
+        cs_exe_branch <= 4'h5;
+      end else if (_T_91) begin
+        cs_exe_branch <= 4'h6;
+      end else if (_T_93) begin
+        cs_exe_branch <= 4'h3;
+      end else if (_T_95) begin
+        cs_exe_branch <= 4'h4;
+      end else if (_T_97) begin
+        cs_exe_branch <= 4'h2;
+      end else begin
+        cs_exe_branch <= 4'h0;
+      end
     end
     if (reset) begin
       cs_reg_exe_is_csr <= 1'h0;
-    end else begin
-      cs_reg_exe_is_csr <= temp_is_csr;
+    end else if (io_d2c_isredir) begin
+      cs_reg_exe_is_csr <= 1'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_reg_exe_is_csr <= 1'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_reg_exe_is_csr <= 1'h0;
+      end else begin
+        cs_reg_exe_is_csr <= temp_is_csr;
+      end
     end
     if (reset) begin
       _T_1366 <= 1'h0;
@@ -4513,13 +4515,29 @@ end // initial
     end
     if (reset) begin
       cs_reg_exe_is_load <= 1'h0;
-    end else begin
-      cs_reg_exe_is_load <= temp_wire_dec_is_load;
+    end else if (io_d2c_isredir) begin
+      cs_reg_exe_is_load <= 1'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_reg_exe_is_load <= 1'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_reg_exe_is_load <= 1'h0;
+      end else begin
+        cs_reg_exe_is_load <= temp_wire_dec_is_load;
+      end
     end
     if (reset) begin
       cs_reg_exe_rd_addr <= 5'h0;
-    end else begin
-      cs_reg_exe_rd_addr <= cs_wire_dec_rd_addr;
+    end else if (io_d2c_isredir) begin
+      cs_reg_exe_rd_addr <= 5'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_reg_exe_rd_addr <= 5'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_reg_exe_rd_addr <= 5'h0;
+      end else begin
+        cs_reg_exe_rd_addr <= cs_wire_dec_rd_addr;
+      end
     end
     if (reset) begin
       _T_1376 <= 1'h0;
@@ -4528,26 +4546,46 @@ end // initial
     end
     if (reset) begin
       cs_reg_exe_exception <= 1'h0;
-    end else begin
-      cs_reg_exe_exception <= cs_wire_dec_exception;
+    end else if (io_d2c_isredir) begin
+      cs_reg_exe_exception <= 1'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_reg_exe_exception <= 1'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_reg_exe_exception <= 1'h0;
+      end else begin
+        cs_reg_exe_exception <= cs_wire_dec_exception;
+      end
     end
     if (reset) begin
       cs_reg_mem_exception <= 1'h0;
-    end else begin
+    end else if (io_d2c_isredir) begin
+      cs_reg_mem_exception <= 1'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
       cs_reg_mem_exception <= cs_reg_exe_exception;
     end
     if (reset) begin
       cs_reg_exe_mem_valid <= 1'h0;
-    end else if (_T_1) begin
+    end else if (io_d2c_isredir) begin
       cs_reg_exe_mem_valid <= 1'h0;
-    end else if (_T_3) begin
-      cs_reg_exe_mem_valid <= 1'h0;
-    end else begin
-      cs_reg_exe_mem_valid <= _T_666;
+    end else if (!(cs_wire_pipeline_stall)) begin
+      if (cs_wire_data_hazard) begin
+        cs_reg_exe_mem_valid <= 1'h0;
+      end else if (cs_wire_control_hazard) begin
+        cs_reg_exe_mem_valid <= 1'h0;
+      end else if (_T_1) begin
+        cs_reg_exe_mem_valid <= 1'h0;
+      end else if (_T_3) begin
+        cs_reg_exe_mem_valid <= 1'h0;
+      end else begin
+        cs_reg_exe_mem_valid <= _T_666;
+      end
     end
     if (reset) begin
       cs_reg_mem_mem_valid <= 1'h0;
-    end else begin
+    end else if (io_d2c_isredir) begin
+      cs_reg_mem_mem_valid <= 1'h0;
+    end else if (!(cs_wire_pipeline_stall)) begin
       cs_reg_mem_mem_valid <= cs_reg_exe_mem_valid;
     end
   end

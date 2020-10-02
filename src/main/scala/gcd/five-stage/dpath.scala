@@ -352,7 +352,8 @@ class Dpath extends Module {
     // val wire_pc_jr_target = Wire(UInt(64.W))
     // val wire_pc_branch_target = Wire(UInt(64.W))
     wire_pc_jump_target := (dp_exe_reg_pc.asSInt() + dp_exe_reg_jim_ext.asSInt()).asUInt()
-    wire_pc_jr_target := (((dp_exe_reg_rs1_data.asSInt() + dp_exe_reg_iim_ext.asSInt()) >> 1) << 1).asUInt()
+    //not dp_exe_reg_rs1_data because there might be a data hazard
+    wire_pc_jr_target := (((dp_exe_reg_op1_source.asSInt() + dp_exe_reg_iim_ext.asSInt()) >> 1) << 1).asUInt()
     wire_pc_branch_target := (dp_exe_reg_pc.asSInt() + dp_exe_reg_bim_ext.asSInt()).asUInt()
 
 
@@ -491,7 +492,7 @@ class Dpath extends Module {
     }
 
     //Write back stage
-    when(dp_wb_reg_rf_wen)
+    when(dp_wb_reg_rf_wen && dp_wb_reg_instr_valid)
     {
         regfile.io.wp_en := true.B
     }.otherwise
