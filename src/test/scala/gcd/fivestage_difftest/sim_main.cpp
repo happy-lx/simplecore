@@ -126,10 +126,12 @@ int main(int argc , char** argv)
     // printf("========================================== init cycle ends ==========================================\n");
 
 
-
+    int error_cnt = 0;
+    int total_cnt = 0;
 
     while(!Verilated::gotFinish())
     {
+        
         printf("========================================== in cycle [%ld] ==========================================\n",nemu->getCycle());
         while(true)
         {
@@ -163,24 +165,28 @@ int main(int argc , char** argv)
         {
             printf("\033[1;31;40m[ERROR] core's regs is not equal with nemu's regs \033[0m \n");
             getDiff(info_nemu,info_core);
+            error_cnt++;
 
         }else
         {
             printf("\033[1;32;40m[PASS] core's regs is equal with nemu's regs \033[0m \n");
         }
+        total_cnt++;
         
         printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
 
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 
-        if(nemu->getCycle() == (system_word)1500)
+        if(nemu->getCycle() == (system_word)55000)
         {
             break;
         }
     }
 
     #ifdef LOG
-    std::cout << "[info] simulation successfully!\n" << std::endl;
+    printf("\033[1;32;40m[info] simulation successfully!\033[0m \n");
+    printf("\033[1;32;40m[info] correct rate : %.2f\033[0m \n",(float)(total_cnt - error_cnt) * 100/total_cnt);
+    printf("\033[1;31;40m[info] error   rate : %.2f\033[0m \n",(float)(error_cnt) * 100/total_cnt);
     #endif
 
     
