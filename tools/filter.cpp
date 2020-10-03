@@ -1,9 +1,11 @@
 #include<fstream>
 #include<iostream>
 #include<string>
+#include<string.h>
 #include<vector>
 #include<assert.h>
 #include<regex>
+#include<stdlib.h>
 
 using namespace std;
 
@@ -16,6 +18,24 @@ void filter(vector<string> & lines,vector<string> & results)
     {
         bool flag = regex_search(lines[i],reg_result,reg_exp);
 
+        //Disassembly of section .text:
+        if(strcmp(lines[i].substr(0,29).c_str() , "Disassembly of section .text:")  == 0 )
+        {
+            char* junck[10];
+
+            string txt_init_end = lines[i-2].substr(0,8);
+            string txt_start = lines[i+2].substr(0,8);
+
+            long end = strtol(txt_init_end.c_str(),junck,16);
+            long start = strtol(txt_start.c_str(),junck,16);
+            long times  = ((start - end) / 4) - 1;
+
+            for(int j=0;j<times;j++)
+            {
+                temp.push_back("00000000");
+            }
+
+        }
         if(flag)
         {
             temp.push_back(reg_result.str(0).substr(10,8)) ;

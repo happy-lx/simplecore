@@ -821,7 +821,7 @@ Disassembly of section .text:
 80001a64:	00008067          	ret
 
 80001a68 <setStats>:
-80001a68:	b0002773          	csrr	a4,mcycle
+80001a68:	00004033          	nop
 80001a6c:	00003797          	auipc	a5,0x3
 80001a70:	83878793          	addi	a5,a5,-1992 # 800042a4 <counters>
 80001a74:	00051e63          	bnez	a0,80001a90 <setStats+0x28>
@@ -832,7 +832,7 @@ Disassembly of section .text:
 80001a88:	80c5ac23          	sw	a2,-2024(a1) # 8000429c <counter_names>
 80001a8c:	40d70733          	sub	a4,a4,a3
 80001a90:	00e7a023          	sw	a4,0(a5)
-80001a94:	b0202773          	csrr	a4,minstret
+80001a94:	00004033          	nop
 80001a98:	00051e63          	bnez	a0,80001ab4 <setStats+0x4c>
 80001a9c:	0047a683          	lw	a3,4(a5)
 80001aa0:	00002617          	auipc	a2,0x2
@@ -2419,7 +2419,7 @@ Disassembly of section .text.startup:
 8000327c:	fa1fd0ef          	jal	ra,8000121c <debug_printf>
 80003280:	00100513          	li	a0,1
 80003284:	fe4fe0ef          	jal	ra,80001a68 <setStats>
-80003288:	b00027f3          	csrr	a5,mcycle
+80003288:	00004033          	nop
 8000328c:	00001717          	auipc	a4,0x1
 80003290:	ff070713          	addi	a4,a4,-16 # 8000427c <Begin_Time>
 80003294:	00190b93          	addi	s7,s2,1
@@ -2451,7 +2451,7 @@ Disassembly of section .text.startup:
 800032fc:	fac42a23          	sw	a2,-76(s0)
 80003300:	fad42c23          	sw	a3,-72(s0)
 80003304:	f7a42e23          	sw	s10,-132(s0)
-80003308:	de9fd0ef          	jal	ra,800010f0 <Func_2>
+80003308:	00004033          	nop
 8000330c:	00050793          	mv	a5,a0
 80003310:	f7442503          	lw	a0,-140(s0)
 80003314:	0017b793          	seqz	a5,a5
@@ -2534,7 +2534,7 @@ Disassembly of section .text.startup:
 80003448:	f7642a23          	sw	s6,-140(s0)
 8000344c:	df9fd0ef          	jal	ra,80001244 <Proc_2>
 80003450:	e55b9ce3          	bne	s7,s5,800032a8 <main+0x208>
-80003454:	b00027f3          	csrr	a5,mcycle
+80003454:	00004033          	nop
 80003458:	00001717          	auipc	a4,0x1
 8000345c:	e2070713          	addi	a4,a4,-480 # 80004278 <End_Time>
 80003460:	00000513          	li	a0,0
