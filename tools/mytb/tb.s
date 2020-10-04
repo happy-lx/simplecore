@@ -186,6 +186,16 @@ sub t2, t1 ,t2
 csrr t2 , mepc
 csrr t3 , mcause
 
+jal func  # jump to func and save position to ra
+this:
+j this
+
+func:
+    li t6,0x1245
+    ret
+
+
+
 
 
 
