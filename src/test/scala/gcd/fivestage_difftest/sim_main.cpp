@@ -177,7 +177,7 @@ int main(int argc , char** argv)
 
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 
-        if(nemu->getCycle() == (system_word)55000)
+        if(nemu->getCycle() == (system_word)135)
         {
             break;
         }
