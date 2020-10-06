@@ -64,6 +64,7 @@ class CSRIO extends Bundle
     val redir_target = Output(UInt(64.W))
     val csr_info = Output(UInt(64.W))
     val isredir = Output(Bool())
+    val csr_illegal_ins_exception = Output(Bool())
 }
 
 class CSRfile extends Module
@@ -265,6 +266,8 @@ class CSRfile extends Module
     val csr_hasexception = csr_illegal_ins_exception || csr_isecall || csr_isebreak
     //check if there is a time interrupt
 
+    io.csr_illegal_ins_exception := csr_illegal_ins_exception
+
     //not sure
     when(reg_mtime >= reg_mtimecmp)
     {
@@ -338,6 +341,18 @@ class CSRfile extends Module
             reg_mstatus := wire_mstatus_new
         }
     }
+    when(csr_ismret)
+    {
+        val wire_mstatus_new = WireInit(reg_mstatus)
+        val wire_mstatus_old = WireInit(reg_mstatus)
+        io.redir_target := wire_ret_addr
+        wire_mstatus_new.mie := wire_mstatus_old.mpie
+        wire_mstatus_new.mpie := true.B
+        prv_now := wire_mstatus_old.mpp
+
+        reg_mstatus := wire_mstatus_new
+    }
+    //so the interrupt is prior to exception and mret
     when(csr_hasinterrupt)
     {
         val wire_mstatus_new = WireInit(reg_mstatus)
@@ -355,17 +370,6 @@ class CSRfile extends Module
 
     }
 
-    when(csr_ismret)
-    {
-        val wire_mstatus_new = WireInit(reg_mstatus)
-        val wire_mstatus_old = WireInit(reg_mstatus)
-        io.redir_target := wire_ret_addr
-        wire_mstatus_new.mie := wire_mstatus_old.mpie
-        wire_mstatus_new.mpie := true.B
-        prv_now := wire_mstatus_old.mpp
-
-        reg_mstatus := wire_mstatus_new
-    }
 
     when(csr_hasexception || csr_hasinterrupt || csr_ismret)
     {

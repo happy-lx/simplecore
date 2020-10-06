@@ -481,6 +481,26 @@ class Dpath extends Module {
         dp_wb_reg_instr_valid := false.B
         dp_wb_reg_pc          := dp_mem_reg_pc
         dp_wb_reg_instr       := dp_mem_reg_instr
+    }.elsewhen(csr.io.csr_illegal_ins_exception)
+    {
+        //when a illegal instruction or a illegal csr_read or write
+        //happens , we should set rf_wen = false , illegal instruction
+        //has been set in DEC stage but csr illegal read and write
+        //are detected in MEM stage which will cause a exception and 
+        //make pc redirect , we should make sure the illegal instruction
+        //will not write anything in WB stage
+
+        //WARNING: do not use pipeline kill signal to judge
+        //         because that will make a legal instruction
+        //         in MEM stage but timer interrupt happens so
+        //         that the ilegal instruction will fail 
+        dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
+        dp_wb_reg_rf_wen      := false.B
+        dp_wb_reg_wb_data     := dp_wire_mem_memstageout
+        dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
+        dp_wb_reg_pc          := dp_mem_reg_pc
+        dp_wb_reg_instr       := dp_mem_reg_instr
+
     }.otherwise
     {
         dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
