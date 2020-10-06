@@ -30,6 +30,14 @@ trait memory_const
     val memory_op_x = 0.U(1.W)
 }
 
+trait AXI_const
+{
+    //ram's addr length
+    val AXI_paddr_len = 32
+    val AXI_data_len = 64
+    val AXI_wstrb_len = (AXI_data_len / 8)
+}
+
 trait alu_const
 {
     //alu operation (5 bits)
@@ -285,5 +293,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const
 {}
