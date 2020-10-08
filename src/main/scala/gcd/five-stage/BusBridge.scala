@@ -5,7 +5,9 @@ import chisel3.util._
 import chisel3.experimental._
 import chisel3.experimental.BundleLiterals._
 
-import constants.Constraints
+import constants.RV64I._
+import constants.RV64M._
+import constants.Constraints._
 
 class Sramlike2AXI4 extends Module
 {
@@ -186,10 +188,10 @@ class Sramlike2AXI4 extends Module
     io.axi4.wlast := true.B
 
     //b channel
-    io.bready := true.B
+    io.axi4.bready := true.B
 
     //get read result from r channel
-    when(do_data_request && data_back)
+    when(do_data_request && data_back && !info_wen)
     {
         io.ports(DATA).rdata := MuxCase(io.axi4.rdata,Array(
                 (info_op === op_b) -> Cat(Fill(56,io.axi4.rdata(7)),io.axi4.rdata(7,0)),
@@ -199,7 +201,7 @@ class Sramlike2AXI4 extends Module
                 (info_op === op_w) -> Cat(Fill(32,io.axi4.rdata(31)),io.axi4.rdata(31,0)),
                 (info_op === op_wu) -> Cat(Fill(32,0.U(1.W)),io.axi4.rdata(31,0))
                 ))
-    }.elsewhen(do_inst_request && data_back)
+    }.elsewhen(do_inst_request && data_back && !info_wen)
     {
         io.ports(INTR).rdata := MuxCase(io.axi4.rdata,Array(
                 (info_op === op_b) -> Cat(Fill(56,io.axi4.rdata(7)),io.axi4.rdata(7,0)),
@@ -216,5 +218,5 @@ class Sramlike2AXI4 extends Module
     }
 
     //check if the burst is down 
-    data_back := has_request && addr_recv && ( (arvalid && arready) || (bvalid && bready) )
+    data_back := has_request && addr_recv && ( (io.axi4.rvalid && io.axi4.rready) || (io.axi4.bvalid && io.axi4.bready) )
 }

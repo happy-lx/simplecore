@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.experimental.BoringUtils
 
+import constants.Constraints._
+
 // class coreIO extends Bundle
 // {
 //     val imem = new memory_port_io()
@@ -69,7 +71,7 @@ class core extends Module {
     io.axi4.arprot := bus_bridge.io.axi4.arprot
     io.axi4.arqos := bus_bridge.io.axi4.arqos
     io.axi4.arregion := bus_bridge.io.axi4.arregion
-    io.axi4.arvalid := bus_bridge.io.axi4.avalid
+    io.axi4.arvalid := bus_bridge.io.axi4.arvalid
 
     bus_bridge.io.axi4.arready := io.axi4.arready
 

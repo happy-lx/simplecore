@@ -243,7 +243,8 @@ class Cpath extends Module {
 
     //pipeline kill 
     //might be a problem
-    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.resp.valid,false.B)
+    //WARNING : RegNext(io.imem.data_valid,false.B) MAY BE A PROBLEM
+    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.data_valid,false.B)
     val cs_reg_exe_exception = RegNext(cs_wire_dec_exception,false.B)
     val cs_reg_mem_exception = RegNext(cs_reg_exe_exception,false.B)
 

@@ -6,7 +6,7 @@ import chisel3.experimental._
 import chisel3.experimental.BundleLiterals._
 import chisel3.util.experimental.loadMemoryFromFile
 
-import constants.Constraints
+import constants.Constraints._
 
 class AXI4IO extends Bundle
 {   
@@ -43,7 +43,7 @@ class AXI4IO extends Bundle
     //read channel's read data
     val rid = Output(UInt(4.W))
     val rdata = Output(UInt(AXI_data_len.W))
-    val rresp = Output(UInt(UInt(2.W)))
+    val rresp = Output(UInt(2.W))
     val rlast = Output(Bool())
 
     val rvalid = Output(Bool())
@@ -66,9 +66,9 @@ class AXI4IO extends Bundle
 }
 
 //a simple version 
-class AXI4_Ram(memdir : String = "") extends Bundle
+class AXI4_Ram(memdir : String = "") extends Module
 {
-    val io = new AXI4IO
+    val io = IO(new AXI4IO)
 
     io := DontCare
 
@@ -80,15 +80,14 @@ class AXI4_Ram(memdir : String = "") extends Bundle
     }
 
     //address in memmory
-    val mem_addr = Wire(UInt(AXI_ram_len.W))
 
     //define the stage of read and write
-    val READ_IDLE :: READ_BURST :: Nil = Enum(UInt(),2)
+    val (read_idle : UInt) :: (read_burst : UInt) :: Nil = Enum(2)
 
-    val WRITE_IDLE :: WRITE_BURST :: WRITE_RESP :: Nil = Enum(UInt(),3)
+    val (write_idle : UInt) :: (write_burst : UInt) :: (write_resp : UInt) :: Nil = Enum(3)
 
-    val read_state = RegInit(READ_IDLE)
-    val write_state = RegInit(WRITE_IDLE)
+    val read_state = RegInit(read_idle)
+    val write_state = RegInit(write_idle)
 
     //we need to define some registers to hold on infomation from master
     val reg_awaddr = RegInit(0.U(AXI_paddr_len.W))
@@ -99,71 +98,76 @@ class AXI4_Ram(memdir : String = "") extends Bundle
     //define the action of each state
     switch(read_state)
     {
-        is(READ_IDLE)
+        is(read_idle)
         {
             io.arready := true.B
             when(io.arvalid)
             {
                 //detect a request 
                 reg_araddr := io.araddr
-                read_state := READ_BURST
+                read_state := read_burst
             }
         }
-        is(READ_BURST)
+        is(read_burst)
         {
             io.arready := false.B
             when(io.rready)
             {
                 io.rdata := Cat(mem(reg_araddr >> bits_ignore))
                 io.rvalid := true.B
-                read_state := READ_IDLE
+                read_state := read_idle
             }
         }
     }
 
     switch(write_state)
     {
-        is(WRITE_IDLE)
+        is(write_idle)
         {
             io.wready  := false.B
             io.awready := true.B
+            io.bvalid := false.B
             when(io.awvalid)
             {
                 reg_awaddr := io.awaddr
-                write_state:= WRITE_BURST
+                write_state:= write_burst
             }
         }
-        is(WRITE_BURST)
+        is(write_burst)
         {
             io.wready  := true.B
             io.awready := false.B
+            io.bvalid := false.B
             when(io.wvalid)
             {
                 //write mem via info of axi4 bus 
                 wire_wstrb := MuxCase(io.wstrb,Array(
                     (io.wstrb === mask_dw) -> io.wstrb,
-                    (io.wstrb =\= mask_dw) -> (io.wstrb << reg_awaddr(bits_ignore,0))
+                    (io.wstrb =/= mask_dw) -> (io.wstrb << reg_awaddr(bits_ignore,0))
                 ))
 
-                val wstrb_bools = wire_wstrb.toBools()
+                val wstrb_bools = wire_wstrb.asBools()
 
-                for(i < (0 until 8))
+                for(i <- (0 until 8))
                 {
                     when(wstrb_bools(i))
                     {
                         mem(reg_awaddr >> bits_ignore)(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
                     }
                 }
-                write_state := WRITE_RESP 
+                write_state := write_resp 
             }
         }
-        is(WRITE_RESP)
+        is(write_resp)
         {
             io.wready  := false.B
             io.awready := false.B
-
             io.bvalid := true.B
-            write_state := WRITE_IDLE
+
+            when(io.bready)
+            {
+                write_state := write_idle
+            }
         }
     }
 
