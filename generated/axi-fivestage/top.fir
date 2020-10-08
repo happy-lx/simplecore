@@ -18815,7 +18815,7 @@ circuit top :
   module Dpath : 
     input clock : Clock
     input reset : Reset
-    output io : {flip c2d : {cp_pc_sel : UInt<3>, cp_op1_sel : UInt<2>, cp_op2_sel : UInt<2>, cp_alu_sel : UInt<5>, cp_reg_wen : UInt<1>, cp_mem_en : UInt<1>, cp_mem_read_op : UInt<3>, cp_mem_write_mask : UInt<8>, cp_mem_wen : UInt<1>, cp_alu_ext_sel : UInt<3>, cp_wb_sel : UInt<2>, cp_csr_op : UInt<3>, cp_control_hazard : UInt<1>, cp_if_kill : UInt<1>, cp_data_hazard : UInt<1>, cp_pipeline_kill : UInt<1>, cp_pipeline_stall : UInt<1>, hasexception : UInt<1>, shouldstall : UInt<1>}, d2c : {instr : UInt<32>, islt : UInt<1>, isltu : UInt<1>, iseq : UInt<1>, isredir : UInt<1>}, imem : {addr : UInt<32>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}, dmem : {addr : UInt<32>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}}
+    output io : {flip c2d : {cp_pc_sel : UInt<3>, cp_op1_sel : UInt<2>, cp_op2_sel : UInt<2>, cp_alu_sel : UInt<5>, cp_reg_wen : UInt<1>, cp_mem_en : UInt<1>, cp_mem_read_op : UInt<3>, cp_mem_write_mask : UInt<8>, cp_mem_wen : UInt<1>, cp_alu_ext_sel : UInt<3>, cp_wb_sel : UInt<2>, cp_csr_op : UInt<3>, cp_control_hazard : UInt<1>, cp_if_kill : UInt<1>, cp_data_hazard : UInt<1>, cp_pipeline_kill : UInt<1>, cp_pipeline_stall : UInt<1>, hasexception : UInt<1>, shouldstall : UInt<1>}, d2c : {instr : UInt<32>, islt : UInt<1>, isltu : UInt<1>, iseq : UInt<1>, isredir : UInt<1>}, imem : {addr : UInt<16>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}, dmem : {addr : UInt<16>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}}
     
     io.dmem.data_valid is invalid @[dpath.scala 32:8]
     io.dmem.rdata is invalid @[dpath.scala 32:8]
@@ -19366,7 +19366,7 @@ circuit top :
   module Cpath : 
     input clock : Clock
     input reset : Reset
-    output io : {c2d : {cp_pc_sel : UInt<3>, cp_op1_sel : UInt<2>, cp_op2_sel : UInt<2>, cp_alu_sel : UInt<5>, cp_reg_wen : UInt<1>, cp_mem_en : UInt<1>, cp_mem_read_op : UInt<3>, cp_mem_write_mask : UInt<8>, cp_mem_wen : UInt<1>, cp_alu_ext_sel : UInt<3>, cp_wb_sel : UInt<2>, cp_csr_op : UInt<3>, cp_control_hazard : UInt<1>, cp_if_kill : UInt<1>, cp_data_hazard : UInt<1>, cp_pipeline_kill : UInt<1>, cp_pipeline_stall : UInt<1>, hasexception : UInt<1>, shouldstall : UInt<1>}, flip d2c : {instr : UInt<32>, islt : UInt<1>, isltu : UInt<1>, iseq : UInt<1>, isredir : UInt<1>}, imem : {addr : UInt<32>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}, dmem : {addr : UInt<32>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}}
+    output io : {c2d : {cp_pc_sel : UInt<3>, cp_op1_sel : UInt<2>, cp_op2_sel : UInt<2>, cp_alu_sel : UInt<5>, cp_reg_wen : UInt<1>, cp_mem_en : UInt<1>, cp_mem_read_op : UInt<3>, cp_mem_write_mask : UInt<8>, cp_mem_wen : UInt<1>, cp_alu_ext_sel : UInt<3>, cp_wb_sel : UInt<2>, cp_csr_op : UInt<3>, cp_control_hazard : UInt<1>, cp_if_kill : UInt<1>, cp_data_hazard : UInt<1>, cp_pipeline_kill : UInt<1>, cp_pipeline_stall : UInt<1>, hasexception : UInt<1>, shouldstall : UInt<1>}, flip d2c : {instr : UInt<32>, islt : UInt<1>, isltu : UInt<1>, iseq : UInt<1>, isredir : UInt<1>}, imem : {addr : UInt<16>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}, dmem : {addr : UInt<16>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}}
     
     io.dmem.data_valid is invalid @[cpath.scala 51:8]
     io.dmem.rdata is invalid @[cpath.scala 51:8]
@@ -20936,7 +20936,7 @@ circuit top :
   module Sramlike2AXI4 : 
     input clock : Clock
     input reset : Reset
-    output io : {flip ports : {addr : UInt<32>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}[2], flip axi4 : {flip awid : UInt<4>, flip awaddr : UInt<32>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<32>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}}
+    output io : {flip ports : {addr : UInt<16>, mask : UInt<8>, op : UInt<3>, wdata : UInt<64>, memen : UInt<1>, wen : UInt<1>, flip rdata : UInt<64>, flip data_valid : UInt<1>}[2], flip axi4 : {flip awid : UInt<4>, flip awaddr : UInt<16>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<16>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}}
     
     io.axi4.bready is invalid @[BusBridge.scala 21:8]
     io.axi4.bvalid is invalid @[BusBridge.scala 21:8]
@@ -21002,7 +21002,7 @@ circuit top :
     reg do_inst_request : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[BusBridge.scala 30:34]
     reg addr_recv : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[BusBridge.scala 33:28]
     reg data_recv : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[BusBridge.scala 35:28]
-    reg info_addr : UInt<32>, clock @[BusBridge.scala 38:24]
+    reg info_addr : UInt<16>, clock @[BusBridge.scala 38:24]
     reg info_mask : UInt<8>, clock @[BusBridge.scala 39:24]
     reg info_op : UInt<3>, clock @[BusBridge.scala 40:24]
     reg info_wdata : UInt<64>, clock @[BusBridge.scala 41:24]
@@ -21235,7 +21235,7 @@ circuit top :
   module core : 
     input clock : Clock
     input reset : Reset
-    output io : {flip axi4 : {flip awid : UInt<4>, flip awaddr : UInt<32>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<32>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}}
+    output io : {flip axi4 : {flip awid : UInt<4>, flip awaddr : UInt<16>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<16>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}}
     
     io.axi4.bready is invalid @[core.scala 20:8]
     io.axi4.bvalid is invalid @[core.scala 20:8]
@@ -21386,7 +21386,7 @@ circuit top :
   module AXI4_Ram : 
     input clock : Clock
     input reset : Reset
-    output io : {flip awid : UInt<4>, flip awaddr : UInt<32>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<32>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}
+    output io : {flip awid : UInt<4>, flip awaddr : UInt<16>, flip awlen : UInt<8>, flip awsize : UInt<3>, flip awburst : UInt<2>, flip awlock : UInt<1>, flip awcache : UInt<4>, flip awprot : UInt<3>, flip awqos : UInt<4>, flip awregion : UInt<4>, flip awvalid : UInt<1>, awready : UInt<1>, flip arid : UInt<4>, flip araddr : UInt<16>, flip arlen : UInt<8>, flip arsize : UInt<3>, flip arburst : UInt<2>, flip arlock : UInt<1>, flip arcache : UInt<4>, flip arprot : UInt<3>, flip arqos : UInt<4>, flip arregion : UInt<4>, flip arvalid : UInt<1>, arready : UInt<1>, rid : UInt<4>, rdata : UInt<64>, rresp : UInt<2>, rlast : UInt<1>, rvalid : UInt<1>, flip rready : UInt<1>, flip wdata : UInt<64>, flip wstrb : UInt<8>, flip wlast : UInt<1>, flip wvalid : UInt<1>, wready : UInt<1>, bid : UInt<1>, bresp : UInt<2>, bvalid : UInt<1>, flip bready : UInt<1>}
     
     io.bready is invalid @[AXI4_Ram.scala 78:8]
     io.bvalid is invalid @[AXI4_Ram.scala 78:8]
@@ -21427,11 +21427,11 @@ circuit top :
     io.awlen is invalid @[AXI4_Ram.scala 78:8]
     io.awaddr is invalid @[AXI4_Ram.scala 78:8]
     io.awid is invalid @[AXI4_Ram.scala 78:8]
-    cmem mem : UInt<64>[536870912] @[AXI4_Ram.scala 80:18]
+    cmem mem : UInt<64>[8192] @[AXI4_Ram.scala 80:18]
     reg read_state : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[AXI4_Ram.scala 94:29]
     reg write_state : UInt<2>, clock with : (reset => (reset, UInt<2>("h00"))) @[AXI4_Ram.scala 95:30]
-    reg reg_awaddr : UInt<32>, clock with : (reset => (reset, UInt<32>("h00"))) @[AXI4_Ram.scala 98:29]
-    reg reg_araddr : UInt<32>, clock with : (reset => (reset, UInt<32>("h00"))) @[AXI4_Ram.scala 99:29]
+    reg reg_awaddr : UInt<16>, clock with : (reset => (reset, UInt<16>("h00"))) @[AXI4_Ram.scala 98:29]
+    reg reg_araddr : UInt<16>, clock with : (reset => (reset, UInt<16>("h00"))) @[AXI4_Ram.scala 99:29]
     wire wire_wstrb : UInt<8>
     wire_wstrb <= UInt<8>("h00")
     wire _T : {bytes : UInt<8>[8]} @[AXI4_Ram.scala 103:48]

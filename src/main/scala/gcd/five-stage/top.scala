@@ -23,7 +23,7 @@ class top extends Module {
     })
 
     val mycore = Module(new core)
-    val mymem  = Module(new AXI4_Ram("./test1"))
+    val mymem  = Module(new AXI4_Ram("./test1.txt"))
 
     mycore.io.axi4 <> mymem.io
 

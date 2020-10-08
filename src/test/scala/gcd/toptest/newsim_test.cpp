@@ -12,7 +12,7 @@ double sc_time_stamp()
 
 void print_redir(Vtop* target)
 {
-    if(target->v__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_exception)
+    if(target->top__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_exception)
     {
         printf("detect a illegal instruction excepiton in mem stage\n");
     }else
@@ -39,31 +39,31 @@ void print_regs(Vtop* target)
     {
         if(i == 0)
         {
-            printf("$x%d : [%lx] ",i,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$x%d : [%lx] ",i,(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if(i == 1)
         {
-            printf("$ra : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$ra : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if(i == 2)
         {
-            printf("$sp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$sp : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if(i == 3)
         {
-            printf("$gp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$gp : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if(i == 4)
         {
-            printf("$tp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$tp : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if( (i>=5 && i<=7) || (i>=28 && i<=31))
         {
-            printf("$t%d : [%lx] ",temp_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$t%d : [%lx] ",temp_cnt++,(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if(i == 8)
         {
-            printf("$fp : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$fp : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if( (i == 9) || (i>=18 && i<=27))
         {
-            printf("$s%d : [%lx] ",save_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$s%d : [%lx] ",save_cnt++,(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }else if( (i>=10 && i<=11) || (i>=12 && i<=17))
         {
-            printf("$a%d : [%lx] ",arg_cnt++,(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
+            printf("$a%d : [%lx] ",arg_cnt++,(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__regfile__DOT__regs[i]);
         }
         
         
@@ -77,21 +77,21 @@ void print_regs(Vtop* target)
 void printcsrs(Vtop* target)
 {
     printf("mstatus : [%lx] ",(unsigned long)target->io_diff_mstatus);
-    printf("mepc : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mepc);
-    printf("mcause : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcause);
-    printf("mtval : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtval);
-    printf("mtvec : [%lx] ",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtvec);
-    printf("mscratch : [%lx] \n",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mscratch);
+    printf("mepc : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mepc);
+    printf("mcause : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcause);
+    printf("mtval : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtval);
+    printf("mtvec : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtvec);
+    printf("mscratch : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mscratch);
 }
 void print_pc(Vtop* target)
 {
-    printf("pc (in instruction fetch stage) :[%lx]\n",(unsigned long)target->v__DOT__mycore__DOT__dpath__DOT__reg_if_pc);    
+    printf("pc (in instruction fetch stage) :[%lx]\n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__reg_if_pc);    
 
     printf("pc (in write back stage) :[%lx]\n",(unsigned long)target->io_diff_pc_data);    
 }
 void print_rf_valid(Vtop* target)
 {
-    if(target->v__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_rf_wen)
+    if(target->top__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_rf_wen)
     {
         printf("the instruction in write back stage will write reg file\n");
     }else
@@ -118,7 +118,7 @@ void print_mem(Vtop* target)
 {
     for(int i=0;i<32;i++)
     {
-        printf("mem[0x%x]: 0x%x\n",(unsigned int)i,(unsigned int)target->v__DOT__mycore__DOT__mymem__DOT__mem[i]);
+        printf("mem[0x%x]: 0x%lx\n",(unsigned int)i*8,(unsigned long)target->top__DOT__mymem__DOT__mem[i]);
     }
 }
 
@@ -243,7 +243,7 @@ int main(int argc,char** argv)
          
         main_time ++;
 
-        if(main_time == 30000)
+        if(main_time == 1000)
         {
             break;
         }

@@ -2,46 +2,39 @@
 // DESCRIPTION: Verilator output: Design internal header
 // See Vtop.h for the primary calling header
 
-#ifndef _Vtop___024unit_H_
-#define _Vtop___024unit_H_
+#ifndef _VTOP___024UNIT_H_
+#define _VTOP___024UNIT_H_  // guard
 
-#include "verilated.h"
+#include "verilated_heavy.h"
+
+//==========
+
 class Vtop__Syms;
 
 //----------
 
 VL_MODULE(Vtop___024unit) {
   public:
-    // CELLS
-    
-    // PORTS
-    
-    // LOCAL SIGNALS
-    
-    // LOCAL VARIABLES
     
     // INTERNAL VARIABLES
   private:
-    //char	__VpadToAlign12[4];
-    Vtop__Syms*	__VlSymsp;		// Symbol table
+    Vtop__Syms* __VlSymsp;  // Symbol table
   public:
-    
-    // PARAMETERS
     
     // CONSTRUCTORS
   private:
-    Vtop___024unit& operator= (const Vtop___024unit&);	///< Copying not allowed
-    Vtop___024unit(const Vtop___024unit&);	///< Copying not allowed
+    VL_UNCOPYABLE(Vtop___024unit);  ///< Copying not allowed
   public:
-    Vtop___024unit(const char* name="TOP");
+    Vtop___024unit(const char* name = "TOP");
     ~Vtop___024unit();
-    
-    // USER METHODS
-    
-    // API METHODS
     
     // INTERNAL METHODS
     void __Vconfigure(Vtop__Syms* symsp, bool first);
-} VL_ATTR_ALIGNED(128);
+  private:
+    void _ctor_var_reset() VL_ATTR_COLD;
+} VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);
 
-#endif  /*guard*/
+//----------
+
+
+#endif  // guard

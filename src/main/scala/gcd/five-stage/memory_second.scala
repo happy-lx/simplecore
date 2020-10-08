@@ -53,7 +53,7 @@ class memory_port_io extends Bundle
 
 class sram_like_io extends Bundle
 {
-    val addr = Output(UInt(32.W))
+    val addr = Output(UInt(AXI_paddr_len.W))
     val mask = Output(UInt(8.W))//写memory时候的掩码
     val op = Output(UInt(3.W))//读memory时候的操作码
     val wdata = Output(UInt(64.W))

@@ -35,7 +35,7 @@ class Sramlike2AXI4 extends Module
     val data_recv = RegInit(false.B)
 
     //write or read infomation register
-    val info_addr = Reg(UInt(32.W))
+    val info_addr = Reg(UInt(AXI_paddr_len.W))
     val info_mask = Reg(UInt(8.W))
     val info_op   = Reg(UInt(3.W))
     val info_wdata= Reg(UInt(64.W))

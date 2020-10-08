@@ -65,6 +65,7 @@ class AXI4IO extends Bundle
     val bready = Input(Bool())
 }
 
+//might be a problem
 class word extends Bundle
 {
     val bytes = Vec(8,UInt(8.W))
@@ -161,6 +162,7 @@ class AXI4_Ram(memdir : String = "") extends Module
                 {
                     when(wstrb_bools(i))
                     {
+                        //or wire_word.bytes(8-i) 
                         wire_word.bytes(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
                     }
                 }

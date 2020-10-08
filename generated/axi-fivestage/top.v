@@ -2183,9 +2183,9 @@ module Dpath(
   output        io_d2c_isltu,
   output        io_d2c_iseq,
   output        io_d2c_isredir,
-  output [31:0] io_imem_addr,
+  output [15:0] io_imem_addr,
   input  [63:0] io_imem_rdata,
-  output [31:0] io_dmem_addr,
+  output [15:0] io_dmem_addr,
   output [7:0]  io_dmem_mask,
   output [2:0]  io_dmem_op,
   output [63:0] io_dmem_wdata,
@@ -2534,8 +2534,8 @@ module Dpath(
   assign io_d2c_isltu = dp_exe_reg_op1_source < dp_exe_reg_op2_source; // @[dpath.scala 372:18]
   assign io_d2c_iseq = dp_exe_reg_op1_source == dp_exe_reg_op2_source; // @[dpath.scala 373:17]
   assign io_d2c_isredir = csr_io__isredir; // @[dpath.scala 458:20]
-  assign io_imem_addr = reg_if_pc[31:0]; // @[dpath.scala 47:18]
-  assign io_dmem_addr = dp_mem_reg_alu_out[31:0]; // @[dpath.scala 442:18]
+  assign io_imem_addr = reg_if_pc[15:0]; // @[dpath.scala 47:18]
+  assign io_dmem_addr = dp_mem_reg_alu_out[15:0]; // @[dpath.scala 442:18]
   assign io_dmem_mask = dp_mem_reg_mem_write_mask; // @[dpath.scala 443:18]
   assign io_dmem_op = dp_mem_reg_mem_read_op; // @[dpath.scala 444:16]
   assign io_dmem_wdata = dp_mem_reg_rs2_data; // @[dpath.scala 445:19]
@@ -4609,10 +4609,10 @@ endmodule
 module Sramlike2AXI4(
   input         clock,
   input         reset,
-  input  [31:0] io_ports_0_addr,
+  input  [15:0] io_ports_0_addr,
   output [63:0] io_ports_0_rdata,
   output        io_ports_0_data_valid,
-  input  [31:0] io_ports_1_addr,
+  input  [15:0] io_ports_1_addr,
   input  [7:0]  io_ports_1_mask,
   input  [2:0]  io_ports_1_op,
   input  [63:0] io_ports_1_wdata,
@@ -4620,10 +4620,10 @@ module Sramlike2AXI4(
   input         io_ports_1_wen,
   output [63:0] io_ports_1_rdata,
   output        io_ports_1_data_valid,
-  output [31:0] io_axi4_awaddr,
+  output [15:0] io_axi4_awaddr,
   output        io_axi4_awvalid,
   input         io_axi4_awready,
-  output [31:0] io_axi4_araddr,
+  output [15:0] io_axi4_araddr,
   output        io_axi4_arvalid,
   input         io_axi4_arready,
   input  [63:0] io_axi4_rdata,
@@ -4652,7 +4652,7 @@ module Sramlike2AXI4(
   reg  do_inst_request; // @[BusBridge.scala 30:34]
   reg  addr_recv; // @[BusBridge.scala 33:28]
   reg  data_recv; // @[BusBridge.scala 35:28]
-  reg [31:0] info_addr; // @[BusBridge.scala 38:24]
+  reg [15:0] info_addr; // @[BusBridge.scala 38:24]
   reg [7:0] info_mask; // @[BusBridge.scala 39:24]
   reg [2:0] info_op; // @[BusBridge.scala 40:24]
   reg [63:0] info_wdata; // @[BusBridge.scala 41:24]
@@ -4758,7 +4758,7 @@ initial begin
   _RAND_4 = {1{`RANDOM}};
   data_recv = _RAND_4[0:0];
   _RAND_5 = {1{`RANDOM}};
-  info_addr = _RAND_5[31:0];
+  info_addr = _RAND_5[15:0];
   _RAND_6 = {1{`RANDOM}};
   info_mask = _RAND_6[7:0];
   _RAND_7 = {1{`RANDOM}};
@@ -4844,10 +4844,10 @@ endmodule
 module core(
   input         clock,
   input         reset,
-  output [31:0] io_axi4_awaddr,
+  output [15:0] io_axi4_awaddr,
   output        io_axi4_awvalid,
   input         io_axi4_awready,
-  output [31:0] io_axi4_araddr,
+  output [15:0] io_axi4_araddr,
   output        io_axi4_arvalid,
   input         io_axi4_arready,
   input  [63:0] io_axi4_rdata,
@@ -4921,9 +4921,9 @@ module core(
   wire  dpath_io_d2c_isltu; // @[core.scala 22:23]
   wire  dpath_io_d2c_iseq; // @[core.scala 22:23]
   wire  dpath_io_d2c_isredir; // @[core.scala 22:23]
-  wire [31:0] dpath_io_imem_addr; // @[core.scala 22:23]
+  wire [15:0] dpath_io_imem_addr; // @[core.scala 22:23]
   wire [63:0] dpath_io_imem_rdata; // @[core.scala 22:23]
-  wire [31:0] dpath_io_dmem_addr; // @[core.scala 22:23]
+  wire [15:0] dpath_io_dmem_addr; // @[core.scala 22:23]
   wire [7:0] dpath_io_dmem_mask; // @[core.scala 22:23]
   wire [2:0] dpath_io_dmem_op; // @[core.scala 22:23]
   wire [63:0] dpath_io_dmem_wdata; // @[core.scala 22:23]
@@ -4998,10 +4998,10 @@ module core(
   wire  cpath_cs_valid_inst_0; // @[core.scala 23:23]
   wire  bus_bridge_clock; // @[core.scala 24:28]
   wire  bus_bridge_reset; // @[core.scala 24:28]
-  wire [31:0] bus_bridge_io_ports_0_addr; // @[core.scala 24:28]
+  wire [15:0] bus_bridge_io_ports_0_addr; // @[core.scala 24:28]
   wire [63:0] bus_bridge_io_ports_0_rdata; // @[core.scala 24:28]
   wire  bus_bridge_io_ports_0_data_valid; // @[core.scala 24:28]
-  wire [31:0] bus_bridge_io_ports_1_addr; // @[core.scala 24:28]
+  wire [15:0] bus_bridge_io_ports_1_addr; // @[core.scala 24:28]
   wire [7:0] bus_bridge_io_ports_1_mask; // @[core.scala 24:28]
   wire [2:0] bus_bridge_io_ports_1_op; // @[core.scala 24:28]
   wire [63:0] bus_bridge_io_ports_1_wdata; // @[core.scala 24:28]
@@ -5009,10 +5009,10 @@ module core(
   wire  bus_bridge_io_ports_1_wen; // @[core.scala 24:28]
   wire [63:0] bus_bridge_io_ports_1_rdata; // @[core.scala 24:28]
   wire  bus_bridge_io_ports_1_data_valid; // @[core.scala 24:28]
-  wire [31:0] bus_bridge_io_axi4_awaddr; // @[core.scala 24:28]
+  wire [15:0] bus_bridge_io_axi4_awaddr; // @[core.scala 24:28]
   wire  bus_bridge_io_axi4_awvalid; // @[core.scala 24:28]
   wire  bus_bridge_io_axi4_awready; // @[core.scala 24:28]
-  wire [31:0] bus_bridge_io_axi4_araddr; // @[core.scala 24:28]
+  wire [15:0] bus_bridge_io_axi4_araddr; // @[core.scala 24:28]
   wire  bus_bridge_io_axi4_arvalid; // @[core.scala 24:28]
   wire  bus_bridge_io_axi4_arready; // @[core.scala 24:28]
   wire [63:0] bus_bridge_io_axi4_rdata; // @[core.scala 24:28]
@@ -5252,10 +5252,10 @@ endmodule
 module AXI4_Ram(
   input         clock,
   input         reset,
-  input  [31:0] io_awaddr,
+  input  [15:0] io_awaddr,
   input         io_awvalid,
   output        io_awready,
-  input  [31:0] io_araddr,
+  input  [15:0] io_araddr,
   input         io_arvalid,
   output        io_arready,
   output [63:0] io_rdata,
@@ -5274,19 +5274,19 @@ module AXI4_Ram(
   reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
 `endif // RANDOMIZE_REG_INIT
-  reg /* sparse */ [63:0] mem [0:536870911]; // @[AXI4_Ram.scala 80:18]
+  reg [63:0] mem [0:8191]; // @[AXI4_Ram.scala 80:18]
   wire [63:0] mem__T_4_data; // @[AXI4_Ram.scala 80:18]
-  wire [28:0] mem__T_4_addr; // @[AXI4_Ram.scala 80:18]
+  wire [12:0] mem__T_4_addr; // @[AXI4_Ram.scala 80:18]
   wire [63:0] mem__T_22_data; // @[AXI4_Ram.scala 80:18]
-  wire [28:0] mem__T_22_addr; // @[AXI4_Ram.scala 80:18]
+  wire [12:0] mem__T_22_addr; // @[AXI4_Ram.scala 80:18]
   wire [63:0] mem__T_42_data; // @[AXI4_Ram.scala 80:18]
-  wire [28:0] mem__T_42_addr; // @[AXI4_Ram.scala 80:18]
+  wire [12:0] mem__T_42_addr; // @[AXI4_Ram.scala 80:18]
   wire  mem__T_42_mask; // @[AXI4_Ram.scala 80:18]
   wire  mem__T_42_en; // @[AXI4_Ram.scala 80:18]
   reg  read_state; // @[AXI4_Ram.scala 94:29]
   reg [1:0] write_state; // @[AXI4_Ram.scala 95:30]
-  reg [31:0] reg_awaddr; // @[AXI4_Ram.scala 98:29]
-  reg [31:0] reg_araddr; // @[AXI4_Ram.scala 99:29]
+  reg [15:0] reg_awaddr; // @[AXI4_Ram.scala 98:29]
+  reg [15:0] reg_araddr; // @[AXI4_Ram.scala 99:29]
   wire  _T_1 = ~read_state; // @[Conditional.scala 37:30]
   wire  _GEN_1 = io_arvalid | read_state; // @[AXI4_Ram.scala 112:13]
   wire  _T_5 = 2'h0 == write_state; // @[Conditional.scala 37:30]
@@ -5339,12 +5339,12 @@ module AXI4_Ram(
   wire  _T_50 = 2'h2 == write_state; // @[Conditional.scala 37:30]
   wire  _GEN_55 = _T_6 ? 1'h0 : 1'h1; // @[Conditional.scala 39:67]
   wire  _GEN_59 = _T_6 & io_wvalid; // @[Conditional.scala 39:67]
-  assign mem__T_4_addr = reg_araddr[31:3];
+  assign mem__T_4_addr = reg_araddr[15:3];
   assign mem__T_4_data = mem[mem__T_4_addr]; // @[AXI4_Ram.scala 80:18]
-  assign mem__T_22_addr = reg_awaddr[31:3];
+  assign mem__T_22_addr = reg_awaddr[15:3];
   assign mem__T_22_data = mem[mem__T_22_addr]; // @[AXI4_Ram.scala 80:18]
   assign mem__T_42_data = {_T_48,_T_45};
-  assign mem__T_42_addr = reg_awaddr[31:3];
+  assign mem__T_42_addr = reg_awaddr[15:3];
   assign mem__T_42_mask = 1'h1;
   assign mem__T_42_en = _T_5 ? 1'h0 : _GEN_59;
   assign io_awready = 2'h0 == write_state; // @[AXI4_Ram.scala 135:24 AXI4_Ram.scala 146:24 AXI4_Ram.scala 176:24]
@@ -5388,7 +5388,7 @@ initial begin
     `endif
 `ifdef RANDOMIZE_MEM_INIT
   _RAND_0 = {2{`RANDOM}};
-  for (initvar = 0; initvar < 536870912; initvar = initvar+1)
+  for (initvar = 0; initvar < 8192; initvar = initvar+1)
     mem[initvar] = _RAND_0[63:0];
 `endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
@@ -5397,9 +5397,9 @@ initial begin
   _RAND_2 = {1{`RANDOM}};
   write_state = _RAND_2[1:0];
   _RAND_3 = {1{`RANDOM}};
-  reg_awaddr = _RAND_3[31:0];
+  reg_awaddr = _RAND_3[15:0];
   _RAND_4 = {1{`RANDOM}};
-  reg_araddr = _RAND_4[31:0];
+  reg_araddr = _RAND_4[15:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -5432,14 +5432,14 @@ end // initial
       write_state <= 2'h0;
     end
     if (reset) begin
-      reg_awaddr <= 32'h0;
+      reg_awaddr <= 16'h0;
     end else if (_T_5) begin
       if (io_awvalid) begin
         reg_awaddr <= io_awaddr;
       end
     end
     if (reset) begin
-      reg_araddr <= 32'h0;
+      reg_araddr <= 16'h0;
     end else if (_T_1) begin
       if (io_arvalid) begin
         reg_araddr <= io_araddr;
@@ -5491,10 +5491,10 @@ module top(
 );
   wire  mycore_clock; // @[top.scala 25:24]
   wire  mycore_reset; // @[top.scala 25:24]
-  wire [31:0] mycore_io_axi4_awaddr; // @[top.scala 25:24]
+  wire [15:0] mycore_io_axi4_awaddr; // @[top.scala 25:24]
   wire  mycore_io_axi4_awvalid; // @[top.scala 25:24]
   wire  mycore_io_axi4_awready; // @[top.scala 25:24]
-  wire [31:0] mycore_io_axi4_araddr; // @[top.scala 25:24]
+  wire [15:0] mycore_io_axi4_araddr; // @[top.scala 25:24]
   wire  mycore_io_axi4_arvalid; // @[top.scala 25:24]
   wire  mycore_io_axi4_arready; // @[top.scala 25:24]
   wire [63:0] mycore_io_axi4_rdata; // @[top.scala 25:24]
@@ -5543,10 +5543,10 @@ module top(
   wire [63:0] mycore__T_41_31; // @[top.scala 25:24]
   wire  mymem_clock; // @[top.scala 26:24]
   wire  mymem_reset; // @[top.scala 26:24]
-  wire [31:0] mymem_io_awaddr; // @[top.scala 26:24]
+  wire [15:0] mymem_io_awaddr; // @[top.scala 26:24]
   wire  mymem_io_awvalid; // @[top.scala 26:24]
   wire  mymem_io_awready; // @[top.scala 26:24]
-  wire [31:0] mymem_io_araddr; // @[top.scala 26:24]
+  wire [15:0] mymem_io_araddr; // @[top.scala 26:24]
   wire  mymem_io_arvalid; // @[top.scala 26:24]
   wire  mymem_io_arready; // @[top.scala 26:24]
   wire [63:0] mymem_io_rdata; // @[top.scala 26:24]
@@ -5680,3 +5680,26 @@ module top(
   assign mymem_io_wstrb = mycore_io_axi4_wstrb; // @[top.scala 28:20]
   assign mymem_io_wvalid = mycore_io_axi4_wvalid; // @[top.scala 28:20]
 endmodule
+module BindsTo_0_AXI4_Ram(
+  input         clock,
+  input         reset,
+  input  [15:0] io_awaddr,
+  input         io_awvalid,
+  output        io_awready,
+  input  [15:0] io_araddr,
+  input         io_arvalid,
+  output        io_arready,
+  output [63:0] io_rdata,
+  input  [63:0] io_wdata,
+  input  [7:0]  io_wstrb,
+  input         io_wvalid,
+  output        io_wready,
+  output        io_bvalid
+);
+
+initial begin
+  $readmemh("./test1", AXI4_Ram.mem);
+end
+                      endmodule
+
+bind AXI4_Ram BindsTo_0_AXI4_Ram BindsTo_0_AXI4_Ram_Inst(.*);

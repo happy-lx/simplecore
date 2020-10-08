@@ -3,7 +3,7 @@
     "class":"firrtl.transforms.BlackBoxInlineAnno",
     "target":"top.AXI4_Ram",
     "name":"top.AXI4_Ram.mem.v",
-    "text":"module BindsTo_0_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1\", AXI4_Ram.mem);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_0_AXI4_Ram BindsTo_0_AXI4_Ram_Inst(.*);"
+    "text":"module BindsTo_0_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [15:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [15:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1\", AXI4_Ram.mem);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_0_AXI4_Ram BindsTo_0_AXI4_Ram_Inst(.*);"
   },
   {
     "class":"logger.LogLevelAnnotation",
