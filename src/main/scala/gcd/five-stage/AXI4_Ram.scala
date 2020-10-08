@@ -65,6 +65,11 @@ class AXI4IO extends Bundle
     val bready = Input(Bool())
 }
 
+class word extends Bundle
+{
+    val bytes = Vec(8,UInt(8.W))
+}
+
 //a simple version 
 class AXI4_Ram(memdir : String = "") extends Module
 {
@@ -72,7 +77,7 @@ class AXI4_Ram(memdir : String = "") extends Module
 
     io := DontCare
 
-    val mem = Mem(1 << AXI_ram_len , Vec(8,UInt(8.W)))
+    val mem = Mem(1 << AXI_ram_len ,UInt(64.W))
 
     if(memdir != "")
     {
@@ -95,6 +100,8 @@ class AXI4_Ram(memdir : String = "") extends Module
     // val reg_wdata  = RegInit(0.U(AXI_data_len.W))
     val wire_wstrb  = WireInit(0.U(AXI_wstrb_len.W))
 
+    val wire_word = WireInit(0.U(64.W).asTypeOf(new word))
+
     //define the action of each state
     switch(read_state)
     {
@@ -113,7 +120,7 @@ class AXI4_Ram(memdir : String = "") extends Module
             io.arready := false.B
             when(io.rready)
             {
-                io.rdata := Cat(mem(reg_araddr >> bits_ignore))
+                io.rdata := mem(reg_araddr >> bits_ignore)
                 io.rvalid := true.B
                 read_state := read_idle
             }
@@ -147,14 +154,19 @@ class AXI4_Ram(memdir : String = "") extends Module
                 ))
 
                 val wstrb_bools = wire_wstrb.asBools()
+                
+                wire_word := mem(reg_awaddr >> bits_ignore).asTypeOf(new word)
 
                 for(i <- (0 until 8))
                 {
                     when(wstrb_bools(i))
                     {
-                        mem(reg_awaddr >> bits_ignore)(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
+                        wire_word.bytes(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
                     }
                 }
+                
+                mem(reg_awaddr >> bits_ignore) := wire_word.asUInt()
+
                 write_state := write_resp 
             }
         }

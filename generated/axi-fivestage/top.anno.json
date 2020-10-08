@@ -2,50 +2,8 @@
   {
     "class":"firrtl.transforms.BlackBoxInlineAnno",
     "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_0.v",
-    "text":"module BindsTo_0_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_0\", AXI4_Ram.mem_0);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_0_AXI4_Ram BindsTo_0_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_1.v",
-    "text":"module BindsTo_1_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_1\", AXI4_Ram.mem_1);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_1_AXI4_Ram BindsTo_1_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_2.v",
-    "text":"module BindsTo_2_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_2\", AXI4_Ram.mem_2);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_2_AXI4_Ram BindsTo_2_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_3.v",
-    "text":"module BindsTo_3_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_3\", AXI4_Ram.mem_3);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_3_AXI4_Ram BindsTo_3_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_4.v",
-    "text":"module BindsTo_4_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_4\", AXI4_Ram.mem_4);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_4_AXI4_Ram BindsTo_4_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_5.v",
-    "text":"module BindsTo_5_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_5\", AXI4_Ram.mem_5);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_5_AXI4_Ram BindsTo_5_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_6.v",
-    "text":"module BindsTo_6_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_6\", AXI4_Ram.mem_6);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_6_AXI4_Ram BindsTo_6_AXI4_Ram_Inst(.*);"
-  },
-  {
-    "class":"firrtl.transforms.BlackBoxInlineAnno",
-    "target":"top.AXI4_Ram",
-    "name":"top.AXI4_Ram.mem_7.v",
-    "text":"module BindsTo_7_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1_7\", AXI4_Ram.mem_7);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_7_AXI4_Ram BindsTo_7_AXI4_Ram_Inst(.*);"
+    "name":"top.AXI4_Ram.mem.v",
+    "text":"module BindsTo_0_AXI4_Ram(\n  input         clock,\n  input         reset,\n  input  [31:0] io_awaddr,\n  input         io_awvalid,\n  output        io_awready,\n  input  [31:0] io_araddr,\n  input         io_arvalid,\n  output        io_arready,\n  output [63:0] io_rdata,\n  input  [63:0] io_wdata,\n  input  [7:0]  io_wstrb,\n  input         io_wvalid,\n  output        io_wready,\n  output        io_bvalid\n);\n\ninitial begin\n  $readmemh(\"./test1\", AXI4_Ram.mem);\nend\n                      endmodule\n\nbind AXI4_Ram BindsTo_0_AXI4_Ram BindsTo_0_AXI4_Ram_Inst(.*);"
   },
   {
     "class":"logger.LogLevelAnnotation",
@@ -63,56 +21,7 @@
   },
   {
     "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_0",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_1",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_2",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_3",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_4",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_5",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_6",
-    "fileName":"./test1",
-    "hexOrBinary":"h",
-    "originalMemoryNameOpt":"mem"
-  },
-  {
-    "class":"firrtl.annotations.LoadMemoryAnnotation",
-    "target":"top.AXI4_Ram.mem_7",
+    "target":"top.AXI4_Ram.mem",
     "fileName":"./test1",
     "hexOrBinary":"h",
     "originalMemoryNameOpt":"mem"
