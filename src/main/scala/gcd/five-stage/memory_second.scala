@@ -51,6 +51,20 @@ class memory_port_io extends Bundle
     override def cloneType = {new memory_port_io().asInstanceOf[this.type]}
 }
 
+class sram_like_io extends Bundle
+{
+    val addr = Output(UInt(32.W))
+    val mask = Output(UInt(8.W))//写memory时候的掩码
+    val op = Output(UInt(3.W))//读memory时候的操作码
+    val wdata = Output(UInt(64.W))
+    val memen = Output(Bool())//是否需要启动mem
+    val wen = Output(Bool())
+    val rdata = Input(UInt(64.W))
+    
+    val data_valid = Input(Bool())
+}
+
+
 class memorymodule(memdir : String = "") extends Module
 {
     val io = IO(new Bundle {

@@ -22,6 +22,9 @@ class top extends Module {
     })
 
     val mycore = Module(new core)
+    val mymem  = Module(new AXI4_Ram("./test1"))
+
+    mycore.io.axi4 <> mymem.io.axi4
 
     val difftestwire = WireInit(0.U.asTypeOf(new difftestIO))
 

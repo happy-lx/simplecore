@@ -36,6 +36,13 @@ trait AXI_const
     val AXI_paddr_len = 32
     val AXI_data_len = 64
     val AXI_wstrb_len = (AXI_data_len / 8)
+    val bits_ignore = log2Ceil(AXI_wstrb_len)
+    val AXI_ram_len = AXI_paddr_len - bits_ignore
+    val AXI_byte_len = 8
+
+    //for sram-like's ports
+    val DATA = 1 
+    val INTR = 0
 }
 
 trait alu_const

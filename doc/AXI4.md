@@ -1,6 +1,6 @@
 ### SRAM-LIKE 接口到AXI接口的转化
 
-+ SRAM-LIKE接口定义
++ my SRAM-LIKE接口定义
 
   + ```scala
     class memory_req_io extends Bundle
@@ -41,7 +41,48 @@
     //1 is data port 
     ```
 
++ 需要更改为
 
+  + ```scala
+    class sram_like_io extends Bundle
+    {
+        val addr = Output(UInt(32.W))
+        val mask = Output(UInt(8.W))//写memory时候的掩码
+        val op = Output(UInt(3.W))//读memory时候的操作码
+        val wdata = Output(UInt(64.W))
+        val memen = Output(Bool())//是否需要启动mem
+        val wen = Output(Bool())
+        val rdata = Output(UInt(64.W))
+        
+        val rdata_valid = Input(Bool())
+        val wdata_valid = Input(Bool())
+    }
+    
+    val ports = Vec(2,new sram_like_io)
+    //0 : Instruction Port 
+    //1 : Data Port
+    //it‘s for core
+    ```
+
+  + trick:当`memen = 1 && wen = 0`时触发读请求，当`memen = 1 && wen = 1`时触发写请求
+
+  + 在bridge处通过 op把读到的数据进行格式的转换
+
+  + 需要更改mask的常量定义，分别定义byte，half byte ，word ， double word，然后在bridge处将其作为strobe，注意要根据地址的后3位进行移动
+
++ bridge首先需要根据sram-like-io传过来的信号判断是否有请求，和是哪一种请求
+
++ 首先需要输入地址和控制信息，这时候可能有IF和MEM阶段的load store，MEM阶段优先，所以需要有一个线表示现在是进行的IF还是MEM,即一个简单的仲裁
+
++ 完成地址信息的握手之后，下一个时钟周期可以把与读或者写的信息全部保存在寄存器中
+
++ 当arready , arvalid都为1的时候下一个时钟周期可以置为地址握手成功信号
+
++ 这个信号要一直保存到数据读写完成，完成之后就置0
+
++ 需要有一根wire来判断读的数据是否valid或者写是否已经完成了
+
++ 对每一个通道的信息进行赋值，如ar通道，最重要的信号是arvalid，标志读地址通道的控制信号就位，此时必须是检测到读请求，并且地址握手还没有成功，握手成功后就可以把其降下来
 
  
 

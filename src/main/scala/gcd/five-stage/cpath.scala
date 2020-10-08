@@ -40,8 +40,8 @@ class CpathIO extends Bundle
 {
     val c2d = new C2DIO()
     val d2c = Flipped(new D2CIO())
-    val imem = Flipped(new memory_port_io)
-    val dmem = Flipped(new memory_port_io)
+    val imem = new sram_like_io
+    val dmem = new sram_like_io
     
 }
 
@@ -178,6 +178,7 @@ class Cpath extends Module {
 
     val temp_is_csr = ((cs_csr_op =/= csr_x) && (cs_csr_op =/= csr_prv))
     val cs_reg_exe_is_csr = RegNext(temp_is_csr,false.B)
+    val cs_reg_exe_is_fencei = RegNext(cs_is_fencei,false.B)
 
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
     //control hazard kills if and dec stages 
@@ -204,7 +205,8 @@ class Cpath extends Module {
         cs_wire_control_hazard := false.B
     }
 
-    when(!io.imem.resp.valid || cs_is_fencei || RegNext(cs_is_fencei,false.B))
+    //WARNING: there will be a problem in fence.i when stalling
+    when(!io.imem.data_valid || cs_is_fencei || cs_reg_exe_is_fencei)
     {
         cs_wire_if_kill := true.B
     }.otherwise
@@ -253,7 +255,7 @@ class Cpath extends Module {
     val cs_reg_exe_mem_valid = RegNext(cs_mem_valid,false.B)
     val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
 
-    cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.resp.valid))
+    cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid))
     io.c2d.shouldstall := cs_wire_pipeline_stall
 
     //assgin inside signal to output
@@ -290,6 +292,7 @@ class Cpath extends Module {
         cs_reg_mem_exception:= N
         cs_reg_exe_mem_valid:= N
         cs_reg_mem_mem_valid:= N
+        cs_reg_exe_is_fencei:= N
 
     }.elsewhen(cs_wire_pipeline_stall)
     {
@@ -301,6 +304,7 @@ class Cpath extends Module {
         cs_reg_mem_exception:= cs_reg_mem_exception
         cs_reg_exe_mem_valid:= cs_reg_exe_mem_valid
         cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
+        cs_reg_exe_is_fencei:= cs_reg_exe_is_fencei
     }.otherwise
     {
         when(cs_wire_data_hazard)
@@ -311,6 +315,7 @@ class Cpath extends Module {
             cs_reg_exe_rd_addr  := 0.U(5.W)
             cs_reg_exe_exception:= N
             cs_reg_exe_mem_valid:= N
+            cs_reg_exe_is_fencei:= N
         }.elsewhen(cs_wire_control_hazard)
         {
             cs_exe_branch       := BR_N
@@ -319,6 +324,7 @@ class Cpath extends Module {
             cs_reg_exe_rd_addr  := 0.U(5.W)
             cs_reg_exe_exception:= N
             cs_reg_exe_mem_valid:= N
+            cs_reg_exe_is_fencei:= N
         }
     }
 

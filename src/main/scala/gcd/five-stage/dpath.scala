@@ -22,8 +22,8 @@ class DpathIO extends Bundle
 {
     val c2d = Flipped(new C2DIO()) 
     val d2c = new D2CIO()
-    val imem = Flipped(new memory_port_io)
-    val dmem = Flipped(new memory_port_io)
+    val imem = new sram_like_io
+    val dmem = new sram_like_io
 }
 
 class Dpath extends Module {
@@ -43,11 +43,10 @@ class Dpath extends Module {
     //the following target is generated in mem stage
     val wire_pc_redirect_target = Wire(UInt(64.W))
 
-    io.imem.req.valid := true.B
-    io.imem.req.bits.addr := reg_if_pc(31,0)
-    io.imem.req.bits.op := op_wu
-    io.imem.req.bits.memen := true.B
-    io.imem.req.bits.wen := false.B
+    io.imem.memen := true.B
+    io.imem.addr := reg_if_pc(31,0)
+    io.imem.op := op_wu
+    io.imem.wen := false.B
 
     wire_pc_next_4 := reg_if_pc + 4.U
 
@@ -61,7 +60,7 @@ class Dpath extends Module {
     ))
 
 
-    val wire_if_instr = WireInit(io.imem.resp.bits.rdata(31,0))
+    val wire_if_instr = WireInit(io.imem.rdata(31,0))
 
     //the instruction register in decode stage init to nop in case the cpath generates a 
     //excepiton in the init cycle for the first instruction is zero
@@ -439,13 +438,12 @@ class Dpath extends Module {
     //mem stage
 
     //access memory for store instruction and access csr file for csr instructions 
-    io.dmem.req.valid := dp_mem_reg_mem_en
-    io.dmem.req.bits.addr := dp_mem_reg_alu_out(31,0)
-    io.dmem.req.bits.mask := dp_mem_reg_mem_write_mask
-    io.dmem.req.bits.op := dp_mem_reg_mem_read_op
-    io.dmem.req.bits.wdata := dp_mem_reg_rs2_data
-    io.dmem.req.bits.memen := dp_mem_reg_mem_en
-    io.dmem.req.bits.wen := dp_mem_reg_mem_wen
+    io.dmem.memen := dp_mem_reg_mem_en
+    io.dmem.addr := dp_mem_reg_alu_out(31,0)
+    io.dmem.mask := dp_mem_reg_mem_write_mask
+    io.dmem.op := dp_mem_reg_mem_read_op
+    io.dmem.wdata := dp_mem_reg_rs2_data
+    io.dmem.wen := dp_mem_reg_mem_wen
 
     val csr = Module(new CSRfile)
 
@@ -461,7 +459,7 @@ class Dpath extends Module {
 
     dp_wire_mem_memstageout := MuxCase(dp_mem_reg_alu_out,Array(
         (dp_mem_reg_wb_sel === wback_aluout) -> dp_mem_reg_alu_out,
-        (dp_mem_reg_wb_sel === wback_memout) -> io.dmem.resp.bits.rdata,
+        (dp_mem_reg_wb_sel === wback_memout) -> io.dmem.rdata,
         (dp_mem_reg_wb_sel === wback_pc_4) -> (dp_mem_reg_pc + 4.U),
         (dp_mem_reg_wb_sel === wback_csrout) -> csr.io.csr_info
     ))
