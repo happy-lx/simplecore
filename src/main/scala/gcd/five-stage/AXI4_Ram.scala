@@ -78,7 +78,7 @@ class AXI4_Ram(memdir : String = "") extends Module
 
     io := DontCare
 
-    val mem = Mem(1 << AXI_ram_len ,UInt(64.W))
+    val mem = Mem(1 << AXI_real_addr_len ,UInt(8.W))
 
     if(memdir != "")
     {
@@ -96,8 +96,8 @@ class AXI4_Ram(memdir : String = "") extends Module
     val write_state = RegInit(write_idle)
 
     //we need to define some registers to hold on infomation from master
-    val reg_awaddr = RegInit(0.U(AXI_paddr_len.W))
-    val reg_araddr = RegInit(0.U(AXI_paddr_len.W))
+    val reg_awaddr = RegInit(0.U(AXI_real_addr_len.W))
+    val reg_araddr = RegInit(0.U(AXI_real_addr_len.W))
     // val reg_wdata  = RegInit(0.U(AXI_data_len.W))
     val wire_wstrb  = WireInit(0.U(AXI_wstrb_len.W))
 
@@ -121,7 +121,7 @@ class AXI4_Ram(memdir : String = "") extends Module
             io.arready := false.B
             when(io.rready)
             {
-                io.rdata := mem(reg_araddr >> bits_ignore)
+                io.rdata := Cat((VecInit.tabulate(8){i => mem(reg_araddr + i.U)}).reverse)
                 io.rvalid := true.B
                 read_state := read_idle
             }
@@ -149,25 +149,35 @@ class AXI4_Ram(memdir : String = "") extends Module
             when(io.wvalid)
             {
                 //write mem via info of axi4 bus 
-                wire_wstrb := MuxCase(io.wstrb,Array(
-                    (io.wstrb === mask_dw) -> io.wstrb,
-                    (io.wstrb =/= mask_dw) -> (io.wstrb << reg_awaddr(bits_ignore,0))
-                ))
+                // wire_wstrb := MuxCase(io.wstrb,Array(
+                //     (io.wstrb === mask_dw) -> io.wstrb,
+                //     (io.wstrb =/= mask_dw) -> (io.wstrb << reg_awaddr(bits_ignore,0))
+                // ))
+                wire_wstrb := io.wstrb
 
                 val wstrb_bools = wire_wstrb.asBools()
+                val write_data = (VecInit.tabulate(8){i => io.wdata(i*8+7,i*8)})
+                // wire_word := mem(reg_awaddr >> bits_ignore).asTypeOf(new word)
+
+                // for(i <- (0 until 8))
+                // {
+                //     when(wstrb_bools(i))
+                //     {
+                //         //or wire_word.bytes(8-i) 
+                //         wire_word.bytes(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
+                //     }
+                // }
                 
-                wire_word := mem(reg_awaddr >> bits_ignore).asTypeOf(new word)
+                // mem(reg_awaddr >> bits_ignore) := wire_word.asUInt()
+
 
                 for(i <- (0 until 8))
                 {
                     when(wstrb_bools(i))
                     {
-                        //or wire_word.bytes(8-i) 
-                        wire_word.bytes(i) := io.wdata(i*AXI_byte_len+7 , i*AXI_byte_len)
+                        mem(reg_awaddr + i.U) := write_data(i)
                     }
                 }
-                
-                mem(reg_awaddr >> bits_ignore) := wire_word.asUInt()
 
                 write_state := write_resp 
             }

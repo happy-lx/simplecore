@@ -15,7 +15,7 @@ coreresult::coreresult(Vtop* in,Ram* ram_in)
     #ifdef LOG
     std::cout << "[info] copying core's instructions and data to ram...\n" << std::endl;
     #endif
-    memcpy(core_ram,top->v__DOT__mycore__DOT__mymem__DOT__mem,RAMSIZE);
+    memcpy(core_ram,top->top__DOT__mymem__DOT__mem,RAMSIZE);
     #ifdef LOG
     std::cout << "[info] copy down\n" << std::endl;
     #endif

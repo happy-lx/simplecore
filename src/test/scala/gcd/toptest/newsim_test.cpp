@@ -243,7 +243,7 @@ int main(int argc,char** argv)
          
         main_time ++;
 
-        if(main_time == 1000)
+        if(main_time == 19000)
         {
             break;
         }

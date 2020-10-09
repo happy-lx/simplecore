@@ -29,6 +29,7 @@ class C2DIO extends Bundle
     val cp_data_hazard = Output(Bool())
     val cp_pipeline_kill = Output(Bool())
     val cp_pipeline_stall = Output(Bool())
+    val cp_pipeline_data_stall = Output(Bool())
 
 
 
@@ -206,7 +207,7 @@ class Cpath extends Module {
     }
 
     //WARNING: there will be a problem in fence.i when stalling
-    when(!io.imem.data_valid || cs_is_fencei || cs_reg_exe_is_fencei)
+    when(cs_is_fencei || cs_reg_exe_is_fencei)
     {
         cs_wire_if_kill := true.B
     }.otherwise
@@ -244,7 +245,8 @@ class Cpath extends Module {
     //pipeline kill 
     //might be a problem
     //WARNING : RegNext(io.imem.data_valid,false.B) MAY BE A PROBLEM
-    val cs_wire_dec_exception = !cs_valid_inst && RegNext(io.imem.data_valid,false.B)
+    val cs_reg_dec_imem_valid = RegNext(io.imem.data_valid,false.B)
+    val cs_wire_dec_exception = !cs_valid_inst && cs_reg_dec_imem_valid
     val cs_reg_exe_exception = RegNext(cs_wire_dec_exception,false.B)
     val cs_reg_mem_exception = RegNext(cs_reg_exe_exception,false.B)
 
@@ -256,8 +258,12 @@ class Cpath extends Module {
     val cs_reg_exe_mem_valid = RegNext(cs_mem_valid,false.B)
     val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
 
-    cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid))
+    val cs_wire_pipeline_data_stall = WireInit(false.B)
+
+    cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid)) || !(!(io.imem.memen) || (io.imem.memen && io.imem.data_valid))
     io.c2d.shouldstall := cs_wire_pipeline_stall
+
+    cs_wire_pipeline_data_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid))
 
     //assgin inside signal to output
     
@@ -280,6 +286,7 @@ class Cpath extends Module {
     io.c2d.cp_data_hazard := cs_wire_data_hazard
     io.c2d.cp_pipeline_kill := cs_wire_pipeline_kill
     io.c2d.cp_pipeline_stall := cs_wire_pipeline_stall
+    io.c2d.cp_pipeline_data_stall := cs_wire_pipeline_data_stall
 
     //when control hazard happens or pipeline kill happens 
     //no need to passforward 
@@ -294,6 +301,7 @@ class Cpath extends Module {
         cs_reg_exe_mem_valid:= N
         cs_reg_mem_mem_valid:= N
         cs_reg_exe_is_fencei:= N
+        cs_reg_dec_imem_valid := N
 
     }.elsewhen(cs_wire_pipeline_stall)
     {
@@ -306,6 +314,7 @@ class Cpath extends Module {
         cs_reg_exe_mem_valid:= cs_reg_exe_mem_valid
         cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
         cs_reg_exe_is_fencei:= cs_reg_exe_is_fencei
+        cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
     }.otherwise
     {
         when(cs_wire_data_hazard)
@@ -317,6 +326,7 @@ class Cpath extends Module {
             cs_reg_exe_exception:= N
             cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
+            cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
         }.elsewhen(cs_wire_control_hazard)
         {
             cs_exe_branch       := BR_N
@@ -326,6 +336,7 @@ class Cpath extends Module {
             cs_reg_exe_exception:= N
             cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
+            cs_reg_dec_imem_valid := N
         }
     }
 
