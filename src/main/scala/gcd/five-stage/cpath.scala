@@ -256,13 +256,13 @@ class Cpath extends Module {
     cs_wire_pipeline_kill := io.d2c.isredir
 
     //pipeline stall for d$ miss
-    val cs_reg_exe_mem_valid = RegNext(cs_mem_valid,false.B)
-    val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
+    // val cs_reg_exe_mem_valid = RegNext(cs_mem_valid,false.B)
+    // val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
 
     val cs_wire_pipeline_data_stall = WireInit(false.B)
     val cs_wire_pipeline_inst_stall = WireInit(false.B)
 
-    cs_wire_pipeline_data_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid))
+    cs_wire_pipeline_data_stall := !((!io.d2c.mem_mem_valid) || (io.d2c.mem_mem_valid && io.dmem.data_valid))
     cs_wire_pipeline_inst_stall := !io.imem.data_valid
 
     cs_wire_pipeline_stall := cs_wire_pipeline_inst_stall || cs_wire_pipeline_data_stall
@@ -301,8 +301,8 @@ class Cpath extends Module {
         cs_reg_exe_rd_addr  := 0.U(5.W)
         cs_reg_exe_exception:= N
         cs_reg_mem_exception:= N
-        cs_reg_exe_mem_valid:= N
-        cs_reg_mem_mem_valid:= N
+        // cs_reg_exe_mem_valid:= N
+        // cs_reg_mem_mem_valid:= N
         cs_reg_exe_is_fencei:= N
         cs_reg_dec_imem_valid := N
 
@@ -314,8 +314,8 @@ class Cpath extends Module {
         cs_reg_exe_rd_addr  := cs_reg_exe_rd_addr
         cs_reg_exe_exception:= cs_reg_exe_exception
         cs_reg_mem_exception:= cs_reg_mem_exception
-        cs_reg_exe_mem_valid:= cs_reg_exe_mem_valid
-        cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
+        // cs_reg_exe_mem_valid:= cs_reg_exe_mem_valid
+        // cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
         cs_reg_exe_is_fencei:= cs_reg_exe_is_fencei
         cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
     }.otherwise
@@ -327,7 +327,7 @@ class Cpath extends Module {
             cs_reg_exe_is_load  := N
             cs_reg_exe_rd_addr  := 0.U(5.W)
             cs_reg_exe_exception:= N
-            cs_reg_exe_mem_valid:= N
+            // cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
             cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
         }.elsewhen(cs_wire_control_hazard)
@@ -337,7 +337,7 @@ class Cpath extends Module {
             cs_reg_exe_is_load  := N
             cs_reg_exe_rd_addr  := 0.U(5.W)
             cs_reg_exe_exception:= N
-            cs_reg_exe_mem_valid:= N
+            // cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
             cs_reg_dec_imem_valid := N
         }

@@ -16,6 +16,7 @@ class D2CIO extends Bundle
     val isltu = Output(Bool())
     val iseq = Output(Bool())
     val isredir =  Output(Bool())
+    val mem_mem_valid = Output(Bool())
 }
 
 class DpathIO extends Bundle
@@ -437,6 +438,9 @@ class Dpath extends Module {
     }
     //mem stage
 
+    //mem stage's mem enable to control path
+    io.d2c.mem_mem_valid := dp_mem_reg_mem_en
+
     //access memory for store instruction and access csr file for csr instructions 
     io.dmem.memen := dp_mem_reg_mem_en
     io.dmem.addr := dp_mem_reg_alu_out(31,0)
@@ -493,6 +497,9 @@ class Dpath extends Module {
 
             dp_mem_reg_instr_valid := false.B
             dp_mem_reg_mem_en := false.B
+            // for load use , let the bypass not detect a forwarding
+            //because the MEM stage has commit 
+            dp_mem_reg_rf_wen := false.B
 
         }
     }.elsewhen(csr.io.csr_illegal_ins_exception)
