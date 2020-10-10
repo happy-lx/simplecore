@@ -69,7 +69,7 @@ sim_main.o: sim_main.cpp
 
 ### Link rules... (from --exe)
 Vtop: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a
-	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@ -ldl $(LIBS) $(SC_LIBS)
+	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) -o $@ -ldl  $(LIBS) $(SC_LIBS)
 
 
 # Verilated -*- Makefile -*-

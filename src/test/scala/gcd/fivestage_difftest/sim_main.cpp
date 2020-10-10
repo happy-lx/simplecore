@@ -148,7 +148,11 @@ int main(int argc , char** argv)
         //which has a feature that the pc is zero
         //but interrupt is not useful in this way
         core->coreStep(1);
-        while(core->getTop()->io_diff_pc_data == (unsigned long)0)
+        // while(core->getTop()->io_diff_pc_data == (unsigned long)0)
+        // {
+        //     core->coreStep(1);
+        // }
+        while(!core->getTop()->io_diff_is_retire)
         {
             core->coreStep(1);
         }

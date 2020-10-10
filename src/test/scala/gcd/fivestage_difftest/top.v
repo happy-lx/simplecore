@@ -2176,6 +2176,8 @@ module Dpath(
   input         io_c2d_cp_data_hazard,
   input         io_c2d_cp_pipeline_kill,
   input         io_c2d_cp_pipeline_stall,
+  input         io_c2d_cp_pipeline_data_stall,
+  input         io_c2d_cp_pipeline_inst_stall,
   input         io_c2d_hasexception,
   input         io_c2d_shouldstall,
   output [31:0] io_d2c_instr,
@@ -2408,6 +2410,10 @@ module Dpath(
   reg [63:0] dp_mem_reg_pc; // @[dpath.scala 384:46]
   wire [63:0] _T_141 = dp_mem_reg_pc + 64'h4; // @[dpath.scala 463:62]
   wire  _T_142 = dp_mem_reg_wb_sel == 2'h3; // @[dpath.scala 464:28]
+  wire [63:0] _T_143 = _T_142 ? csr_io__csr_info : dp_mem_reg_alu_out; // @[Mux.scala 98:16]
+  wire [63:0] _T_144 = _T_139 ? _T_141 : _T_143; // @[Mux.scala 98:16]
+  wire [63:0] _T_145 = _T_138 ? io_dmem_rdata : _T_144; // @[Mux.scala 98:16]
+  wire [63:0] dp_wire_mem_memstageout = _T_137 ? dp_mem_reg_alu_out : _T_145; // @[Mux.scala 98:16]
   wire [63:0] dp_wire_exe_aluout = dp_alu_io_res; // @[dpath.scala 368:24]
   wire  _T_67 = io_c2d_cp_op2_sel == 2'h0; // @[dpath.scala 188:28]
   wire  _T_68 = io_c2d_cp_op2_sel == 2'h1; // @[dpath.scala 189:28]
@@ -2462,6 +2468,9 @@ module Dpath(
   reg  dp_wb_reg_instr_valid; // @[dpath.scala 469:40]
   reg [63:0] dp_wb_reg_pc; // @[dpath.scala 470:31]
   reg [31:0] dp_wb_reg_instr; // @[dpath.scala 471:34]
+  wire  _T_147 = io_c2d_cp_pipeline_data_stall & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 476:44]
+  wire  _T_148 = ~io_c2d_cp_pipeline_data_stall; // @[dpath.scala 484:20]
+  wire  _T_149 = _T_148 & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 484:51]
   Regfile regfile ( // @[dpath.scala 127:25]
     .clock(regfile_clock),
     .io_rp1(regfile_io_rp1),
@@ -2581,9 +2590,9 @@ module Dpath(
   assign regfile_clock = clock;
   assign regfile_io_rp1 = reg_dec_instr[19:15]; // @[dpath.scala 129:20]
   assign regfile_io_rp2 = reg_dec_instr[24:20]; // @[dpath.scala 130:20]
-  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 520:19]
-  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 521:24]
-  assign regfile_io_wp_en = dp_wb_reg_rf_wen & dp_wb_reg_instr_valid; // @[dpath.scala 515:26 dpath.scala 518:26]
+  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 536:19]
+  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 537:24]
+  assign regfile_io_wp_en = dp_wb_reg_rf_wen & dp_wb_reg_instr_valid; // @[dpath.scala 531:26 dpath.scala 534:26]
   assign dp_alu_io_input1 = dp_exe_reg_op1_source; // @[dpath.scala 362:22]
   assign dp_alu_io_input2 = dp_exe_reg_op2_source; // @[dpath.scala 363:22]
   assign dp_alu_io_op = dp_exe_reg_alu_sel; // @[dpath.scala 365:18]
@@ -2596,7 +2605,7 @@ module Dpath(
   assign csr_io__hasException = io_c2d_hasexception; // @[dpath.scala 453:25]
   assign csr_io__hasStall = io_c2d_shouldstall; // @[dpath.scala 454:21]
   assign csr_io__in_pc = dp_mem_reg_pc; // @[dpath.scala 455:18]
-  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 523:22]
+  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 539:22]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -2908,7 +2917,11 @@ end // initial
     if (reset) begin
       dp_wb_reg_rd_addr <= 5'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
-      dp_wb_reg_rd_addr <= 5'h0;
+      if (_T_147) begin
+        dp_wb_reg_rd_addr <= 5'h0;
+      end else if (_T_149) begin
+        dp_wb_reg_rd_addr <= dp_mem_reg_rd_addr;
+      end
     end else begin
       dp_wb_reg_rd_addr <= dp_mem_reg_rd_addr;
     end
@@ -2935,7 +2948,11 @@ end // initial
     if (reset) begin
       dp_wb_reg_rf_wen <= 1'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
-      dp_wb_reg_rf_wen <= 1'h0;
+      if (_T_147) begin
+        dp_wb_reg_rf_wen <= 1'h0;
+      end else if (_T_149) begin
+        dp_wb_reg_rf_wen <= dp_mem_reg_rf_wen;
+      end
     end else if (csr_io__csr_illegal_ins_exception) begin
       dp_wb_reg_rf_wen <= 1'h0;
     end else begin
@@ -2984,7 +3001,21 @@ end // initial
     if (reset) begin
       dp_wb_reg_wb_data <= 64'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
-      dp_wb_reg_wb_data <= 64'h0;
+      if (_T_147) begin
+        dp_wb_reg_wb_data <= 64'h0;
+      end else if (_T_149) begin
+        if (_T_137) begin
+          dp_wb_reg_wb_data <= dp_mem_reg_alu_out;
+        end else if (_T_138) begin
+          dp_wb_reg_wb_data <= io_dmem_rdata;
+        end else if (_T_139) begin
+          dp_wb_reg_wb_data <= _T_141;
+        end else if (_T_142) begin
+          dp_wb_reg_wb_data <= csr_io__csr_info;
+        end else begin
+          dp_wb_reg_wb_data <= dp_mem_reg_alu_out;
+        end
+      end
     end else if (_T_137) begin
       dp_wb_reg_wb_data <= dp_mem_reg_alu_out;
     end else if (_T_138) begin
@@ -3029,17 +3060,7 @@ end // initial
       end else if (_T_99) begin
         dp_exe_reg_rs2_data <= dp_wire_exe_aluout;
       end else if (_T_103) begin
-        if (_T_137) begin
-          dp_exe_reg_rs2_data <= dp_mem_reg_alu_out;
-        end else if (_T_138) begin
-          dp_exe_reg_rs2_data <= io_dmem_rdata;
-        end else if (_T_139) begin
-          dp_exe_reg_rs2_data <= _T_141;
-        end else if (_T_142) begin
-          dp_exe_reg_rs2_data <= csr_io__csr_info;
-        end else begin
-          dp_exe_reg_rs2_data <= dp_mem_reg_alu_out;
-        end
+        dp_exe_reg_rs2_data <= dp_wire_mem_memstageout;
       end else if (_T_107) begin
         dp_exe_reg_rs2_data <= dp_wb_reg_wb_data;
       end else begin
@@ -3172,6 +3193,20 @@ end // initial
     end
     if (reset) begin
       dp_mem_reg_instr_valid <= 1'h0;
+    end else if (io_c2d_cp_pipeline_stall) begin
+      if (_T_147) begin
+        if (io_c2d_cp_pipeline_kill) begin
+          dp_mem_reg_instr_valid <= 1'h0;
+        end else if (!(io_c2d_cp_pipeline_stall)) begin
+          dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
+        end
+      end else if (_T_149) begin
+        dp_mem_reg_instr_valid <= 1'h0;
+      end else if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_instr_valid <= 1'h0;
+      end else if (!(io_c2d_cp_pipeline_stall)) begin
+        dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
+      end
     end else if (io_c2d_cp_pipeline_kill) begin
       dp_mem_reg_instr_valid <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
@@ -3186,6 +3221,20 @@ end // initial
     end
     if (reset) begin
       dp_mem_reg_mem_en <= 1'h0;
+    end else if (io_c2d_cp_pipeline_stall) begin
+      if (_T_147) begin
+        if (io_c2d_cp_pipeline_kill) begin
+          dp_mem_reg_mem_en <= 1'h0;
+        end else if (!(io_c2d_cp_pipeline_stall)) begin
+          dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
+        end
+      end else if (_T_149) begin
+        dp_mem_reg_mem_en <= 1'h0;
+      end else if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_mem_en <= 1'h0;
+      end else if (!(io_c2d_cp_pipeline_stall)) begin
+        dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
+      end
     end else if (io_c2d_cp_pipeline_kill) begin
       dp_mem_reg_mem_en <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
@@ -3222,17 +3271,33 @@ end // initial
     if (reset) begin
       dp_wb_reg_instr_valid <= 1'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
-      dp_wb_reg_instr_valid <= 1'h0;
+      if (_T_147) begin
+        dp_wb_reg_instr_valid <= 1'h0;
+      end else if (_T_149) begin
+        dp_wb_reg_instr_valid <= dp_mem_reg_instr_valid;
+      end
     end else begin
       dp_wb_reg_instr_valid <= dp_mem_reg_instr_valid;
     end
     if (reset) begin
       dp_wb_reg_pc <= 64'h80000000;
+    end else if (io_c2d_cp_pipeline_stall) begin
+      if (_T_147) begin
+        dp_wb_reg_pc <= dp_mem_reg_pc;
+      end else if (_T_149) begin
+        dp_wb_reg_pc <= dp_mem_reg_pc;
+      end
     end else begin
       dp_wb_reg_pc <= dp_mem_reg_pc;
     end
     if (reset) begin
       dp_wb_reg_instr <= 32'h4033;
+    end else if (io_c2d_cp_pipeline_stall) begin
+      if (_T_147) begin
+        dp_wb_reg_instr <= dp_mem_reg_instr;
+      end else if (_T_149) begin
+        dp_wb_reg_instr <= dp_mem_reg_instr;
+      end
     end else begin
       dp_wb_reg_instr <= dp_mem_reg_instr;
     end
@@ -3258,6 +3323,8 @@ module Cpath(
   output        io_c2d_cp_data_hazard,
   output        io_c2d_cp_pipeline_kill,
   output        io_c2d_cp_pipeline_stall,
+  output        io_c2d_cp_pipeline_data_stall,
+  output        io_c2d_cp_pipeline_inst_stall,
   output        io_c2d_hasexception,
   output        io_c2d_shouldstall,
   input  [31:0] io_d2c_instr,
@@ -4125,25 +4192,25 @@ module Cpath(
   wire  _T_1332 = _T_5 ? 1'h0 : _T_1331; // @[Lookup.scala 33:37]
   wire  _T_1333 = _T_3 ? 1'h0 : _T_1332; // @[Lookup.scala 33:37]
   wire  cs_rs2_en = _T_1 ? 1'h0 : _T_1333; // @[Lookup.scala 33:37]
-  reg [3:0] cs_exe_branch; // @[cpath.scala 156:32]
-  wire  _T_1334 = cs_exe_branch == 4'h0; // @[cpath.scala 163:24]
-  wire  _T_1335 = cs_exe_branch == 4'h1; // @[cpath.scala 164:24]
-  wire [2:0] _T_1336 = io_d2c_iseq ? 3'h2 : 3'h0; // @[cpath.scala 164:42]
-  wire  _T_1337 = cs_exe_branch == 4'h2; // @[cpath.scala 165:24]
-  wire  _T_1338 = ~io_d2c_iseq; // @[cpath.scala 165:44]
-  wire [2:0] _T_1339 = _T_1338 ? 3'h2 : 3'h0; // @[cpath.scala 165:43]
-  wire  _T_1340 = cs_exe_branch == 4'h5; // @[cpath.scala 166:24]
-  wire  _T_1341 = ~io_d2c_islt; // @[cpath.scala 166:43]
-  wire [2:0] _T_1342 = _T_1341 ? 3'h2 : 3'h0; // @[cpath.scala 166:42]
-  wire  _T_1343 = cs_exe_branch == 4'h6; // @[cpath.scala 167:24]
-  wire  _T_1344 = ~io_d2c_isltu; // @[cpath.scala 167:44]
-  wire [2:0] _T_1345 = _T_1344 ? 3'h2 : 3'h0; // @[cpath.scala 167:43]
-  wire  _T_1346 = cs_exe_branch == 4'h3; // @[cpath.scala 168:24]
-  wire [2:0] _T_1347 = io_d2c_islt ? 3'h2 : 3'h0; // @[cpath.scala 168:42]
-  wire  _T_1348 = cs_exe_branch == 4'h4; // @[cpath.scala 169:24]
-  wire [2:0] _T_1349 = io_d2c_isltu ? 3'h2 : 3'h0; // @[cpath.scala 169:43]
-  wire  _T_1350 = cs_exe_branch == 4'h7; // @[cpath.scala 170:24]
-  wire  _T_1351 = cs_exe_branch == 4'h8; // @[cpath.scala 171:24]
+  reg [3:0] cs_exe_branch; // @[cpath.scala 158:32]
+  wire  _T_1334 = cs_exe_branch == 4'h0; // @[cpath.scala 165:24]
+  wire  _T_1335 = cs_exe_branch == 4'h1; // @[cpath.scala 166:24]
+  wire [2:0] _T_1336 = io_d2c_iseq ? 3'h2 : 3'h0; // @[cpath.scala 166:42]
+  wire  _T_1337 = cs_exe_branch == 4'h2; // @[cpath.scala 167:24]
+  wire  _T_1338 = ~io_d2c_iseq; // @[cpath.scala 167:44]
+  wire [2:0] _T_1339 = _T_1338 ? 3'h2 : 3'h0; // @[cpath.scala 167:43]
+  wire  _T_1340 = cs_exe_branch == 4'h5; // @[cpath.scala 168:24]
+  wire  _T_1341 = ~io_d2c_islt; // @[cpath.scala 168:43]
+  wire [2:0] _T_1342 = _T_1341 ? 3'h2 : 3'h0; // @[cpath.scala 168:42]
+  wire  _T_1343 = cs_exe_branch == 4'h6; // @[cpath.scala 169:24]
+  wire  _T_1344 = ~io_d2c_isltu; // @[cpath.scala 169:44]
+  wire [2:0] _T_1345 = _T_1344 ? 3'h2 : 3'h0; // @[cpath.scala 169:43]
+  wire  _T_1346 = cs_exe_branch == 4'h3; // @[cpath.scala 170:24]
+  wire [2:0] _T_1347 = io_d2c_islt ? 3'h2 : 3'h0; // @[cpath.scala 170:42]
+  wire  _T_1348 = cs_exe_branch == 4'h4; // @[cpath.scala 171:24]
+  wire [2:0] _T_1349 = io_d2c_isltu ? 3'h2 : 3'h0; // @[cpath.scala 171:43]
+  wire  _T_1350 = cs_exe_branch == 4'h7; // @[cpath.scala 172:24]
+  wire  _T_1351 = cs_exe_branch == 4'h8; // @[cpath.scala 173:24]
   wire [2:0] _T_1352 = _T_1351 ? 3'h3 : 3'h0; // @[Mux.scala 98:16]
   wire [2:0] _T_1353 = _T_1350 ? 3'h1 : _T_1352; // @[Mux.scala 98:16]
   wire [2:0] _T_1354 = _T_1348 ? _T_1349 : _T_1353; // @[Mux.scala 98:16]
@@ -4153,59 +4220,61 @@ module Cpath(
   wire [2:0] _T_1358 = _T_1337 ? _T_1339 : _T_1357; // @[Mux.scala 98:16]
   wire [2:0] _T_1359 = _T_1335 ? _T_1336 : _T_1358; // @[Mux.scala 98:16]
   wire [2:0] _T_1360 = _T_1334 ? 3'h0 : _T_1359; // @[Mux.scala 98:16]
-  wire [2:0] temp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1360; // @[cpath.scala 175:5]
-  wire  _T_1361 = cs_csr_op != 3'h0; // @[cpath.scala 179:35]
-  wire  _T_1362 = cs_csr_op != 3'h5; // @[cpath.scala 179:60]
-  wire  temp_is_csr = _T_1361 & _T_1362; // @[cpath.scala 179:46]
-  reg  cs_reg_exe_is_csr; // @[cpath.scala 180:36]
-  reg  cs_reg_exe_is_fencei; // @[cpath.scala 181:39]
-  wire  cs_wire_control_hazard = temp_pc_sel != 3'h0; // @[cpath.scala 200:22]
-  wire  _T_1365 = ~cs_mem_en; // @[cpath.scala 219:49]
-  wire  temp_wire_dec_is_load = cs_mem_valid & _T_1365; // @[cpath.scala 219:46]
-  reg  cs_reg_exe_is_load; // @[cpath.scala 222:37]
-  wire [4:0] cs_wire_dec_rs1_addr = io_d2c_instr[19:15]; // @[cpath.scala 224:44]
-  wire [4:0] cs_wire_dec_rs2_addr = io_d2c_instr[24:20]; // @[cpath.scala 225:44]
-  wire [4:0] cs_wire_dec_rd_addr = io_d2c_instr[11:7]; // @[cpath.scala 226:44]
-  reg [4:0] cs_reg_exe_rd_addr; // @[cpath.scala 228:37]
-  wire  _T_1366 = cs_reg_exe_is_load | cs_reg_exe_is_csr; // @[cpath.scala 230:29]
-  wire  _T_1367 = cs_reg_exe_rd_addr == cs_wire_dec_rs1_addr; // @[cpath.scala 232:34]
-  wire  _T_1368 = _T_1367 & cs_rs1_en; // @[cpath.scala 232:59]
-  wire  _T_1369 = cs_reg_exe_rd_addr == cs_wire_dec_rs2_addr; // @[cpath.scala 232:96]
-  wire  _T_1370 = _T_1369 & cs_rs2_en; // @[cpath.scala 232:121]
-  wire  _T_1371 = _T_1368 | _T_1370; // @[cpath.scala 232:73]
-  wire  cs_wire_data_hazard = _T_1366 & _T_1371; // @[cpath.scala 231:5]
-  reg  cs_reg_dec_imem_valid; // @[cpath.scala 247:40]
-  wire  _T_1372 = ~cs_valid_inst; // @[cpath.scala 248:33]
-  wire  cs_wire_dec_exception = _T_1372 & cs_reg_dec_imem_valid; // @[cpath.scala 248:48]
-  reg  cs_reg_exe_exception; // @[cpath.scala 249:39]
-  reg  cs_reg_mem_exception; // @[cpath.scala 250:39]
-  reg  cs_reg_exe_mem_valid; // @[cpath.scala 257:39]
-  reg  cs_reg_mem_mem_valid; // @[cpath.scala 258:39]
-  wire  _T_1373 = ~cs_reg_mem_mem_valid; // @[cpath.scala 260:34]
-  wire  _T_1374 = cs_reg_mem_mem_valid & io_dmem_data_valid; // @[cpath.scala 260:82]
-  wire  _T_1375 = _T_1373 | _T_1374; // @[cpath.scala 260:57]
-  wire  _T_1376 = ~_T_1375; // @[cpath.scala 260:31]
-  wire  _T_1377 = ~io_imem_data_valid; // @[cpath.scala 260:109]
-  wire  cs_wire_pipeline_stall = _T_1376 | _T_1377; // @[cpath.scala 260:106]
-  assign io_c2d_cp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1360; // @[cpath.scala 266:22]
-  assign io_c2d_cp_op1_sel = _T_1 ? 2'h0 : _T_371; // @[cpath.scala 267:23]
-  assign io_c2d_cp_op2_sel = _T_1 ? 2'h0 : _T_445; // @[cpath.scala 268:23]
-  assign io_c2d_cp_alu_sel = _T_1 ? 5'h0 : _T_519; // @[cpath.scala 269:23]
-  assign io_c2d_cp_reg_wen = _T_1 | _T_593; // @[cpath.scala 270:23]
-  assign io_c2d_cp_mem_en = _T_1 ? 1'h0 : _T_667; // @[cpath.scala 271:22]
-  assign io_c2d_cp_mem_read_op = _T_1 ? 3'h0 : _T_741; // @[cpath.scala 272:27]
-  assign io_c2d_cp_mem_write_mask = _T_1 ? 8'h1 : _T_815; // @[cpath.scala 273:30]
-  assign io_c2d_cp_mem_wen = _T_1 ? 1'h0 : _T_889; // @[cpath.scala 274:23]
-  assign io_c2d_cp_alu_ext_sel = _T_1 ? 3'h0 : _T_1111; // @[cpath.scala 275:27]
-  assign io_c2d_cp_wb_sel = _T_1 ? 2'h2 : _T_963; // @[cpath.scala 276:22]
-  assign io_c2d_cp_csr_op = _T_1 ? 3'h0 : _T_1037; // @[cpath.scala 277:22]
-  assign io_c2d_cp_control_hazard = temp_pc_sel != 3'h0; // @[cpath.scala 279:30]
-  assign io_c2d_cp_if_kill = cs_is_fencei | cs_reg_exe_is_fencei; // @[cpath.scala 280:23]
-  assign io_c2d_cp_data_hazard = _T_1366 & _T_1371; // @[cpath.scala 281:27]
-  assign io_c2d_cp_pipeline_kill = io_d2c_isredir; // @[cpath.scala 282:29]
-  assign io_c2d_cp_pipeline_stall = _T_1376 | _T_1377; // @[cpath.scala 283:30]
-  assign io_c2d_hasexception = cs_reg_mem_exception; // @[cpath.scala 252:25]
-  assign io_c2d_shouldstall = _T_1376 | _T_1377; // @[cpath.scala 261:24]
+  wire [2:0] temp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1360; // @[cpath.scala 177:5]
+  wire  _T_1361 = cs_csr_op != 3'h0; // @[cpath.scala 181:35]
+  wire  _T_1362 = cs_csr_op != 3'h5; // @[cpath.scala 181:60]
+  wire  temp_is_csr = _T_1361 & _T_1362; // @[cpath.scala 181:46]
+  reg  cs_reg_exe_is_csr; // @[cpath.scala 182:36]
+  reg  cs_reg_exe_is_fencei; // @[cpath.scala 183:39]
+  wire  cs_wire_control_hazard = temp_pc_sel != 3'h0; // @[cpath.scala 202:22]
+  wire  _T_1365 = ~cs_mem_en; // @[cpath.scala 221:49]
+  wire  temp_wire_dec_is_load = cs_mem_valid & _T_1365; // @[cpath.scala 221:46]
+  reg  cs_reg_exe_is_load; // @[cpath.scala 224:37]
+  wire [4:0] cs_wire_dec_rs1_addr = io_d2c_instr[19:15]; // @[cpath.scala 226:44]
+  wire [4:0] cs_wire_dec_rs2_addr = io_d2c_instr[24:20]; // @[cpath.scala 227:44]
+  wire [4:0] cs_wire_dec_rd_addr = io_d2c_instr[11:7]; // @[cpath.scala 228:44]
+  reg [4:0] cs_reg_exe_rd_addr; // @[cpath.scala 230:37]
+  wire  _T_1366 = cs_reg_exe_is_load | cs_reg_exe_is_csr; // @[cpath.scala 232:29]
+  wire  _T_1367 = cs_reg_exe_rd_addr == cs_wire_dec_rs1_addr; // @[cpath.scala 234:34]
+  wire  _T_1368 = _T_1367 & cs_rs1_en; // @[cpath.scala 234:59]
+  wire  _T_1369 = cs_reg_exe_rd_addr == cs_wire_dec_rs2_addr; // @[cpath.scala 234:96]
+  wire  _T_1370 = _T_1369 & cs_rs2_en; // @[cpath.scala 234:121]
+  wire  _T_1371 = _T_1368 | _T_1370; // @[cpath.scala 234:73]
+  wire  cs_wire_data_hazard = _T_1366 & _T_1371; // @[cpath.scala 233:5]
+  reg  cs_reg_dec_imem_valid; // @[cpath.scala 249:40]
+  wire  _T_1372 = ~cs_valid_inst; // @[cpath.scala 250:33]
+  wire  cs_wire_dec_exception = _T_1372 & cs_reg_dec_imem_valid; // @[cpath.scala 250:48]
+  reg  cs_reg_exe_exception; // @[cpath.scala 251:39]
+  reg  cs_reg_mem_exception; // @[cpath.scala 252:39]
+  reg  cs_reg_exe_mem_valid; // @[cpath.scala 259:39]
+  reg  cs_reg_mem_mem_valid; // @[cpath.scala 260:39]
+  wire  _T_1373 = ~cs_reg_mem_mem_valid; // @[cpath.scala 265:39]
+  wire  _T_1374 = cs_reg_mem_mem_valid & io_dmem_data_valid; // @[cpath.scala 265:87]
+  wire  _T_1375 = _T_1373 | _T_1374; // @[cpath.scala 265:62]
+  wire  cs_wire_pipeline_data_stall = ~_T_1375; // @[cpath.scala 265:36]
+  wire  cs_wire_pipeline_inst_stall = ~io_imem_data_valid; // @[cpath.scala 266:36]
+  wire  cs_wire_pipeline_stall = cs_wire_pipeline_inst_stall | cs_wire_pipeline_data_stall; // @[cpath.scala 268:59]
+  assign io_c2d_cp_pc_sel = io_d2c_isredir ? 3'h4 : _T_1360; // @[cpath.scala 273:22]
+  assign io_c2d_cp_op1_sel = _T_1 ? 2'h0 : _T_371; // @[cpath.scala 274:23]
+  assign io_c2d_cp_op2_sel = _T_1 ? 2'h0 : _T_445; // @[cpath.scala 275:23]
+  assign io_c2d_cp_alu_sel = _T_1 ? 5'h0 : _T_519; // @[cpath.scala 276:23]
+  assign io_c2d_cp_reg_wen = _T_1 | _T_593; // @[cpath.scala 277:23]
+  assign io_c2d_cp_mem_en = _T_1 ? 1'h0 : _T_667; // @[cpath.scala 278:22]
+  assign io_c2d_cp_mem_read_op = _T_1 ? 3'h0 : _T_741; // @[cpath.scala 279:27]
+  assign io_c2d_cp_mem_write_mask = _T_1 ? 8'h1 : _T_815; // @[cpath.scala 280:30]
+  assign io_c2d_cp_mem_wen = _T_1 ? 1'h0 : _T_889; // @[cpath.scala 281:23]
+  assign io_c2d_cp_alu_ext_sel = _T_1 ? 3'h0 : _T_1111; // @[cpath.scala 282:27]
+  assign io_c2d_cp_wb_sel = _T_1 ? 2'h2 : _T_963; // @[cpath.scala 283:22]
+  assign io_c2d_cp_csr_op = _T_1 ? 3'h0 : _T_1037; // @[cpath.scala 284:22]
+  assign io_c2d_cp_control_hazard = temp_pc_sel != 3'h0; // @[cpath.scala 286:30]
+  assign io_c2d_cp_if_kill = cs_is_fencei | cs_reg_exe_is_fencei; // @[cpath.scala 287:23]
+  assign io_c2d_cp_data_hazard = _T_1366 & _T_1371; // @[cpath.scala 288:27]
+  assign io_c2d_cp_pipeline_kill = io_d2c_isredir; // @[cpath.scala 289:29]
+  assign io_c2d_cp_pipeline_stall = cs_wire_pipeline_inst_stall | cs_wire_pipeline_data_stall; // @[cpath.scala 290:30]
+  assign io_c2d_cp_pipeline_data_stall = ~_T_1375; // @[cpath.scala 291:35]
+  assign io_c2d_cp_pipeline_inst_stall = ~io_imem_data_valid; // @[cpath.scala 292:35]
+  assign io_c2d_hasexception = cs_reg_mem_exception; // @[cpath.scala 254:25]
+  assign io_c2d_shouldstall = cs_wire_pipeline_inst_stall | cs_wire_pipeline_data_stall; // @[cpath.scala 269:24]
   assign cs_valid_inst_0 = cs_valid_inst;
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
@@ -4922,6 +4991,8 @@ module core(
   wire  dpath_io_c2d_cp_data_hazard; // @[core.scala 22:23]
   wire  dpath_io_c2d_cp_pipeline_kill; // @[core.scala 22:23]
   wire  dpath_io_c2d_cp_pipeline_stall; // @[core.scala 22:23]
+  wire  dpath_io_c2d_cp_pipeline_data_stall; // @[core.scala 22:23]
+  wire  dpath_io_c2d_cp_pipeline_inst_stall; // @[core.scala 22:23]
   wire  dpath_io_c2d_hasexception; // @[core.scala 22:23]
   wire  dpath_io_c2d_shouldstall; // @[core.scala 22:23]
   wire [31:0] dpath_io_d2c_instr; // @[core.scala 22:23]
@@ -4994,6 +5065,8 @@ module core(
   wire  cpath_io_c2d_cp_data_hazard; // @[core.scala 23:23]
   wire  cpath_io_c2d_cp_pipeline_kill; // @[core.scala 23:23]
   wire  cpath_io_c2d_cp_pipeline_stall; // @[core.scala 23:23]
+  wire  cpath_io_c2d_cp_pipeline_data_stall; // @[core.scala 23:23]
+  wire  cpath_io_c2d_cp_pipeline_inst_stall; // @[core.scala 23:23]
   wire  cpath_io_c2d_hasexception; // @[core.scala 23:23]
   wire  cpath_io_c2d_shouldstall; // @[core.scala 23:23]
   wire [31:0] cpath_io_d2c_instr; // @[core.scala 23:23]
@@ -5051,6 +5124,8 @@ module core(
     .io_c2d_cp_data_hazard(dpath_io_c2d_cp_data_hazard),
     .io_c2d_cp_pipeline_kill(dpath_io_c2d_cp_pipeline_kill),
     .io_c2d_cp_pipeline_stall(dpath_io_c2d_cp_pipeline_stall),
+    .io_c2d_cp_pipeline_data_stall(dpath_io_c2d_cp_pipeline_data_stall),
+    .io_c2d_cp_pipeline_inst_stall(dpath_io_c2d_cp_pipeline_inst_stall),
     .io_c2d_hasexception(dpath_io_c2d_hasexception),
     .io_c2d_shouldstall(dpath_io_c2d_shouldstall),
     .io_d2c_instr(dpath_io_d2c_instr),
@@ -5125,6 +5200,8 @@ module core(
     .io_c2d_cp_data_hazard(cpath_io_c2d_cp_data_hazard),
     .io_c2d_cp_pipeline_kill(cpath_io_c2d_cp_pipeline_kill),
     .io_c2d_cp_pipeline_stall(cpath_io_c2d_cp_pipeline_stall),
+    .io_c2d_cp_pipeline_data_stall(cpath_io_c2d_cp_pipeline_data_stall),
+    .io_c2d_cp_pipeline_inst_stall(cpath_io_c2d_cp_pipeline_inst_stall),
     .io_c2d_hasexception(cpath_io_c2d_hasexception),
     .io_c2d_shouldstall(cpath_io_c2d_shouldstall),
     .io_d2c_instr(cpath_io_d2c_instr),
@@ -5229,6 +5306,8 @@ module core(
   assign dpath_io_c2d_cp_data_hazard = cpath_io_c2d_cp_data_hazard; // @[core.scala 27:18]
   assign dpath_io_c2d_cp_pipeline_kill = cpath_io_c2d_cp_pipeline_kill; // @[core.scala 27:18]
   assign dpath_io_c2d_cp_pipeline_stall = cpath_io_c2d_cp_pipeline_stall; // @[core.scala 27:18]
+  assign dpath_io_c2d_cp_pipeline_data_stall = cpath_io_c2d_cp_pipeline_data_stall; // @[core.scala 27:18]
+  assign dpath_io_c2d_cp_pipeline_inst_stall = cpath_io_c2d_cp_pipeline_inst_stall; // @[core.scala 27:18]
   assign dpath_io_c2d_hasexception = cpath_io_c2d_hasexception; // @[core.scala 27:18]
   assign dpath_io_c2d_shouldstall = cpath_io_c2d_shouldstall; // @[core.scala 27:18]
   assign dpath_io_imem_rdata = bus_bridge_io_ports_0_rdata; // @[core.scala 43:31]

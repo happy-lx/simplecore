@@ -30,6 +30,7 @@ class C2DIO extends Bundle
     val cp_pipeline_kill = Output(Bool())
     val cp_pipeline_stall = Output(Bool())
     val cp_pipeline_data_stall = Output(Bool())
+    val cp_pipeline_inst_stall = Output(Bool())
 
 
 
@@ -259,12 +260,13 @@ class Cpath extends Module {
     val cs_reg_mem_mem_valid = RegNext(cs_reg_exe_mem_valid,false.B)
 
     val cs_wire_pipeline_data_stall = WireInit(false.B)
-
-    cs_wire_pipeline_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid)) || !(!(io.imem.memen) || (io.imem.memen && io.imem.data_valid))
-    io.c2d.shouldstall := cs_wire_pipeline_stall
+    val cs_wire_pipeline_inst_stall = WireInit(false.B)
 
     cs_wire_pipeline_data_stall := !((!cs_reg_mem_mem_valid) || (cs_reg_mem_mem_valid && io.dmem.data_valid))
+    cs_wire_pipeline_inst_stall := !io.imem.data_valid
 
+    cs_wire_pipeline_stall := cs_wire_pipeline_inst_stall || cs_wire_pipeline_data_stall
+    io.c2d.shouldstall := cs_wire_pipeline_stall
     //assgin inside signal to output
     
 
@@ -287,6 +289,7 @@ class Cpath extends Module {
     io.c2d.cp_pipeline_kill := cs_wire_pipeline_kill
     io.c2d.cp_pipeline_stall := cs_wire_pipeline_stall
     io.c2d.cp_pipeline_data_stall := cs_wire_pipeline_data_stall
+    io.c2d.cp_pipeline_inst_stall := cs_wire_pipeline_inst_stall
 
     //when control hazard happens or pipeline kill happens 
     //no need to passforward 

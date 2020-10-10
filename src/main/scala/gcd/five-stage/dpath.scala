@@ -473,12 +473,28 @@ class Dpath extends Module {
     //connect mem and write back stage
     when(io.c2d.cp_pipeline_stall)
     {
-        dp_wb_reg_rd_addr     := 0.U(5.W)
-        dp_wb_reg_rf_wen      := false.B
-        dp_wb_reg_wb_data     := 0.U(64.W)
-        dp_wb_reg_instr_valid := false.B
-        dp_wb_reg_pc          := dp_mem_reg_pc
-        dp_wb_reg_instr       := dp_mem_reg_instr
+        when(io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
+        {
+            dp_wb_reg_rd_addr     := 0.U(5.W)
+            dp_wb_reg_rf_wen      := false.B
+            dp_wb_reg_wb_data     := 0.U(64.W)
+            dp_wb_reg_instr_valid := false.B
+            dp_wb_reg_pc          := dp_mem_reg_pc
+            dp_wb_reg_instr       := dp_mem_reg_instr
+        }.elsewhen(!io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
+        {
+            //now we can commit the MEM stage and set the previous MEM stage invalid
+            dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
+            dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
+            dp_wb_reg_wb_data     := dp_wire_mem_memstageout
+            dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
+            dp_wb_reg_pc          := dp_mem_reg_pc
+            dp_wb_reg_instr       := dp_mem_reg_instr
+
+            dp_mem_reg_instr_valid := false.B
+            dp_mem_reg_mem_en := false.B
+
+        }
     }.elsewhen(csr.io.csr_illegal_ins_exception)
     {
         //when a illegal instruction or a illegal csr_read or write
