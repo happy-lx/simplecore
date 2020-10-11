@@ -108,6 +108,8 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_mem_reg_mem_wen;
         CData/*2:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_mem_reg_csr_op;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_wb_reg_instr_valid;
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT___T_147;
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT___T_149;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_msi;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_mti;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mip_msi;
@@ -129,10 +131,10 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__exception_in_csr;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_read_enable;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_wen;
-        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT___GEN_92;
-        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_illegal_ins_exception;
     };
     struct {
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT___GEN_92;
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_illegal_ins_exception;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isecall;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isebreak;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_ismret;
@@ -161,7 +163,6 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_590;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_643;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_659;
-        CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_666;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_667;
         CData/*7:0*/ top__DOT__mycore__DOT__cpath__DOT___T_788;
         CData/*7:0*/ top__DOT__mycore__DOT__cpath__DOT___T_803;
@@ -196,13 +197,11 @@ VL_MODULE(Vtop) {
         CData/*4:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_rd_addr;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_1366;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_1371;
-        CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_dec_imem_valid;
     };
     struct {
+        CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_dec_imem_valid;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_exception;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_exception;
-        CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_exe_mem_valid;
-        CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT__cs_reg_mem_mem_valid;
         CData/*0:0*/ top__DOT__mycore__DOT__cpath__DOT___T_1375;
         CData/*0:0*/ top__DOT__mycore__DOT__bus_bridge__DOT__has_request;
         CData/*0:0*/ top__DOT__mycore__DOT__bus_bridge__DOT__do_data_request;
@@ -239,6 +238,7 @@ VL_MODULE(Vtop) {
         IData/*23:0*/ top__DOT__mymem__DOT__reg_awaddr;
         IData/*23:0*/ top__DOT__mymem__DOT__reg_araddr;
         QData/*63:0*/ top__DOT__mymem_io_rdata;
+        QData/*63:0*/ top__DOT__mycore__DOT__bus_bridge_io_ports_1_rdata;
         QData/*63:0*/ top__DOT__mycore__DOT__dpath__DOT__regfile_io_rp2_data;
         QData/*63:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_alu_io_res;
         QData/*63:0*/ top__DOT__mycore__DOT__dpath__DOT__reg_if_pc;

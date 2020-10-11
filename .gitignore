@@ -339,5 +339,5 @@ project/plugins/project/
 hs_err_pid*
 
 #user
-generated
+/generated/*
 

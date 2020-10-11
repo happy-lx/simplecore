@@ -81,6 +81,7 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mycore__DOT__bus_bridge_io_axi4_arvalid;
         CData/*0:0*/ top__DOT__mycore__DOT__bus_bridge_io_axi4_wvalid;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr_io___05Fisredir;
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr_io___05Fcsr_illegal_ins_exception;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__reg_dec_instr_valid;
         CData/*4:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_exe_reg_rd_addr;
         CData/*4:0*/ top__DOT__mycore__DOT__dpath__DOT__dp_mem_reg_rd_addr;
@@ -130,11 +131,10 @@ VL_MODULE(Vtop) {
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__read_illegal;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__exception_in_csr;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_read_enable;
-        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_wen;
     };
     struct {
+        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_wen;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT___GEN_92;
-        CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_illegal_ins_exception;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isecall;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_isebreak;
         CData/*0:0*/ top__DOT__mycore__DOT__dpath__DOT__csr__DOT__csr_ismret;

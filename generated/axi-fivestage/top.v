@@ -2317,27 +2317,27 @@ module Dpath(
   wire [63:0] regfile__T_41_0_29; // @[dpath.scala 128:25]
   wire [63:0] regfile__T_41_0_30; // @[dpath.scala 128:25]
   wire [63:0] regfile__T_41_0_31; // @[dpath.scala 128:25]
-  wire [63:0] dp_alu_io_input1; // @[dpath.scala 361:24]
-  wire [63:0] dp_alu_io_input2; // @[dpath.scala 361:24]
-  wire [4:0] dp_alu_io_op; // @[dpath.scala 361:24]
-  wire [2:0] dp_alu_io_res_ext_op; // @[dpath.scala 361:24]
-  wire [63:0] dp_alu_io_res; // @[dpath.scala 361:24]
-  wire  csr_clock; // @[dpath.scala 452:21]
-  wire  csr_reset; // @[dpath.scala 452:21]
-  wire [31:0] csr_io__instruction; // @[dpath.scala 452:21]
-  wire [2:0] csr_io__csr_op; // @[dpath.scala 452:21]
-  wire [63:0] csr_io__data_in; // @[dpath.scala 452:21]
-  wire  csr_io__hasException; // @[dpath.scala 452:21]
-  wire  csr_io__hasStall; // @[dpath.scala 452:21]
-  wire [63:0] csr_io__in_pc; // @[dpath.scala 452:21]
-  wire  csr_io__is_retire; // @[dpath.scala 452:21]
-  wire [63:0] csr_io__redir_target; // @[dpath.scala 452:21]
-  wire [63:0] csr_io__csr_info; // @[dpath.scala 452:21]
-  wire  csr_io__isredir; // @[dpath.scala 452:21]
-  wire  csr_io__csr_illegal_ins_exception; // @[dpath.scala 452:21]
-  wire  csr_io_isredir; // @[dpath.scala 452:21]
-  wire  csr_io_is_retire; // @[dpath.scala 452:21]
-  wire [63:0] csr__T_17756_0; // @[dpath.scala 452:21]
+  wire [63:0] dp_alu_io_input1; // @[dpath.scala 362:24]
+  wire [63:0] dp_alu_io_input2; // @[dpath.scala 362:24]
+  wire [4:0] dp_alu_io_op; // @[dpath.scala 362:24]
+  wire [2:0] dp_alu_io_res_ext_op; // @[dpath.scala 362:24]
+  wire [63:0] dp_alu_io_res; // @[dpath.scala 362:24]
+  wire  csr_clock; // @[dpath.scala 453:21]
+  wire  csr_reset; // @[dpath.scala 453:21]
+  wire [31:0] csr_io__instruction; // @[dpath.scala 453:21]
+  wire [2:0] csr_io__csr_op; // @[dpath.scala 453:21]
+  wire [63:0] csr_io__data_in; // @[dpath.scala 453:21]
+  wire  csr_io__hasException; // @[dpath.scala 453:21]
+  wire  csr_io__hasStall; // @[dpath.scala 453:21]
+  wire [63:0] csr_io__in_pc; // @[dpath.scala 453:21]
+  wire  csr_io__is_retire; // @[dpath.scala 453:21]
+  wire [63:0] csr_io__redir_target; // @[dpath.scala 453:21]
+  wire [63:0] csr_io__csr_info; // @[dpath.scala 453:21]
+  wire  csr_io__isredir; // @[dpath.scala 453:21]
+  wire  csr_io__csr_illegal_ins_exception; // @[dpath.scala 453:21]
+  wire  csr_io_isredir; // @[dpath.scala 453:21]
+  wire  csr_io_is_retire; // @[dpath.scala 453:21]
+  wire [63:0] csr__T_17756_0; // @[dpath.scala 453:21]
   reg [63:0] reg_if_pc; // @[dpath.scala 36:28]
   wire [63:0] wire_pc_next_4 = reg_if_pc + 64'h4; // @[dpath.scala 52:33]
   wire  _T_3 = io_c2d_cp_pc_sel == 3'h0; // @[dpath.scala 56:27]
@@ -2347,15 +2347,15 @@ module Dpath(
   wire  _T_7 = io_c2d_cp_pc_sel == 3'h2; // @[dpath.scala 60:27]
   reg [63:0] dp_exe_reg_pc; // @[dpath.scala 221:32]
   reg [63:0] dp_exe_reg_bim_ext; // @[dpath.scala 227:37]
-  wire [63:0] wire_pc_branch_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_bim_ext); // @[dpath.scala 357:91]
+  wire [63:0] wire_pc_branch_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_bim_ext); // @[dpath.scala 358:91]
   reg [63:0] dp_exe_reg_op1_source; // @[dpath.scala 166:36]
   reg [63:0] dp_exe_reg_iim_ext; // @[dpath.scala 226:37]
-  wire [63:0] _T_121 = $signed(dp_exe_reg_op1_source) + $signed(dp_exe_reg_iim_ext); // @[dpath.scala 356:60]
-  wire [62:0] _T_122 = _T_121[63:1]; // @[dpath.scala 356:91]
-  wire [63:0] wire_pc_jr_target = {$signed(_T_122), 1'h0}; // @[dpath.scala 356:109]
+  wire [63:0] _T_121 = $signed(dp_exe_reg_op1_source) + $signed(dp_exe_reg_iim_ext); // @[dpath.scala 357:60]
+  wire [62:0] _T_122 = _T_121[63:1]; // @[dpath.scala 357:91]
+  wire [63:0] wire_pc_jr_target = {$signed(_T_122), 1'h0}; // @[dpath.scala 357:109]
   reg [63:0] dp_exe_reg_jim_ext; // @[dpath.scala 225:37]
-  wire [63:0] wire_pc_jump_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_jim_ext); // @[dpath.scala 354:89]
-  wire [63:0] wire_pc_redirect_target = csr_io__redir_target; // @[dpath.scala 45:39 dpath.scala 461:29]
+  wire [63:0] wire_pc_jump_target = $signed(dp_exe_reg_pc) + $signed(dp_exe_reg_jim_ext); // @[dpath.scala 355:89]
+  wire [63:0] wire_pc_redirect_target = csr_io__redir_target; // @[dpath.scala 45:39 dpath.scala 462:29]
   wire [31:0] wire_if_instr = io_imem_rdata[31:0]; // @[dpath.scala 64:47]
   reg [31:0] reg_dec_instr; // @[dpath.scala 68:32]
   reg  reg_dec_instr_valid; // @[dpath.scala 69:38]
@@ -2403,19 +2403,19 @@ module Dpath(
   wire  _T_58 = dp_dec_rs1_addr == dp_wb_reg_rd_addr; // @[dpath.scala 185:26]
   wire  _T_60 = _T_58 & _T_51; // @[dpath.scala 185:48]
   wire  _T_61 = _T_60 & dp_wb_reg_rf_wen; // @[dpath.scala 185:75]
-  reg [1:0] dp_mem_reg_wb_sel; // @[dpath.scala 387:46]
-  wire  _T_137 = dp_mem_reg_wb_sel == 2'h0; // @[dpath.scala 465:28]
-  reg [63:0] dp_mem_reg_alu_out; // @[dpath.scala 386:46]
-  wire  _T_138 = dp_mem_reg_wb_sel == 2'h1; // @[dpath.scala 466:28]
-  wire  _T_139 = dp_mem_reg_wb_sel == 2'h2; // @[dpath.scala 467:28]
-  reg [63:0] dp_mem_reg_pc; // @[dpath.scala 385:46]
-  wire [63:0] _T_141 = dp_mem_reg_pc + 64'h4; // @[dpath.scala 467:62]
-  wire  _T_142 = dp_mem_reg_wb_sel == 2'h3; // @[dpath.scala 468:28]
+  reg [1:0] dp_mem_reg_wb_sel; // @[dpath.scala 388:46]
+  wire  _T_137 = dp_mem_reg_wb_sel == 2'h0; // @[dpath.scala 466:28]
+  reg [63:0] dp_mem_reg_alu_out; // @[dpath.scala 387:46]
+  wire  _T_138 = dp_mem_reg_wb_sel == 2'h1; // @[dpath.scala 467:28]
+  wire  _T_139 = dp_mem_reg_wb_sel == 2'h2; // @[dpath.scala 468:28]
+  reg [63:0] dp_mem_reg_pc; // @[dpath.scala 386:46]
+  wire [63:0] _T_141 = dp_mem_reg_pc + 64'h4; // @[dpath.scala 468:62]
+  wire  _T_142 = dp_mem_reg_wb_sel == 2'h3; // @[dpath.scala 469:28]
   wire [63:0] _T_143 = _T_142 ? csr_io__csr_info : dp_mem_reg_alu_out; // @[Mux.scala 98:16]
   wire [63:0] _T_144 = _T_139 ? _T_141 : _T_143; // @[Mux.scala 98:16]
   wire [63:0] _T_145 = _T_138 ? io_dmem_rdata : _T_144; // @[Mux.scala 98:16]
   wire [63:0] dp_wire_mem_memstageout = _T_137 ? dp_mem_reg_alu_out : _T_145; // @[Mux.scala 98:16]
-  wire [63:0] dp_wire_exe_aluout = dp_alu_io_res; // @[dpath.scala 369:24]
+  wire [63:0] dp_wire_exe_aluout = dp_alu_io_res; // @[dpath.scala 370:24]
   wire  _T_67 = io_c2d_cp_op2_sel == 2'h0; // @[dpath.scala 189:28]
   wire  _T_68 = io_c2d_cp_op2_sel == 2'h1; // @[dpath.scala 190:28]
   wire  _T_69 = io_c2d_cp_op2_sel == 2'h2; // @[dpath.scala 191:28]
@@ -2454,24 +2454,26 @@ module Dpath(
   reg [1:0] dp_exe_reg_wb_sel; // @[dpath.scala 218:36]
   reg [2:0] dp_exe_reg_csr_op; // @[dpath.scala 219:36]
   reg  dp_exe_reg_instr_valid; // @[dpath.scala 223:41]
-  wire [65:0] _GEN_36 = io_c2d_cp_control_hazard ? 66'h0 : dp_dec_iim_ext; // @[dpath.scala 302:9]
-  wire [65:0] _GEN_56 = io_c2d_cp_data_hazard ? 66'h0 : _GEN_36; // @[dpath.scala 279:9]
-  wire [65:0] _GEN_76 = io_c2d_cp_pipeline_stall ? {{2'd0}, dp_exe_reg_iim_ext} : _GEN_56; // @[dpath.scala 255:5]
-  wire [65:0] _GEN_96 = io_c2d_cp_pipeline_kill ? 66'h0 : _GEN_76; // @[dpath.scala 233:5]
-  reg [31:0] dp_mem_reg_instr; // @[dpath.scala 377:46]
-  reg  dp_mem_reg_instr_valid; // @[dpath.scala 378:46]
-  reg [63:0] dp_mem_reg_rs2_data; // @[dpath.scala 379:46]
-  reg  dp_mem_reg_mem_en; // @[dpath.scala 380:46]
-  reg [2:0] dp_mem_reg_mem_read_op; // @[dpath.scala 381:46]
-  reg [7:0] dp_mem_reg_mem_write_mask; // @[dpath.scala 382:46]
-  reg  dp_mem_reg_mem_wen; // @[dpath.scala 383:46]
-  reg [2:0] dp_mem_reg_csr_op; // @[dpath.scala 384:46]
-  reg  dp_wb_reg_instr_valid; // @[dpath.scala 473:40]
-  reg [63:0] dp_wb_reg_pc; // @[dpath.scala 474:31]
-  reg [31:0] dp_wb_reg_instr; // @[dpath.scala 475:34]
-  wire  _T_147 = io_c2d_cp_pipeline_data_stall & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 480:44]
-  wire  _T_148 = ~io_c2d_cp_pipeline_data_stall; // @[dpath.scala 488:20]
-  wire  _T_149 = _T_148 & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 488:51]
+  wire [65:0] _GEN_36 = io_c2d_cp_control_hazard ? 66'h0 : dp_dec_iim_ext; // @[dpath.scala 303:9]
+  wire [65:0] _GEN_56 = io_c2d_cp_data_hazard ? 66'h0 : _GEN_36; // @[dpath.scala 280:9]
+  wire [65:0] _GEN_76 = io_c2d_cp_pipeline_kill ? 66'h0 : _GEN_56; // @[dpath.scala 256:5]
+  wire [65:0] _GEN_96 = io_c2d_cp_pipeline_stall ? {{2'd0}, dp_exe_reg_iim_ext} : _GEN_76; // @[dpath.scala 233:5]
+  reg [31:0] dp_mem_reg_instr; // @[dpath.scala 378:46]
+  reg  dp_mem_reg_instr_valid; // @[dpath.scala 379:46]
+  reg [63:0] dp_mem_reg_rs2_data; // @[dpath.scala 380:46]
+  reg  dp_mem_reg_mem_en; // @[dpath.scala 381:46]
+  reg [2:0] dp_mem_reg_mem_read_op; // @[dpath.scala 382:46]
+  reg [7:0] dp_mem_reg_mem_write_mask; // @[dpath.scala 383:46]
+  reg  dp_mem_reg_mem_wen; // @[dpath.scala 384:46]
+  reg [2:0] dp_mem_reg_csr_op; // @[dpath.scala 385:46]
+  reg  dp_wb_reg_instr_valid; // @[dpath.scala 474:40]
+  reg [63:0] dp_wb_reg_pc; // @[dpath.scala 475:31]
+  reg [31:0] dp_wb_reg_instr; // @[dpath.scala 476:34]
+  wire  _T_147 = io_c2d_cp_pipeline_data_stall & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 481:44]
+  wire  _T_148 = ~io_c2d_cp_pipeline_data_stall; // @[dpath.scala 489:20]
+  wire  _T_149 = _T_148 & io_c2d_cp_pipeline_inst_stall; // @[dpath.scala 489:51]
+  wire  _T_150 = ~csr_io__csr_illegal_ins_exception; // @[dpath.scala 493:18]
+  wire  _GEN_126 = _T_150 & dp_mem_reg_rf_wen; // @[dpath.scala 494:13]
   Regfile regfile ( // @[dpath.scala 128:25]
     .clock(regfile_clock),
     .io_rp1(regfile_io_rp1),
@@ -2514,14 +2516,14 @@ module Dpath(
     ._T_41_0_30(regfile__T_41_0_30),
     ._T_41_0_31(regfile__T_41_0_31)
   );
-  alu_module dp_alu ( // @[dpath.scala 361:24]
+  alu_module dp_alu ( // @[dpath.scala 362:24]
     .io_input1(dp_alu_io_input1),
     .io_input2(dp_alu_io_input2),
     .io_op(dp_alu_io_op),
     .io_res_ext_op(dp_alu_io_res_ext_op),
     .io_res(dp_alu_io_res)
   );
-  CSRfile csr ( // @[dpath.scala 452:21]
+  CSRfile csr ( // @[dpath.scala 453:21]
     .clock(csr_clock),
     .reset(csr_reset),
     .io__instruction(csr_io__instruction),
@@ -2540,18 +2542,18 @@ module Dpath(
     ._T_17756_0(csr__T_17756_0)
   );
   assign io_d2c_instr = reg_dec_instr; // @[dpath.scala 120:18]
-  assign io_d2c_islt = $signed(dp_exe_reg_op1_source) < $signed(dp_exe_reg_op2_source); // @[dpath.scala 372:17]
-  assign io_d2c_isltu = dp_exe_reg_op1_source < dp_exe_reg_op2_source; // @[dpath.scala 373:18]
-  assign io_d2c_iseq = dp_exe_reg_op1_source == dp_exe_reg_op2_source; // @[dpath.scala 374:17]
-  assign io_d2c_isredir = csr_io__isredir; // @[dpath.scala 462:20]
-  assign io_d2c_mem_mem_valid = dp_mem_reg_mem_en; // @[dpath.scala 442:26]
+  assign io_d2c_islt = $signed(dp_exe_reg_op1_source) < $signed(dp_exe_reg_op2_source); // @[dpath.scala 373:17]
+  assign io_d2c_isltu = dp_exe_reg_op1_source < dp_exe_reg_op2_source; // @[dpath.scala 374:18]
+  assign io_d2c_iseq = dp_exe_reg_op1_source == dp_exe_reg_op2_source; // @[dpath.scala 375:17]
+  assign io_d2c_isredir = csr_io__isredir; // @[dpath.scala 463:20]
+  assign io_d2c_mem_mem_valid = dp_mem_reg_mem_en; // @[dpath.scala 443:26]
   assign io_imem_addr = {{32'd0}, reg_if_pc[31:0]}; // @[dpath.scala 48:18]
-  assign io_dmem_addr = {{32'd0}, dp_mem_reg_alu_out[31:0]}; // @[dpath.scala 446:18]
-  assign io_dmem_mask = dp_mem_reg_mem_write_mask; // @[dpath.scala 447:18]
-  assign io_dmem_op = dp_mem_reg_mem_read_op; // @[dpath.scala 448:16]
-  assign io_dmem_wdata = dp_mem_reg_rs2_data; // @[dpath.scala 449:19]
-  assign io_dmem_memen = dp_mem_reg_mem_en; // @[dpath.scala 445:19]
-  assign io_dmem_wen = dp_mem_reg_mem_wen; // @[dpath.scala 450:17]
+  assign io_dmem_addr = {{32'd0}, dp_mem_reg_alu_out[31:0]}; // @[dpath.scala 447:18]
+  assign io_dmem_mask = dp_mem_reg_mem_write_mask; // @[dpath.scala 448:18]
+  assign io_dmem_op = dp_mem_reg_mem_read_op; // @[dpath.scala 449:16]
+  assign io_dmem_wdata = dp_mem_reg_rs2_data; // @[dpath.scala 450:19]
+  assign io_dmem_memen = dp_mem_reg_mem_en; // @[dpath.scala 446:19]
+  assign io_dmem_wen = dp_mem_reg_mem_wen; // @[dpath.scala 451:17]
   assign io_isredir = csr_io_isredir;
   assign io_is_retire = csr_io_is_retire;
   assign _T_17756 = csr__T_17756_0;
@@ -2592,22 +2594,22 @@ module Dpath(
   assign regfile_clock = clock;
   assign regfile_io_rp1 = reg_dec_instr[19:15]; // @[dpath.scala 130:20]
   assign regfile_io_rp2 = reg_dec_instr[24:20]; // @[dpath.scala 131:20]
-  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 543:19]
-  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 544:24]
-  assign regfile_io_wp_en = dp_wb_reg_rf_wen & dp_wb_reg_instr_valid; // @[dpath.scala 538:26 dpath.scala 541:26]
-  assign dp_alu_io_input1 = dp_exe_reg_op1_source; // @[dpath.scala 363:22]
-  assign dp_alu_io_input2 = dp_exe_reg_op2_source; // @[dpath.scala 364:22]
-  assign dp_alu_io_op = dp_exe_reg_alu_sel; // @[dpath.scala 366:18]
-  assign dp_alu_io_res_ext_op = dp_exe_reg_alu_ext_sel; // @[dpath.scala 367:26]
+  assign regfile_io_wp = dp_wb_reg_rd_addr; // @[dpath.scala 550:19]
+  assign regfile_io_wp_data = dp_wb_reg_wb_data; // @[dpath.scala 551:24]
+  assign regfile_io_wp_en = dp_wb_reg_rf_wen & dp_wb_reg_instr_valid; // @[dpath.scala 545:26 dpath.scala 548:26]
+  assign dp_alu_io_input1 = dp_exe_reg_op1_source; // @[dpath.scala 364:22]
+  assign dp_alu_io_input2 = dp_exe_reg_op2_source; // @[dpath.scala 365:22]
+  assign dp_alu_io_op = dp_exe_reg_alu_sel; // @[dpath.scala 367:18]
+  assign dp_alu_io_res_ext_op = dp_exe_reg_alu_ext_sel; // @[dpath.scala 368:26]
   assign csr_clock = clock;
   assign csr_reset = reset;
-  assign csr_io__instruction = dp_mem_reg_instr; // @[dpath.scala 454:24]
-  assign csr_io__csr_op = dp_mem_reg_csr_op; // @[dpath.scala 455:19]
-  assign csr_io__data_in = dp_mem_reg_alu_out; // @[dpath.scala 456:20]
-  assign csr_io__hasException = io_c2d_hasexception; // @[dpath.scala 457:25]
-  assign csr_io__hasStall = io_c2d_shouldstall; // @[dpath.scala 458:21]
-  assign csr_io__in_pc = dp_mem_reg_pc; // @[dpath.scala 459:18]
-  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 546:22]
+  assign csr_io__instruction = dp_mem_reg_instr; // @[dpath.scala 455:24]
+  assign csr_io__csr_op = dp_mem_reg_csr_op; // @[dpath.scala 456:19]
+  assign csr_io__data_in = dp_mem_reg_alu_out; // @[dpath.scala 457:20]
+  assign csr_io__hasException = io_c2d_hasexception; // @[dpath.scala 458:25]
+  assign csr_io__hasStall = io_c2d_shouldstall; // @[dpath.scala 459:21]
+  assign csr_io__in_pc = dp_mem_reg_pc; // @[dpath.scala 460:18]
+  assign csr_io__is_retire = dp_wb_reg_instr_valid; // @[dpath.scala 553:22]
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
 `define RANDOMIZE
 `endif
@@ -2737,22 +2739,22 @@ end // initial
   always @(posedge clock) begin
     if (reset) begin
       reg_if_pc <= 64'h80000000;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      if (_T_3) begin
-        reg_if_pc <= wire_pc_next_4;
-      end else if (_T_4) begin
-        reg_if_pc <= wire_pc_redirect_target;
-      end else if (_T_5) begin
-        reg_if_pc <= wire_pc_jump_target;
-      end else if (_T_6) begin
-        reg_if_pc <= wire_pc_jr_target;
-      end else if (_T_7) begin
-        reg_if_pc <= wire_pc_branch_target;
-      end else begin
-        reg_if_pc <= wire_pc_next_4;
-      end
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (!(io_c2d_cp_data_hazard)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        if (_T_3) begin
+          reg_if_pc <= wire_pc_next_4;
+        end else if (_T_4) begin
+          reg_if_pc <= wire_pc_redirect_target;
+        end else if (_T_5) begin
+          reg_if_pc <= wire_pc_jump_target;
+        end else if (_T_6) begin
+          reg_if_pc <= wire_pc_jr_target;
+        end else if (_T_7) begin
+          reg_if_pc <= wire_pc_branch_target;
+        end else begin
+          reg_if_pc <= wire_pc_next_4;
+        end
+      end else if (!(io_c2d_cp_data_hazard)) begin
         if (io_c2d_cp_control_hazard) begin
           if (_T_3) begin
             reg_if_pc <= wire_pc_next_4;
@@ -2786,10 +2788,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_pc <= 64'h80000000;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_pc <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_pc <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_pc <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_pc <= 64'h0;
@@ -2799,10 +2801,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_bim_ext <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_bim_ext <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_bim_ext <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_bim_ext <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_bim_ext <= 64'h0;
@@ -2810,10 +2812,10 @@ end // initial
         dp_exe_reg_bim_ext <= dp_dec_bim_ext;
       end
     end
-    if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_op1_source <= 64'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+    if (!(io_c2d_cp_pipeline_stall)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_op1_source <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_op1_source <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_op1_source <= 64'h0;
@@ -2848,10 +2850,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_jim_ext <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_jim_ext <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_jim_ext <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_jim_ext <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_jim_ext <= 64'h0;
@@ -2861,10 +2863,10 @@ end // initial
     end
     if (reset) begin
       reg_dec_instr <= 32'h4033;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      reg_dec_instr <= 32'h4033;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (!(io_c2d_cp_data_hazard)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        reg_dec_instr <= 32'h4033;
+      end else if (!(io_c2d_cp_data_hazard)) begin
         if (io_c2d_cp_control_hazard) begin
           reg_dec_instr <= 32'h4033;
         end else if (io_c2d_cp_if_kill) begin
@@ -2876,17 +2878,19 @@ end // initial
     end
     if (reset) begin
       reg_dec_instr_valid <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      reg_dec_instr_valid <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      reg_dec_instr_valid <= _GEN_10;
+      if (io_c2d_cp_pipeline_kill) begin
+        reg_dec_instr_valid <= 1'h0;
+      end else begin
+        reg_dec_instr_valid <= _GEN_10;
+      end
     end
     if (reset) begin
       reg_dec_pc <= 64'h80000000;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      reg_dec_pc <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (!(io_c2d_cp_data_hazard)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        reg_dec_pc <= 64'h0;
+      end else if (!(io_c2d_cp_data_hazard)) begin
         if (io_c2d_cp_control_hazard) begin
           reg_dec_pc <= 64'h0;
         end else if (io_c2d_cp_if_kill) begin
@@ -2898,10 +2902,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_rd_addr <= 5'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_rd_addr <= 5'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_rd_addr <= 5'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_rd_addr <= 5'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_rd_addr <= 5'h0;
@@ -2911,10 +2915,12 @@ end // initial
     end
     if (reset) begin
       dp_mem_reg_rd_addr <= 5'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_rd_addr <= 5'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_rd_addr <= dp_exe_reg_rd_addr;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_rd_addr <= 5'h0;
+      end else begin
+        dp_mem_reg_rd_addr <= dp_exe_reg_rd_addr;
+      end
     end
     if (reset) begin
       dp_wb_reg_rd_addr <= 5'h0;
@@ -2929,10 +2935,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_rf_wen <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_rf_wen <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_rf_wen <= 1'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_rf_wen <= 1'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_rf_wen <= 1'h0;
@@ -2944,22 +2950,28 @@ end // initial
       dp_mem_reg_rf_wen <= 1'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
       if (_T_147) begin
-        if (io_c2d_cp_pipeline_kill) begin
-          dp_mem_reg_rf_wen <= 1'h0;
-        end else if (!(io_c2d_cp_pipeline_stall)) begin
-          dp_mem_reg_rf_wen <= dp_exe_reg_rf_wen;
+        if (!(io_c2d_cp_pipeline_stall)) begin
+          if (io_c2d_cp_pipeline_kill) begin
+            dp_mem_reg_rf_wen <= 1'h0;
+          end else begin
+            dp_mem_reg_rf_wen <= dp_exe_reg_rf_wen;
+          end
         end
       end else if (_T_149) begin
         dp_mem_reg_rf_wen <= 1'h0;
-      end else if (io_c2d_cp_pipeline_kill) begin
-        dp_mem_reg_rf_wen <= 1'h0;
       end else if (!(io_c2d_cp_pipeline_stall)) begin
+        if (io_c2d_cp_pipeline_kill) begin
+          dp_mem_reg_rf_wen <= 1'h0;
+        end else begin
+          dp_mem_reg_rf_wen <= dp_exe_reg_rf_wen;
+        end
+      end
+    end else if (!(io_c2d_cp_pipeline_stall)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_rf_wen <= 1'h0;
+      end else begin
         dp_mem_reg_rf_wen <= dp_exe_reg_rf_wen;
       end
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_rf_wen <= 1'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_rf_wen <= dp_exe_reg_rf_wen;
     end
     if (reset) begin
       dp_wb_reg_rf_wen <= 1'h0;
@@ -2967,17 +2979,17 @@ end // initial
       if (_T_147) begin
         dp_wb_reg_rf_wen <= 1'h0;
       end else if (_T_149) begin
-        dp_wb_reg_rf_wen <= dp_mem_reg_rf_wen;
+        dp_wb_reg_rf_wen <= _GEN_126;
       end
     end else if (csr_io__csr_illegal_ins_exception) begin
       dp_wb_reg_rf_wen <= 1'h0;
     end else begin
       dp_wb_reg_rf_wen <= dp_mem_reg_rf_wen;
     end
-    if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_op2_source <= 64'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+    if (!(io_c2d_cp_pipeline_stall)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_op2_source <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_op2_source <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_op2_source <= 64'h0;
@@ -3003,10 +3015,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_instr <= 32'h4033;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_instr <= 32'h4033;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_instr <= 32'h4033;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_instr <= 32'h4033;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_instr <= 32'h4033;
@@ -3045,31 +3057,37 @@ end // initial
     end
     if (reset) begin
       dp_mem_reg_wb_sel <= 2'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_wb_sel <= 2'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_wb_sel <= dp_exe_reg_wb_sel;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_wb_sel <= 2'h0;
+      end else begin
+        dp_mem_reg_wb_sel <= dp_exe_reg_wb_sel;
+      end
     end
     if (reset) begin
       dp_mem_reg_alu_out <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_alu_out <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_alu_out <= dp_wire_exe_aluout;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_alu_out <= 64'h0;
+      end else begin
+        dp_mem_reg_alu_out <= dp_wire_exe_aluout;
+      end
     end
     if (reset) begin
       dp_mem_reg_pc <= 64'h80000000;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_pc <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_pc <= dp_exe_reg_pc;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_pc <= 64'h0;
+      end else begin
+        dp_mem_reg_pc <= dp_exe_reg_pc;
+      end
     end
     if (reset) begin
       dp_exe_reg_rs2_data <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_rs2_data <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_rs2_data <= 64'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_rs2_data <= 64'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_rs2_data <= 64'h0;
@@ -3085,10 +3103,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_alu_sel <= 5'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_alu_sel <= 5'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_alu_sel <= 5'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_alu_sel <= 5'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_alu_sel <= 5'h0;
@@ -3098,10 +3116,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_mem_en <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_mem_en <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_mem_en <= 1'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_mem_en <= 1'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_mem_en <= 1'h0;
@@ -3111,10 +3129,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_mem_read_op <= 3'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_mem_read_op <= 3'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_mem_read_op <= 3'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_mem_read_op <= 3'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_mem_read_op <= 3'h0;
@@ -3124,10 +3142,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_mem_write_mask <= 8'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_mem_write_mask <= 8'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_mem_write_mask <= 8'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_mem_write_mask <= 8'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_mem_write_mask <= 8'h0;
@@ -3137,10 +3155,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_mem_wen <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_mem_wen <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_mem_wen <= 1'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_mem_wen <= 1'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_mem_wen <= 1'h0;
@@ -3150,10 +3168,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_alu_ext_sel <= 3'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_alu_ext_sel <= 3'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_alu_ext_sel <= 3'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_alu_ext_sel <= 3'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_alu_ext_sel <= 3'h0;
@@ -3163,10 +3181,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_wb_sel <= 2'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_wb_sel <= 2'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_wb_sel <= 2'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_wb_sel <= 2'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_wb_sel <= 2'h0;
@@ -3176,10 +3194,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_csr_op <= 3'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_csr_op <= 3'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_csr_op <= 3'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_csr_op <= 3'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_csr_op <= 3'h0;
@@ -3189,10 +3207,10 @@ end // initial
     end
     if (reset) begin
       dp_exe_reg_instr_valid <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_exe_reg_instr_valid <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      if (io_c2d_cp_data_hazard) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_exe_reg_instr_valid <= 1'h0;
+      end else if (io_c2d_cp_data_hazard) begin
         dp_exe_reg_instr_valid <= 1'h0;
       end else if (io_c2d_cp_control_hazard) begin
         dp_exe_reg_instr_valid <= 1'h0;
@@ -3202,87 +3220,111 @@ end // initial
     end
     if (reset) begin
       dp_mem_reg_instr <= 32'h4033;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_instr <= 32'h4033;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_instr <= dp_exe_reg_instr;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_instr <= 32'h4033;
+      end else begin
+        dp_mem_reg_instr <= dp_exe_reg_instr;
+      end
     end
     if (reset) begin
       dp_mem_reg_instr_valid <= 1'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
       if (_T_147) begin
+        if (!(io_c2d_cp_pipeline_stall)) begin
+          if (io_c2d_cp_pipeline_kill) begin
+            dp_mem_reg_instr_valid <= 1'h0;
+          end else begin
+            dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
+          end
+        end
+      end else if (_T_149) begin
+        dp_mem_reg_instr_valid <= 1'h0;
+      end else if (!(io_c2d_cp_pipeline_stall)) begin
         if (io_c2d_cp_pipeline_kill) begin
           dp_mem_reg_instr_valid <= 1'h0;
-        end else if (!(io_c2d_cp_pipeline_stall)) begin
+        end else begin
           dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
         end
-      end else if (_T_149) begin
+      end
+    end else if (!(io_c2d_cp_pipeline_stall)) begin
+      if (io_c2d_cp_pipeline_kill) begin
         dp_mem_reg_instr_valid <= 1'h0;
-      end else if (io_c2d_cp_pipeline_kill) begin
-        dp_mem_reg_instr_valid <= 1'h0;
-      end else if (!(io_c2d_cp_pipeline_stall)) begin
+      end else begin
         dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
       end
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_instr_valid <= 1'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_instr_valid <= dp_exe_reg_instr_valid;
     end
     if (reset) begin
       dp_mem_reg_rs2_data <= 64'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_rs2_data <= 64'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_rs2_data <= dp_exe_reg_rs2_data;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_rs2_data <= 64'h0;
+      end else begin
+        dp_mem_reg_rs2_data <= dp_exe_reg_rs2_data;
+      end
     end
     if (reset) begin
       dp_mem_reg_mem_en <= 1'h0;
     end else if (io_c2d_cp_pipeline_stall) begin
       if (_T_147) begin
-        if (io_c2d_cp_pipeline_kill) begin
-          dp_mem_reg_mem_en <= 1'h0;
-        end else if (!(io_c2d_cp_pipeline_stall)) begin
-          dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
+        if (!(io_c2d_cp_pipeline_stall)) begin
+          if (io_c2d_cp_pipeline_kill) begin
+            dp_mem_reg_mem_en <= 1'h0;
+          end else begin
+            dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
+          end
         end
       end else if (_T_149) begin
         dp_mem_reg_mem_en <= 1'h0;
-      end else if (io_c2d_cp_pipeline_kill) begin
-        dp_mem_reg_mem_en <= 1'h0;
       end else if (!(io_c2d_cp_pipeline_stall)) begin
+        if (io_c2d_cp_pipeline_kill) begin
+          dp_mem_reg_mem_en <= 1'h0;
+        end else begin
+          dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
+        end
+      end
+    end else if (!(io_c2d_cp_pipeline_stall)) begin
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_mem_en <= 1'h0;
+      end else begin
         dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
       end
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_mem_en <= 1'h0;
-    end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_mem_en <= dp_exe_reg_mem_en;
     end
     if (reset) begin
       dp_mem_reg_mem_read_op <= 3'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_mem_read_op <= 3'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_mem_read_op <= dp_exe_reg_mem_read_op;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_mem_read_op <= 3'h0;
+      end else begin
+        dp_mem_reg_mem_read_op <= dp_exe_reg_mem_read_op;
+      end
     end
     if (reset) begin
       dp_mem_reg_mem_write_mask <= 8'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_mem_write_mask <= 8'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_mem_write_mask <= dp_exe_reg_mem_write_mask;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_mem_write_mask <= 8'h0;
+      end else begin
+        dp_mem_reg_mem_write_mask <= dp_exe_reg_mem_write_mask;
+      end
     end
     if (reset) begin
       dp_mem_reg_mem_wen <= 1'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_mem_wen <= 1'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_mem_wen <= dp_exe_reg_mem_wen;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_mem_wen <= 1'h0;
+      end else begin
+        dp_mem_reg_mem_wen <= dp_exe_reg_mem_wen;
+      end
     end
     if (reset) begin
       dp_mem_reg_csr_op <= 3'h0;
-    end else if (io_c2d_cp_pipeline_kill) begin
-      dp_mem_reg_csr_op <= 3'h0;
     end else if (!(io_c2d_cp_pipeline_stall)) begin
-      dp_mem_reg_csr_op <= dp_exe_reg_csr_op;
+      if (io_c2d_cp_pipeline_kill) begin
+        dp_mem_reg_csr_op <= 3'h0;
+      end else begin
+        dp_mem_reg_csr_op <= dp_exe_reg_csr_op;
+      end
     end
     if (reset) begin
       dp_wb_reg_instr_valid <= 1'h0;

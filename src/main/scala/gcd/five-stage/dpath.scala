@@ -72,19 +72,19 @@ class Dpath extends Module {
 
     //update pc 
     //pipeline kill and stall will not happen together
-    when(io.c2d.cp_pipeline_kill)
-    {
-        reg_dec_instr := NOP
-        reg_if_pc := wire_pc_next
-        reg_dec_instr_valid := false.B
-        reg_dec_pc := 0.U(64.W)
-
-    }.elsewhen(io.c2d.cp_pipeline_stall)
+    when(io.c2d.cp_pipeline_stall)
     {
         reg_dec_instr := reg_dec_instr
         reg_if_pc := reg_if_pc
         reg_dec_instr_valid := reg_dec_instr_valid
         reg_dec_pc := reg_dec_pc
+
+    }.elsewhen(io.c2d.cp_pipeline_kill)
+    {
+        reg_dec_instr := NOP
+        reg_if_pc := wire_pc_next
+        reg_dec_instr_valid := false.B
+        reg_dec_pc := 0.U(64.W)
 
     }.otherwise
     {
@@ -229,29 +229,7 @@ class Dpath extends Module {
 
     //pass signals from dec to exe stage due to all kinds of hazard 
     //needs rewrite that only control signal should be set to false 
-    when(io.c2d.cp_pipeline_kill)
-    {
-        dp_exe_reg_instr_valid := false.B
-        dp_exe_reg_instr := NOP
-        dp_exe_reg_rd_addr := 0.U(5.W)
-        dp_exe_reg_rf_wen := false.B
-        dp_exe_reg_op1_source := 0.U(64.W)
-        dp_exe_reg_op2_source := 0.U(64.W)
-        dp_exe_reg_rs2_data := 0.U(64.W)
-        dp_exe_reg_alu_sel := 0.U(5.W)
-        dp_exe_reg_mem_en := false.B
-        dp_exe_reg_mem_read_op := 0.U(3.W)
-        dp_exe_reg_mem_write_mask := 0.U(8.W)
-        dp_exe_reg_mem_wen := false.B
-        dp_exe_reg_alu_ext_sel := 0.U(3.W)
-        dp_exe_reg_csr_op := 0.U(csr_op_sz)
-        dp_exe_reg_pc := 0.U(64.W)
-        dp_exe_reg_jim_ext := 0.U(64.W)
-        dp_exe_reg_iim_ext := 0.U(64.W)
-        dp_exe_reg_bim_ext := 0.U(64.W)
-        dp_exe_reg_rs1_data := 0.U(64.W)
-        dp_exe_reg_wb_sel := 0.U(2.W)
-    }.elsewhen(io.c2d.cp_pipeline_stall)
+    when(io.c2d.cp_pipeline_stall)
     {
         dp_exe_reg_instr_valid := dp_exe_reg_instr_valid
         dp_exe_reg_instr := dp_exe_reg_instr
@@ -273,6 +251,29 @@ class Dpath extends Module {
         dp_exe_reg_bim_ext := dp_exe_reg_bim_ext
         dp_exe_reg_rs1_data := dp_exe_reg_rs1_data
         dp_exe_reg_wb_sel := dp_exe_reg_wb_sel
+        
+    }.elsewhen(io.c2d.cp_pipeline_kill)
+    {
+        dp_exe_reg_instr_valid := false.B
+        dp_exe_reg_instr := NOP
+        dp_exe_reg_rd_addr := 0.U(5.W)
+        dp_exe_reg_rf_wen := false.B
+        dp_exe_reg_op1_source := 0.U(64.W)
+        dp_exe_reg_op2_source := 0.U(64.W)
+        dp_exe_reg_rs2_data := 0.U(64.W)
+        dp_exe_reg_alu_sel := 0.U(5.W)
+        dp_exe_reg_mem_en := false.B
+        dp_exe_reg_mem_read_op := 0.U(3.W)
+        dp_exe_reg_mem_write_mask := 0.U(8.W)
+        dp_exe_reg_mem_wen := false.B
+        dp_exe_reg_alu_ext_sel := 0.U(3.W)
+        dp_exe_reg_csr_op := 0.U(csr_op_sz)
+        dp_exe_reg_pc := 0.U(64.W)
+        dp_exe_reg_jim_ext := 0.U(64.W)
+        dp_exe_reg_iim_ext := 0.U(64.W)
+        dp_exe_reg_bim_ext := 0.U(64.W)
+        dp_exe_reg_rs1_data := 0.U(64.W)
+        dp_exe_reg_wb_sel := 0.U(2.W)
     }.otherwise
     {
         when(io.c2d.cp_data_hazard)
@@ -387,23 +388,7 @@ class Dpath extends Module {
     val dp_mem_reg_wb_sel           = RegInit(0.U(2.W))
 
     //connect exe with mem
-    when(io.c2d.cp_pipeline_kill)
-    {
-        dp_mem_reg_instr := NOP
-        dp_mem_reg_instr_valid := false.B
-        dp_mem_reg_rs2_data := 0.U(64.W)
-        dp_mem_reg_mem_en := false.B
-        dp_mem_reg_mem_read_op := 0.U(3.W)
-        dp_mem_reg_mem_write_mask := 0.U(8.W)
-        dp_mem_reg_mem_wen := false.B
-        dp_mem_reg_csr_op := 0.U(csr_op_sz)
-        dp_mem_reg_pc := 0.U(64.W)
-        dp_mem_reg_alu_out := 0.U(64.W)
-        dp_mem_reg_wb_sel := 0.U(2.W)
-        dp_mem_reg_rd_addr := 0.U(5.W)
-        dp_mem_reg_rf_wen := false.B
-
-    }.elsewhen(io.c2d.cp_pipeline_stall)
+    when(io.c2d.cp_pipeline_stall)
     {
         dp_mem_reg_instr := dp_mem_reg_instr
         dp_mem_reg_instr_valid := dp_mem_reg_instr_valid
@@ -418,6 +403,22 @@ class Dpath extends Module {
         dp_mem_reg_wb_sel := dp_mem_reg_wb_sel
         dp_mem_reg_rd_addr := dp_mem_reg_rd_addr
         dp_mem_reg_rf_wen := dp_mem_reg_rf_wen
+
+    }.elsewhen(io.c2d.cp_pipeline_kill)
+    {
+        dp_mem_reg_instr := NOP
+        dp_mem_reg_instr_valid := false.B
+        dp_mem_reg_rs2_data := 0.U(64.W)
+        dp_mem_reg_mem_en := false.B
+        dp_mem_reg_mem_read_op := 0.U(3.W)
+        dp_mem_reg_mem_write_mask := 0.U(8.W)
+        dp_mem_reg_mem_wen := false.B
+        dp_mem_reg_csr_op := 0.U(csr_op_sz)
+        dp_mem_reg_pc := 0.U(64.W)
+        dp_mem_reg_alu_out := 0.U(64.W)
+        dp_mem_reg_wb_sel := 0.U(2.W)
+        dp_mem_reg_rd_addr := 0.U(5.W)
+        dp_mem_reg_rf_wen := false.B
 
     }.otherwise
     {
@@ -489,7 +490,13 @@ class Dpath extends Module {
         {
             //now we can commit the MEM stage and set the previous MEM stage invalid
             dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
-            dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
+            when(!csr.io.csr_illegal_ins_exception)
+            {
+                dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
+            }.otherwise
+            {
+                dp_wb_reg_rf_wen      := false.B
+            }
             dp_wb_reg_wb_data     := dp_wire_mem_memstageout
             dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
             dp_wb_reg_pc          := dp_mem_reg_pc

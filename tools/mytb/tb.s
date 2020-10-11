@@ -1,5 +1,12 @@
 addi t0, x0, 100; # t0 = tx0100mm
 addi ra, x0, 500; # t0 1 tx0500mm
+nop
+auipc t0 , 0
+csrr t1 , mcause
+beq x0, t1, addr3 # if x0 !=0t1 then target
+mret
+addr3:
+csrw mtvec , t0
 addi sp, x0, 501; # t0 1 tx0500mm
 addi gp, x0, 502; # t0 1 tx0500mm
 addi tp, x0, 503; # t0 1 tx0500mm
@@ -27,12 +34,31 @@ addi a1, x0, 520; # t0 1 tx0500mm
 addi a2, x0, 562; # t0 1 tx0500mm
 addi a3, x0, 131; # t0 1 tx0500mm
 addi a4, x0, 512; # t0 1 tx0500mm
+csrr a4 , mtvec
+csrr a4 , mcause
 addi a5, x0, 555; # t0 1 tx0500mm
 addi a6, x0, 559; # t0 1 tx0500mm
 addi a7, x0, 500; # t0 1 tx0500mm
 auipc s1,0x200
+fence.i
+fence 
+
+jal addr1  # jump to addr and save position to ra
 
 
+lui a1 , 565
+addr1:
+lui a1 , 560
+srliw a1 , a1 , 8
+
+ori t0 , t0 ,56
+addr2:
+ori t0 , t0 ,55
+slliw t0 ,t0 ,6
+slt t3 ,t1 ,t0
+slti t3 ,t1 ,100
+sltiu t3 , t1 , -20
+sltu t3 ,t1 ,s11
 
 sw t1, 0(s1) # 
 sw t2, 4(s1) # 
@@ -117,7 +143,7 @@ lbu t6, 8(s1) #
 lb s4, 24(s1) # 
 lb s2, 28(s1) # 
 
-
+wfi
 lui t0 , 0x500
 lui t1 , 0x820
 sub t2 , t0,t1
@@ -125,6 +151,8 @@ subw t2,t0,t1
 xor t2,t0,t1
 add t2,t0,t1
 addw t2,t0,t1
+addiw t3 ,t1 , -50
+andi t2 , t2 , 0x110
 and t2,t0,t1
 or t2,t0,t1
 mul t2,t0,t1
@@ -135,9 +163,21 @@ mulw t2,t0,t1
 rem t2,t0,t1
 remu t2,t0,t1
 remuw t2,t0,t1
+mul t2,a7,s1
+mulh t2,a7,s1
+mulhsu t2,a7,s1
+mulhu t2,a7,s1
+mulw t2,a7,s1
+rem t2,a7,s1
+remu t2,a7,s1
+remuw t2,a7,s1
+bge t0, t1, next1 # if t0 >= t1target
+
 remw t2,t0,t1
 div t2,t0,t1
 divu t2,t0,t1
+blt t2, t1, next1 # if t2 < t1 then target
+
 divu t2,t0,t1
 divuw t2,t0,t1
 divw t2,t0,t1
@@ -177,7 +217,6 @@ srli t1 , t1 ,5
 
 next2:
 
-csrw	mtvec,t0
 csrw mepc , s2
 csrw mcause , s3
 
@@ -187,6 +226,7 @@ csrr t2 , mepc
 csrr t3 , mcause
 
 jal func  # jump to func and save position to ra
+ecall
 this:
 j this
 
