@@ -15,6 +15,7 @@ $(temp) : $(source)
 install:
 	./filter2 $(target)
 	cp ./test1.txt ../../src/test/scala/gcd/fivestage_difftest/obj_dir/test1.txt
+	cp ./test1.txt ../../src/test/scala/gcd/utest/obj_dir/test1.txt
 
 
 clean:

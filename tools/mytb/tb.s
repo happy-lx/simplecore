@@ -225,6 +225,196 @@ sub t2, t1 ,t2
 csrr t2 , mepc
 csrr t3 , mcause
 
+li t1 ,'F'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'o'
+sw t1 , 4(t0)
+
+li t1 ,'m'
+sw t1 , 4(t0)
+
+li t1 ,' '
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'a'
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,'_'
+sw t1 , 4(t0)
+
+li t1 ,'i'
+sw t1 , 4(t0)
+
+li t1 ,'n'
+sw t1 , 4(t0)
+
+li t1 ,'p'
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,':'
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t0 , 0x40600000
+lw t1 , 0(t0)
+sw t1 , 4(t0)
+
+li t1 ,'\n'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'F'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'o'
+sw t1 , 4(t0)
+
+li t1 ,'m'
+sw t1 , 4(t0)
+
+li t1 ,' '
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'a'
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,'_'
+sw t1 , 4(t0)
+
+li t1 ,'o'
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,'p'
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,':'
+sw t1 , 4(t0)
+
+li t1 ,'h'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'e'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'l'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'l'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'o'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,' '
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'w'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'o'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'r'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'l'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'d'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'!'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'\n'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+
 jal func  # jump to func and save position to ra
 ecall
 this:
@@ -233,10 +423,4 @@ j this
 func:
     li t6,0x1245
     ret
-
-
-
-
-
-
 
