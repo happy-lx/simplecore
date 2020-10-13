@@ -34,7 +34,7 @@ trait AXI_const
 {
     //ram's addr length
     val AXI_paddr_len = 64
-    val AXI_real_addr_len = 24
+    val AXI_real_addr_len = 27 // 128 * 1024 * 1024
     val AXI_data_len = 64
     val AXI_wstrb_len = (AXI_data_len / 8)
     val bits_ignore = log2Ceil(AXI_wstrb_len)
@@ -44,6 +44,14 @@ trait AXI_const
     //for sram-like's ports
     val DATA = 1 
     val INTR = 0
+}
+
+trait Uart_const
+{
+    val uart_read_addr =  0x40600000L
+    val uart_write_addr = 0x40600004L
+    val uart_state_addr = 0x40600008L
+    val uart_contr_addr = 0x4060000cL
 }
 
 trait alu_const
@@ -137,6 +145,9 @@ trait CSRConstants extends PRV
     val csr_MSB = 31
 
     val MTVEC_ADDR = 0x8000000cL
+
+    val mtimecmp_addr = 0x2004000L
+    val mtime_addr    = 0x200bff8L
 }
 
 trait CpathConstants 
@@ -301,5 +312,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const
 {}

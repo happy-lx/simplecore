@@ -5,7 +5,6 @@
 #define LOG
 
 #define STARTADDR 0x80000000
-#define RAMSIZE (128 * 1024 * 1024)
 #define REGNUM 32
 
 typedef unsigned int uint_32;

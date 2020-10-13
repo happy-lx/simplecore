@@ -5,6 +5,7 @@
 #include "Ram.h"
 #include "coreresult.h"
 #include "nemuresult.h"
+#include "uart.h"
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -113,6 +114,8 @@ int main(int argc , char** argv)
 
     coreresult* core = new coreresult(top,ram);
     nemuresult* nemu = new nemuresult(ram);
+
+    uart_init("cmd.txt");
 
     // core->coreStep(1);
     // nemu->step(1);

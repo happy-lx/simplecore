@@ -84,8 +84,8 @@ class CSRfile extends Module
     val reg_mtval = RegInit(0.U(64.W))
     val reg_mscratch = RegInit(0.U(64.W))
     val reg_mstatus = RegInit(0.U.asTypeOf(new Mstatus()))
-    val reg_mtimecmp = RegInit(UInt(64.W),0.U)
-    val reg_mtime = RegInit(UInt(64.W),0.U)//??
+    // val reg_mtimecmp = RegInit(UInt(64.W),0.U)
+    // val reg_mtime = RegInit(UInt(64.W),0.U)//??
     // val reg_misa = WireInit(UInt(64.W),0.U)
     val reg_mcounteren = RegInit(0.U(64.W))
 
@@ -269,13 +269,13 @@ class CSRfile extends Module
     io.csr_illegal_ins_exception := csr_illegal_ins_exception
 
     //not sure
-    when(reg_mtime >= reg_mtimecmp)
-    {
-        reg_mip.mti := true.B
-    }
-
+    // when(reg_mtime >= reg_mtimecmp)
+    // {
+    //     reg_mip.mti := true.B
+    // }
+    BoringUtils.addSink(reg_mip.mti,"time_interrupt")
     
-    reg_mtime := reg_mtime + 1.U
+    // reg_mtime := reg_mtime + 1.U
     reg_mcycle := reg_mcycle + 1.U
     
     when(io.is_retire)

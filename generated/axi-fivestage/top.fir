@@ -21462,11 +21462,11 @@ circuit top :
     io.awlen is invalid @[AXI4_Ram.scala 79:8]
     io.awaddr is invalid @[AXI4_Ram.scala 79:8]
     io.awid is invalid @[AXI4_Ram.scala 79:8]
-    cmem mem : UInt<8>[16777216] @[AXI4_Ram.scala 81:18]
+    cmem mem : UInt<8>[134217728] @[AXI4_Ram.scala 81:18]
     reg read_state : UInt<1>, clock with : (reset => (reset, UInt<1>("h00"))) @[AXI4_Ram.scala 95:29]
     reg write_state : UInt<2>, clock with : (reset => (reset, UInt<2>("h00"))) @[AXI4_Ram.scala 96:30]
-    reg reg_awaddr : UInt<24>, clock with : (reset => (reset, UInt<24>("h00"))) @[AXI4_Ram.scala 99:29]
-    reg reg_araddr : UInt<24>, clock with : (reset => (reset, UInt<24>("h00"))) @[AXI4_Ram.scala 100:29]
+    reg reg_awaddr : UInt<27>, clock with : (reset => (reset, UInt<27>("h00"))) @[AXI4_Ram.scala 99:29]
+    reg reg_araddr : UInt<27>, clock with : (reset => (reset, UInt<27>("h00"))) @[AXI4_Ram.scala 100:29]
     wire wire_wstrb : UInt<8>
     wire_wstrb <= UInt<8>("h00")
     wire _T : {bytes : UInt<8>[8]} @[AXI4_Ram.scala 104:48]
