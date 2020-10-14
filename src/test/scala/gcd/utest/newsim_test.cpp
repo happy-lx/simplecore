@@ -73,7 +73,7 @@ int main(int argc,char** argv)
         top->eval();
         cnt ++ ;
 
-        if(cnt == 2000)
+        if(cnt == 100000)
         break;
     }
     printf("simulation successfully!\n");

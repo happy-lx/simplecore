@@ -12,18 +12,19 @@ import constants.Cause._
 class MIP extends Bundle
 {
     //可以处理的中断
-    val zero0 = Bool()
-    val ssi = Bool()
-    val zero1 = Bool()
-    val msi = Bool()
-    val zero2 = Bool()
-    val sti = Bool()
-    val zero3 = Bool()
-    val mti = Bool()
-    val zero4 = Bool()
-    val sei = Bool()
-    val zero5 = Bool()
+    val zero0 = UInt(4.W)
     val mei = Bool()
+    val zero1 = Bool()
+    val sei = Bool()
+    val zero2 = Bool()
+    val mti = Bool()
+    val zero3 = Bool()
+    val sti = Bool()
+    val zero4 = Bool()
+    val msi = Bool()
+    val zero5 = Bool()
+    val ssi = Bool()
+    val zero6 = Bool()
 }
 
 class Mstatus extends Bundle
@@ -285,9 +286,10 @@ class CSRfile extends Module
 
     val csr_hasinterrupt = Wire(Bool())
 
-    when(reg_mip.mti && reg_mie.mti && reg_mstatus.mie)
+    when(reg_mip.mti && reg_mie.mti && reg_mstatus.mie && !io.hasStall)
     {
         //can process timer interrupt
+        //when no stall happens , the redirect infomation can be set into registers 
         csr_hasinterrupt := true.B
     }.otherwise
     {

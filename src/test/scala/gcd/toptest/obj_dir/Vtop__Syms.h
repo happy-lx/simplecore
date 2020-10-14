@@ -13,6 +13,8 @@
 #include "Vtop.h"
 #include "Vtop___024unit.h"
 
+// DPI TYPES for DPI Export callbacks (Internal use)
+
 // SYMS CLASS
 class Vtop__Syms : public VerilatedSyms {
   public:
@@ -23,6 +25,7 @@ class Vtop__Syms : public VerilatedSyms {
     
     // SUBCELL STATE
     Vtop*                          TOPp;
+    Vtop___024unit                 TOP____024unit;
     
     // CREATORS
     Vtop__Syms(Vtop* topp, const char* namep);

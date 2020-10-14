@@ -6,6 +6,7 @@
 #define _VTOP___024UNIT_H_  // guard
 
 #include "verilated_heavy.h"
+#include "Vtop__Dpi.h"
 
 //==========
 
@@ -30,6 +31,8 @@ VL_MODULE(Vtop___024unit) {
     
     // INTERNAL METHODS
     void __Vconfigure(Vtop__Syms* symsp, bool first);
+    void __Vdpiimwrap_uart_getchar_TOP____024unit(CData/*7:0*/(&  ch));
+    void __Vdpiimwrap_uart_putchar_TOP____024unit(const CData/*7:0*/ ch);
   private:
     void _ctor_var_reset() VL_ATTR_COLD;
 } VL_ATTR_ALIGNED(VL_CACHE_LINE_BYTES);

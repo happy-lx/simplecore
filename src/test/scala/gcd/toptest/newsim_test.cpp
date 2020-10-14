@@ -1,6 +1,7 @@
 #include <verilated.h>      
 #include "Vtop.h"
 #include <iostream>
+#include "uart.h"
 #include <stdio.h>
 
 vluint64_t main_time = 0;
@@ -82,6 +83,8 @@ void printcsrs(Vtop* target)
     printf("mtval : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtval);
     printf("mtvec : [%lx] ",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtvec);
     printf("mscratch : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mscratch);
+    printf("mip_time : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mip_mti);
+    printf("mie_time : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_mti);
 }
 void print_pc(Vtop* target)
 {
@@ -214,6 +217,7 @@ int main(int argc,char** argv)
     reset_cycle(top,1);
 
     // put_to_pipeline(top,4);
+    uart_init("12asa");
     
     while(!Verilated::gotFinish())
     {
@@ -243,7 +247,7 @@ int main(int argc,char** argv)
          
         main_time ++;
 
-        if(main_time == 19000)
+        if(main_time == 2000)
         {
             break;
         }

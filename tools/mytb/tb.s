@@ -4,6 +4,50 @@ nop
 auipc t0 , 0
 csrr t1 , mcause
 beq x0, t1, addr3 # if x0 !=0t1 then target
+# haddle time interrupt
+li t1 ,'T'
+li t0 ,0x40600000
+sw t1 , 4(t0)
+
+li t1 ,'i'
+sw t1 , 4(t0)
+
+li t1 ,'m'
+sw t1 , 4(t0)
+
+li t1 ,'e'
+sw t1 , 4(t0)
+
+li t1 ,'_'
+sw t1 , 4(t0)
+
+li t1 ,'I'
+sw t1 , 4(t0)
+
+li t1 ,'n'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'r'
+sw t1 , 4(t0)
+
+li t1 ,'u'
+sw t1 , 4(t0)
+
+li t1 ,'p'
+sw t1 , 4(t0)
+
+li t1 ,'t'
+sw t1 , 4(t0)
+
+li t1 ,'\n'
+sw t1 , 4(t0)
+
 mret
 addr3:
 csrw mtvec , t0
@@ -217,8 +261,7 @@ srli t1 , t1 ,5
 
 next2:
 
-csrw mepc , s2
-csrw mcause , s3
+
 
 csrr t1 , mtvec
 sub t2, t1 ,t2
@@ -416,11 +459,24 @@ sw t1 , 4(t0)
 
 
 jal func  # jump to func and save position to ra
-ecall
+li a0 , -1
+csrw mie ,a0
+csrw mip ,a0
+csrw mstatus , a0
+
+
+# ecall
 this:
 j this
 
 func:
     li t6,0x1245
     ret
+
+# li t0 , 0x80000010
+# csrw mtvec , t0
+# li a0 , -1
+# csrw mie ,a0
+# csrw mip ,a0
+# csrw mstatus , a0
 
