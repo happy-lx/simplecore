@@ -340,4 +340,6 @@ hs_err_pid*
 
 #user
 /generated/
+/src/test/scala/gcd/*/obj_dir
+/src/test/scala/gcd/*/*.v
 
