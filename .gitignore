@@ -342,4 +342,13 @@ hs_err_pid*
 /generated/
 /src/test/scala/gcd/*/obj_dir
 /src/test/scala/gcd/*/*.v
+/tools/*.asm
+/tools/*.s
+/tools/*.txt
+/tools/*.riscv.dump
+
+/tools/mytb/*.asm
+/tools/mytb/*.s
+/tools/mytb/*.txt
+/tools/mytb/*.riscv.dump
 
