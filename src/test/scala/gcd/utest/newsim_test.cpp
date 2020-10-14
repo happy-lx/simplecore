@@ -73,7 +73,11 @@ int main(int argc,char** argv)
         top->eval();
         cnt ++ ;
 
-        if(cnt == 100000)
+        printf("uart_control:%x\n",(unsigned)top->top__DOT__mymem__DOT__uart_control);
+        printf("uart_state:%x\n",(unsigned)top->top__DOT__mymem__DOT__uart_state);
+        printf("mtime:%x\n",(unsigned)top->top__DOT__mymem__DOT__reg_mtime);
+        printf("mtimecmp:%x\n",(unsigned)top->top__DOT__mymem__DOT__reg_mtimecmp);
+        if(cnt == 1000000)
         break;
     }
     printf("simulation successfully!\n");

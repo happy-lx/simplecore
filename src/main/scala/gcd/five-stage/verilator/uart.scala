@@ -50,21 +50,22 @@ class UARTHelper extends BlackBox with HasBlackBoxInline
 class UART extends Module
 {
     val io = IO(new Bundle{
-        val state_out = Output(UInt(32.W))
-        val state_in  = Input(UInt(32.W))
-        val control_out = Output(UInt(32.W))
-        val control_in  = Input(UInt(32.W))
+        // val state_out = Output(UInt(32.W))
+        // val state_in  = Input(UInt(32.W))
+        // val control_out = Output(UInt(32.W))
+        // val control_in  = Input(UInt(32.W))
         val ch_get    = Output(UInt(8.W))
         val ch_put    = Input(UInt(8.W))
         val getc      = Input(Bool())
         val putc      = Input(Bool())
+        // val uart_wen = Input(Bool())
     })
 
     io := DontCare
 
     val uart_helper = Module(new UARTHelper)
-    val uart_control = RegInit(0.U(32.W))
-    val uart_state = RegInit(1.U(32.W))
+    // val uart_control = RegInit(0.U(32.W))
+    // val uart_state = RegInit(1.U(32.W))
 
     uart_helper.io.clk := clock.asBool
     uart_helper.io.getc := io.getc
@@ -72,9 +73,16 @@ class UART extends Module
     uart_helper.io.ch_put := io.ch_put
     io.ch_get := uart_helper.io.ch_get
 
-    io.control_out := uart_control
-    uart_control := io.control_in
-    io.state_out := uart_state
-    uart_state := io.state_in
+    // io.control_out := uart_control
+    // io.state_out := uart_state
+    // when(io.uart_wen)
+    // {
+    //     uart_control := io.control_in
+    //     uart_state := io.state_in
+    // }.otherwise
+    // {
+    //     uart_control := uart_control
+    //     uart_state := uart_state
+    // }
 
 }

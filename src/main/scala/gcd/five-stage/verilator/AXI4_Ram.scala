@@ -90,6 +90,9 @@ class AXI4_Ram(memdir : String = "") extends Module
     val reg_mtimecmp = RegInit(0.U(64.W))
     val reg_mtime = RegInit(0.U(64.W))
 
+    val uart_control = RegInit(0.U(32.W))
+    val uart_state = RegInit(1.U(32.W))
+
     //make mtime to incline 
     val freq = RegInit(10000.U(16.W))
     val inc = RegInit(1.U(16.W))
@@ -134,82 +137,6 @@ class AXI4_Ram(memdir : String = "") extends Module
 
     val temp_read_data = Reg(UInt(64.W))
 
-    def axi_read(rdata:UInt) = {
-        when(reg_araddr === uart_read_addr.U)
-        {
-            //uart read
-            uart.io.getc := true.B
-            rdata := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
-        }.otherwise
-        {
-            uart.io.getc := false.B
-            when(reg_araddr === uart_state_addr.U)
-            {
-                //read state
-                rdata := Cat(Fill(32,0.U(1.W)),uart.io.state_out)
-            }.elsewhen(reg_araddr === uart_contr_addr.U)
-            {
-                //read control
-                rdata := Cat(Fill(32,0.U(1.W)),uart.io.control_out)
-            }.elsewhen(reg_araddr === mtimecmp_addr.U)
-            {
-                //read mtimecmp
-                rdata := reg_mtimecmp
-            }.elsewhen(reg_araddr === mtime_addr.U)
-            {
-                //read mtime   
-                rdata := reg_mtime
-            }.otherwise
-            {
-                //read ram
-                rdata := Cat((VecInit.tabulate(8){i => mem( ((reg_araddr + i.U)(AXI_real_addr_len-1,0)) )}).reverse)
-            }
-
-        }
-        
-    }
-
-    def axi_write(write_data : Vec[UInt],write_strobe : Seq[Bool]) = {
-        when(reg_awaddr === uart_write_addr.U)
-        {
-            //uart write
-            uart.io.ch_put := write_data(0)
-            uart.io.putc := true.B
-        }.otherwise
-        {
-            uart.io.putc := false.B
-            when(reg_awaddr === uart_state_addr.U)
-            {
-                //write state
-                uart.io.state_in := Cat(write_data)(31,0)
-            }.elsewhen(reg_awaddr === uart_contr_addr.U)
-            {
-                //write control
-                uart.io.control_in := Cat(write_data)(31,0)
-            }.elsewhen(reg_awaddr === mtimecmp_addr.U)
-            {
-                //wtire mtimecmp
-                reg_mtimecmp := Cat(write_data)
-            }.elsewhen(reg_awaddr === mtime_addr.U)
-            {
-                //write mtime   
-                reg_mtime := Cat(write_data)
-            }.otherwise
-            {
-                //write ram
-                for(i <- (0 until 8))
-                    {
-                        when(write_strobe(i))
-                        {
-                            mem((reg_awaddr + i.U)(AXI_real_addr_len-1,0)) := write_data(i)
-                        }
-                    }
-            }
-        }
-        
-        
-    }
-
     //define the action of each state
     switch(read_state)
     {
@@ -232,7 +159,37 @@ class AXI4_Ram(memdir : String = "") extends Module
             when(io.rready)
             {
                 // io.rdata := Cat((VecInit.tabulate(8){i => mem(reg_araddr + i.U)}).reverse)
-                axi_read(temp_read_data)
+                when(reg_araddr === uart_read_addr.U)
+                {
+                    //uart read
+                    uart.io.getc := true.B
+                    temp_read_data := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
+                }.otherwise
+                {
+                    uart.io.getc := false.B
+                    when(reg_araddr === uart_state_addr.U)
+                    {
+                        //read state
+                        temp_read_data := Cat(Fill(32,0.U(1.W)),uart_state)
+                    }.elsewhen(reg_araddr === uart_contr_addr.U)
+                    {
+                        //read control
+                        temp_read_data := Cat(Fill(32,0.U(1.W)),uart_control)
+                    }.elsewhen(reg_araddr === mtimecmp_addr.U)
+                    {
+                        //read mtimecmp
+                        temp_read_data := reg_mtimecmp
+                    }.elsewhen(reg_araddr === mtime_addr.U)
+                    {
+                        //read mtime   
+                        temp_read_data := reg_mtime
+                    }.otherwise
+                    {
+                        //read ram
+                        temp_read_data := Cat((VecInit.tabulate(8){i => mem( ((reg_araddr + i.U)(AXI_real_addr_len-1,0)) )}).reverse)
+                    }
+
+                }
                 read_state := read_resp
             }
         }
@@ -302,7 +259,42 @@ class AXI4_Ram(memdir : String = "") extends Module
                 //         mem(reg_awaddr + i.U) := write_data(i)
                 //     }
                 // }
-                axi_write(write_data,wstrb_bools)
+                when(reg_awaddr === uart_write_addr.U)
+                {
+                    //uart write
+                    uart.io.ch_put := write_data(0)
+                    uart.io.putc := true.B
+                }.otherwise
+                {
+                    uart.io.putc := false.B
+                    when(reg_awaddr === uart_state_addr.U)
+                    {
+                        //write state
+                        uart_state := Cat(write_data(3),write_data(2),write_data(1),write_data(0))
+                    }.elsewhen(reg_awaddr === uart_contr_addr.U)
+                    {
+                        //write control
+                        uart_control := Cat(write_data(3),write_data(2),write_data(1),write_data(0))
+                    }.elsewhen(reg_awaddr === mtimecmp_addr.U)
+                    {
+                        //wtire mtimecmp
+                        reg_mtimecmp := Cat(write_data(7),write_data(6),write_data(5),write_data(4),write_data(3),write_data(2),write_data(1),write_data(0))
+                    }.elsewhen(reg_awaddr === mtime_addr.U)
+                    {
+                        //write mtime   
+                        reg_mtime := Cat(write_data(7),write_data(6),write_data(5),write_data(4),write_data(3),write_data(2),write_data(1),write_data(0))
+                    }.otherwise
+                    {
+                        //write ram
+                        for(i <- (0 until 8))
+                            {
+                                when(wstrb_bools(i))
+                                {
+                                    mem((reg_awaddr + i.U)(AXI_real_addr_len-1,0)) := write_data(i)
+                                }
+                            }
+                    }
+                }
 
                 write_state := write_resp 
             }
