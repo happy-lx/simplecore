@@ -17,7 +17,7 @@ Disassembly of section .text.startup:
     80000014:	00001517          	auipc	a0,0x1
     80000018:	b5c50513          	addi	a0,a0,-1188 # 80000b70 <strlen+0x30>
     8000001c:	00113423          	sd	ra,8(sp)
-    80000020:	2d5000ef          	jal	ra,80000af4 <printf>
+    80000020:	00004033            nop
     80000024:	00813083          	ld	ra,8(sp)
     80000028:	00000513          	li	a0,0
     8000002c:	01010113          	addi	sp,sp,16
@@ -46,7 +46,7 @@ Disassembly of section .text._trm_init:
 000000008000005c <_trm_init>:
     8000005c:	ff010113          	addi	sp,sp,-16
     80000060:	00113423          	sd	ra,8(sp)
-    80000064:	014000ef          	jal	ra,80000078 <__am_init_uartlite>
+    80000064:	00004033            nop
     80000068:	00001517          	auipc	a0,0x1
     8000006c:	b2d50513          	addi	a0,a0,-1235 # 80000b95 <__am_mainargs>
     80000070:	fa1ff0ef          	jal	ra,80000010 <main>
@@ -749,8 +749,8 @@ Disassembly of section .text.printf:
     80000b04:	02d13c23          	sd	a3,56(sp)
     80000b08:	00050613          	mv	a2,a0
     80000b0c:	00030693          	mv	a3,t1
-    80000b10:	00000593          	li	a1,0
-    80000b14:	00000513          	li	a0,0
+    80000b10:	00100593          	li	a1,1
+    80000b14:	00100513          	li	a0,1
     80000b18:	00113c23          	sd	ra,24(sp)
     80000b1c:	04e13023          	sd	a4,64(sp)
     80000b20:	04f13423          	sd	a5,72(sp)

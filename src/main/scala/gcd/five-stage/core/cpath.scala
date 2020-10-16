@@ -293,20 +293,8 @@ class Cpath extends Module {
 
     //when control hazard happens or pipeline kill happens 
     //no need to passforward 
-    when(cs_wire_pipeline_kill)
-    {
-        cs_exe_branch       := BR_N
-        cs_reg_exe_is_csr   := N
-        cs_reg_exe_is_load  := N
-        cs_reg_exe_rd_addr  := 0.U(5.W)
-        cs_reg_exe_exception:= N
-        cs_reg_mem_exception:= N
-        // cs_reg_exe_mem_valid:= N
-        // cs_reg_mem_mem_valid:= N
-        cs_reg_exe_is_fencei:= N
-        cs_reg_dec_imem_valid := N
-
-    }.elsewhen(cs_wire_pipeline_stall)
+    //adjust the priority of pipeline stall and pipeline kill
+    when(cs_wire_pipeline_stall)
     {
         cs_exe_branch       := cs_exe_branch
         cs_reg_exe_is_csr   := cs_reg_exe_is_csr
@@ -318,6 +306,20 @@ class Cpath extends Module {
         // cs_reg_mem_mem_valid:= cs_reg_mem_mem_valid
         cs_reg_exe_is_fencei:= cs_reg_exe_is_fencei
         cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
+
+    }.elsewhen(cs_wire_pipeline_kill)
+    {
+        cs_exe_branch       := BR_N
+        cs_reg_exe_is_csr   := N
+        cs_reg_exe_is_load  := N
+        cs_reg_exe_rd_addr  := 0.U(5.W)
+        cs_reg_exe_exception:= N
+        cs_reg_mem_exception:= N
+        // cs_reg_exe_mem_valid:= N
+        // cs_reg_mem_mem_valid:= N
+        cs_reg_exe_is_fencei:= N
+        cs_reg_dec_imem_valid := N
+        
     }.otherwise
     {
         when(cs_wire_data_hazard)

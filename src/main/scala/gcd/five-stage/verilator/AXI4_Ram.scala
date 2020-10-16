@@ -87,6 +87,7 @@ class AXI4_Ram(memdir : String = "") extends Module
     uart.io.putc := false.B
 
     //mtimecmp mtime initializa
+    //TODO:use mask when write
     val reg_mtimecmp = RegInit(0.U(64.W))
     val reg_mtime = RegInit(0.U(64.W))
 
@@ -236,7 +237,8 @@ class AXI4_Ram(memdir : String = "") extends Module
                 // ))
                 wire_wstrb := io.wstrb
 
-                val wstrb_bools = wire_wstrb.asBools()
+                // val wstrb_bools = wire_wstrb.asBools()
+                val wstrb_bools = VecInit.tabulate(8){i => (wire_wstrb(i) === 1.U)}
                 val write_data = (VecInit.tabulate(8){i => io.wdata(i*8+7,i*8)})
                 // wire_word := mem(reg_awaddr >> bits_ignore).asTypeOf(new word)
 
@@ -262,7 +264,7 @@ class AXI4_Ram(memdir : String = "") extends Module
                 when(reg_awaddr === uart_write_addr.U)
                 {
                     //uart write
-                    uart.io.ch_put := write_data(0)
+                    uart.io.ch_put := io.wdata(7,0)
                     uart.io.putc := true.B
                 }.otherwise
                 {
@@ -270,19 +272,19 @@ class AXI4_Ram(memdir : String = "") extends Module
                     when(reg_awaddr === uart_state_addr.U)
                     {
                         //write state
-                        uart_state := Cat(write_data(3),write_data(2),write_data(1),write_data(0))
+                        uart_state := io.wdata(31,0)
                     }.elsewhen(reg_awaddr === uart_contr_addr.U)
                     {
                         //write control
-                        uart_control := Cat(write_data(3),write_data(2),write_data(1),write_data(0))
+                        uart_control := io.wdata(31,0)
                     }.elsewhen(reg_awaddr === mtimecmp_addr.U)
                     {
                         //wtire mtimecmp
-                        reg_mtimecmp := Cat(write_data(7),write_data(6),write_data(5),write_data(4),write_data(3),write_data(2),write_data(1),write_data(0))
+                        reg_mtimecmp := io.wdata
                     }.elsewhen(reg_awaddr === mtime_addr.U)
                     {
                         //write mtime   
-                        reg_mtime := Cat(write_data(7),write_data(6),write_data(5),write_data(4),write_data(3),write_data(2),write_data(1),write_data(0))
+                        reg_mtime := io.wdata
                     }.otherwise
                     {
                         //write ram

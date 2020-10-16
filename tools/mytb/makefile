@@ -5,7 +5,7 @@ temp = tb.o
 elf = tb.elf
 
 $(target) : $(elf)
-	riscv64-unknown-elf-objdump -S -d  $(elf) > $(target)
+	riscv64-unknown-elf-objdump  -S -d  $(elf) > $(target)
 
 $(elf) : $(temp)
 	riscv64-unknown-elf-ld -Ttext 0x80000000 $(temp) -o $(elf)
@@ -16,6 +16,7 @@ install:
 	./filter2 $(target)
 	cp ./test1.txt ../../src/test/scala/gcd/fivestage_difftest/obj_dir/test1.txt
 	cp ./test1.txt ../../src/test/scala/gcd/utest/obj_dir/test1.txt
+	cp ./test1.txt ../../src/test/scala/gcd/toptest/obj_dir/test1.txt
 
 
 clean:
