@@ -49,4 +49,4 @@
 + 成功运行`coremark`
   + ![coremark](doc/screenshot/coremark测试.png)
 + 成功启动`RT-Thread`
-  + ![RT-Thread](doc/screenshot/成功启动RT-Thread.png)
+  + ![RT-Thread](doc/screenshot/启动rtthread.png)
