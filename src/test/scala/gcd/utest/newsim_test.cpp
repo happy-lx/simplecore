@@ -61,7 +61,7 @@ int main(int argc,char** argv)
     reset_cycle(top,1);
 
     // put_to_pipeline(top,4);
-    uart_init("123456789");
+    uart_init("help\nps\n");
     
     int cnt = 0;
     
