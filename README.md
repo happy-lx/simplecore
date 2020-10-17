@@ -39,7 +39,14 @@
 - [x] 添加对于时钟中断的支持
 - [ ] 深入读一下特权文档手册
 - [x] 阅读`NutShell`的总线代码
-- [ ] 下载AM中的测试代码进行测试
-- [ ] 下载RT-Thread,编译测试
+- [x] 下载AM中的测试代码进行测试
+- [x] 下载RT-Thread,编译测试
 - [ ] 代码重构
+- [ ] AM中的测试程序还有几个有问题，需要修改
 
+### 成果
+
++ 成功运行`coremark`
+  + ![coremark](doc/screenshot/coremark测试.png)
++ 成功启动`RT-Thread`
+  + ![RT-Thread](doc/screenshot/成功启动RT-Thread.png)
