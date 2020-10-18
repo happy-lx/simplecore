@@ -359,7 +359,7 @@ class CSRfile extends Module
     {
         val wire_mstatus_new = WireInit(reg_mstatus)
         val wire_mstatus_old = WireInit(reg_mstatus)
-        reg_mepc := io.in_pc
+        reg_mepc := io.in_pc 
         reg_mtval := io.in_pc
 
         reg_mcause := (BigInt(1)<<63).U(64.W) | m_timer_interrupt
