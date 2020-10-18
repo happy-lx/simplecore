@@ -94,7 +94,7 @@ Disassembly of section .text:
     80000140:	06432e13          	slti	t3,t1,100
     80000144:	fec33e13          	sltiu	t3,t1,-20
     80000148:	01b33e33          	sltu	t3,t1,s11
-    8000014c:	0064a023          	sw	t1,0(s1) # 80002110 <__global_pointer$+0x360>
+    8000014c:	0064a023          	sw	t1,0(s1) # 80002110 <__global_pointer$+0x358>
     80000150:	0074a223          	sw	t2,4(s1)
     80000154:	01c4a423          	sw	t3,8(s1)
     80000158:	01d4a623          	sw	t4,12(s1)
@@ -373,13 +373,15 @@ Disassembly of section .text:
     8000058c:	00a00313          	li	t1,10
     80000590:	406002b7          	lui	t0,0x40600
     80000594:	0062a223          	sw	t1,4(t0) # 40600004 <addr3-0x3fa0008c>
-    80000598:	00c000ef          	jal	ra,800005a4 <func>
+    80000598:	014000ef          	jal	ra,800005ac <func>
     8000059c:	fff00513          	li	a0,-1
+    800005a0:	00000713          	li	a4,0
+    800005a4:	00e5d5bb          	srlw	a1,a1,a4
 
-00000000800005a0 <this>:
-    800005a0:	0000006f          	j	800005a0 <this>
+00000000800005a8 <this>:
+    800005a8:	0000006f          	j	800005a8 <this>
 
-00000000800005a4 <func>:
-    800005a4:	00001fb7          	lui	t6,0x1
-    800005a8:	245f8f9b          	addiw	t6,t6,581
-    800005ac:	00008067          	ret
+00000000800005ac <func>:
+    800005ac:	00001fb7          	lui	t6,0x1
+    800005b0:	245f8f9b          	addiw	t6,t6,581
+    800005b4:	00008067          	ret

@@ -95,7 +95,7 @@ class AXI4_Ram(memdir : String = "") extends Module
     val uart_state = RegInit(1.U(32.W))
 
     //make mtime to incline 
-    val freq = RegInit(10000.U(16.W))
+    val freq = RegInit(40.U(16.W))
     val inc = RegInit(1.U(16.W))
 
     val cnt = RegInit(0.U(16.W))
