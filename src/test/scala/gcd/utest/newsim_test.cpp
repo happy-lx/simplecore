@@ -61,10 +61,10 @@ int main(int argc,char** argv)
     reset_cycle(top,1);
 
     // put_to_pipeline(top,4);
-    uart_init("help\nps\nfree\nlist_device\nversion\n");
+    uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nlist_mailbox\nlist_mutex\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
     
-    int cnt = 0;
-    
+    long long cnt = 0;
+
     while(!Verilated::gotFinish())
     {
         top->clock = (top->clock == 1 ? 0 : 1);
@@ -72,6 +72,15 @@ int main(int argc,char** argv)
         top->clock = (top->clock == 1 ? 0 : 1);
         top->eval();
         cnt ++ ;
+
+        // if(cnt > 1 && cnt < 500000 || cnt == 1)
+        // {
+        //     printf("mtime:%lx mtimecmp:%lx mepc:%lx ra:%lx sp:%lx pc:%lx \n",top->top__DOT__mymem__DOT__reg_mtime,top->top__DOT__mymem__DOT__reg_mtimecmp,top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mepc,top->io_diff_r_1,top->io_diff_r_2,top->io_diff_pc_data);
+        // }
+        // if(cnt == 500000)
+        // {
+        //     break;
+        // }
 
         // printf("uart_control:%x\n",(unsigned)top->top__DOT__mymem__DOT__uart_control);
         // printf("uart_state:%x\n",(unsigned)top->top__DOT__mymem__DOT__uart_state);

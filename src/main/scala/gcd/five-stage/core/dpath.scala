@@ -457,7 +457,10 @@ class Dpath extends Module {
     csr.io.data_in := dp_mem_reg_alu_out
     csr.io.hasException := io.c2d.hasexception
     csr.io.hasStall := io.c2d.shouldstall
-    csr.io.in_pc := dp_mem_reg_pc
+    csr.io.in_mem_pc := dp_mem_reg_pc
+    csr.io.in_exe_pc := dp_exe_reg_pc
+    csr.io.in_dec_pc := reg_dec_pc
+    csr.io.in_if_pc := reg_if_pc
 
     wire_pc_redirect_target := csr.io.redir_target
     io.d2c.isredir := csr.io.isredir

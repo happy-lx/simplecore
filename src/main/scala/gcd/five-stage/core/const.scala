@@ -145,7 +145,7 @@ trait CSRConstants extends PRV
     val csr_LSB = 20
     val csr_MSB = 31
 
-    val MTVEC_ADDR = 0x8000000cL
+    val MTVEC_ADDR = 0x8000c09cL
 
     //for RT-Thread
     val mtimecmp_addr = 0x40704000L
