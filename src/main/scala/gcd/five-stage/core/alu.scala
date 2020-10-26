@@ -32,33 +32,85 @@ class alu_module extends Module {
 
     //do the operation of op
 
+    val sub_res = Wire(UInt(64.W))
+    val and_res = Wire(UInt(64.W))
+    val or_res = Wire(UInt(64.W))
+    val xor_res = Wire(UInt(64.W))
+    val sll_res = Wire(UInt(64.W))
+    val sllw_res = Wire(UInt(64.W))
+    val slt_res = Wire(UInt(64.W))
+    val sltu_res = Wire(UInt(64.W))
+    val sra_res = Wire(UInt(64.W))
+    val sraw_res = Wire(UInt(64.W))
+    val srl_res = Wire(UInt(64.W))
+    val srlw_res = Wire(UInt(64.W))
+    val cp1_res = Wire(UInt(64.W))
+    val mul_res = Wire(UInt(64.W))
+    val mulh_res = Wire(UInt(64.W))
+    val mulhsu_res = Wire(UInt(64.W))
+    val mulhu_res = Wire(UInt(64.W))
+    val rem_res = Wire(UInt(64.W))
+    val remu_res = Wire(UInt(64.W))
+    val remuw_res = Wire(UInt(64.W))
+    val remw_res = Wire(UInt(64.W))
+    val div_res = Wire(UInt(64.W))
+    val divu_res = Wire(UInt(64.W))
+    val divuw_res = Wire(UInt(64.W))
+    val divw_res = Wire(UInt(64.W))
+
+    sub_res := (io.input1 - io.input2)
+    and_res := (io.input1 & io.input2)
+    or_res := (io.input1 | io.input2)
+    xor_res := (io.input1 ^ io.input2)
+    sll_res := ((io.input1 << sham)(63,0).asUInt())
+    sllw_res := ((io.input1 << sham(4,0))(63,0).asUInt())
+    slt_res := (io.input1.asSInt() < io.input2.asSInt())
+    sltu_res := (io.input1.asUInt() < io.input2.asUInt())
+    sra_res := ((io.input1.asSInt() >> sham).asUInt())
+    sraw_res := ((io.input1(31,0).asSInt() >> sham(4,0)).asUInt())
+    srl_res := ((io.input1.asUInt() >> sham).asUInt())
+    srlw_res := ((io.input1(31,0).asUInt() >> sham(4,0)).asUInt())
+    cp1_res := (io.input1)
+    mul_res := ((io.input1.asSInt() * io.input2.asSInt())(63,0).asUInt())
+    mulh_res := ((io.input1.asSInt() * io.input2.asSInt())(127,64).asUInt())
+    mulhsu_res := ((io.input1.asSInt() * io.input2.asSInt())(127,64).asUInt())
+    mulhu_res := ((io.input1.asUInt() * io.input2.asUInt())(127,64).asUInt())
+    rem_res := Mux(io.input2 === 0.U,0.U,((io.input1.asSInt() % io.input2.asSInt()).asUInt()))
+    remu_res := Mux(io.input2 === 0.U,0.U,((io.input1.asUInt() % io.input2.asUInt()).asUInt()))
+    remuw_res := Mux(io.input2 === 0.U,0.U,((io.input1(31,0).asUInt() % io.input2(31,0).asUInt()).asUInt()))
+    remw_res := Mux(io.input2 === 0.U,0.U,((io.input1(31,0).asSInt() % io.input2(31,0).asSInt()).asUInt()))
+    div_res := Mux(io.input2 === 0.U,0.U,((io.input1.asSInt() / io.input2.asSInt()).asUInt()))
+    divu_res := Mux(io.input2 === 0.U,0.U,((io.input1.asUInt() / io.input2.asUInt()).asUInt()))
+    divuw_res := Mux(io.input2 === 0.U,0.U,((io.input1(31,0).asUInt() / io.input2(31,0).asUInt()).asUInt()))
+    divw_res := Mux(io.input2 === 0.U,0.U,((io.input1(31,0).asSInt() / io.input2(31,0).asSInt()).asUInt()))
+
     res_temp := MuxCase(add_res,Array(
         (io.op === ALU_ADD) -> add_res,
-        (io.op === ALU_SUB) -> (io.input1 - io.input2) ,
-        (io.op === ALU_AND) -> (io.input1 & io.input2),
-        (io.op === ALU_OR) -> (io.input1 | io.input2),
-        (io.op === ALU_XOR) -> (io.input1 ^ io.input2),
-        (io.op === ALU_SLL) -> ((io.input1 << sham)(63,0).asUInt()),
-        (io.op === ALU_SLLW) -> ((io.input1 << sham(4,0))(63,0).asUInt()),
-        (io.op === ALU_SLT) -> (io.input1.asSInt() < io.input2.asSInt()),
-        (io.op === ALU_SLTU) -> (io.input1.asUInt() < io.input2.asUInt()),
-        (io.op === ALU_SRA) -> ((io.input1.asSInt() >> sham).asUInt()),
-        (io.op === ALU_SRAW) -> ((io.input1(31,0).asSInt() >> sham(4,0)).asUInt()),
-        (io.op === ALU_SRL) -> ((io.input1.asUInt() >> sham).asUInt()),
-        (io.op === ALU_SRLW) -> ((io.input1(31,0).asUInt() >> sham(4,0)).asUInt()),
-        (io.op === ALU_CP1) -> (io.input1),
-        (io.op === ALU_MUL) -> ((io.input1.asSInt() * io.input2.asSInt())(63,0).asUInt()),
-        (io.op === ALU_MULH) -> ((io.input1.asSInt() * io.input2.asSInt())(127,64).asUInt()),
-        (io.op === ALU_MULHSU) -> ((io.input1.asSInt() * Cat(0.U(1.W),io.input2).asSInt())(127,64).asUInt()),
-        (io.op === ALU_MULHU) -> ((io.input1.asUInt() * io.input2.asUInt())(127,64).asUInt()),
-        (io.op === ALU_REM) -> ((io.input1.asSInt() % io.input2.asSInt()).asUInt()),
-        (io.op === ALU_REMU) -> ((io.input1.asUInt() % io.input2.asUInt()).asUInt()),
-        (io.op === ALU_REMUW) -> ((io.input1(31,0).asUInt() % io.input2(31,0).asUInt()).asUInt()),
-        (io.op === ALU_REMW) -> ((io.input1(31,0).asSInt() % io.input2(31,0).asSInt()).asUInt()),
-        (io.op === ALU_DIV) -> ((io.input1.asSInt() / io.input2.asSInt()).asUInt()),
-        (io.op === ALU_DIVU) -> ((io.input1.asUInt() / io.input2.asUInt()).asUInt()),
-        (io.op === ALU_DIVUW) -> ((io.input1(31,0).asUInt() / io.input2(31,0).asUInt()).asUInt()),
-        (io.op === ALU_DIVW) -> ((io.input1(31,0).asSInt() / io.input2(31,0).asSInt()).asUInt())
+        (io.op === ALU_SUB) -> sub_res ,
+        (io.op === ALU_AND) -> and_res,
+        (io.op === ALU_OR) -> or_res,
+        (io.op === ALU_XOR) -> xor_res,
+        (io.op === ALU_SLL) -> sll_res,
+        (io.op === ALU_SLLW) -> sllw_res,
+        (io.op === ALU_SLT) -> slt_res,
+        (io.op === ALU_SLTU) -> sltu_res,
+        (io.op === ALU_SRA) -> sra_res,
+        (io.op === ALU_SRAW) -> sraw_res,
+        (io.op === ALU_SRL) -> srl_res,
+        (io.op === ALU_SRLW) -> srlw_res,
+        (io.op === ALU_CP1) -> cp1_res,
+        (io.op === ALU_MUL) -> mul_res,
+        (io.op === ALU_MULH) -> mulh_res,
+        (io.op === ALU_MULHSU) -> mulhsu_res,
+        (io.op === ALU_MULHU) -> mulhu_res,
+        (io.op === ALU_REM) -> rem_res,
+        (io.op === ALU_REMU) -> remu_res,
+        (io.op === ALU_REMUW) -> remuw_res,
+        (io.op === ALU_REMW) -> remw_res,
+        (io.op === ALU_DIV) -> div_res,
+        (io.op === ALU_DIVU) -> divu_res,
+        (io.op === ALU_DIVUW) -> divuw_res,
+        (io.op === ALU_DIVW) -> divw_res
     ))
 
     //extend the result using arg res_ext_op

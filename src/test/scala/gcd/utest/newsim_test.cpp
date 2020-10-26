@@ -61,7 +61,7 @@ int main(int argc,char** argv)
     reset_cycle(top,1);
 
     // put_to_pipeline(top,4);
-    uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nlist_mailbox\nlist_mutex\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
+    uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nmemcheck\nmemtrace\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
     
     long long cnt = 0;
 
