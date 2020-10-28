@@ -157,55 +157,55 @@ class AXI4_Ram(memdir : String = "") extends Module
         {
             io.arready := false.B
             io.rvalid  := false.B
-            when(io.rready)
+            
+            // io.rdata := Cat((VecInit.tabulate(8){i => mem(reg_araddr + i.U)}).reverse)
+            when(reg_araddr === uart_read_addr.U)
             {
-                // io.rdata := Cat((VecInit.tabulate(8){i => mem(reg_araddr + i.U)}).reverse)
-                when(reg_araddr === uart_read_addr.U)
+                //uart read
+                uart.io.getc := true.B
+                temp_read_data := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
+            }.otherwise
+            {
+                uart.io.getc := false.B
+                when(reg_araddr === uart_state_addr.U)
                 {
-                    //uart read
-                    uart.io.getc := true.B
-                    temp_read_data := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
-                }.otherwise
+                     //read state
+                    temp_read_data := Cat(Fill(32,0.U(1.W)),uart_state)
+                 }.elsewhen(reg_araddr === uart_contr_addr.U)
+                 {
+                     //read control
+                     temp_read_data := Cat(Fill(32,0.U(1.W)),uart_control)
+                 }.elsewhen(reg_araddr === mtimecmp_addr.U)
                 {
-                    uart.io.getc := false.B
-                    when(reg_araddr === uart_state_addr.U)
-                    {
-                        //read state
-                        temp_read_data := Cat(Fill(32,0.U(1.W)),uart_state)
-                    }.elsewhen(reg_araddr === uart_contr_addr.U)
-                    {
-                        //read control
-                        temp_read_data := Cat(Fill(32,0.U(1.W)),uart_control)
-                    }.elsewhen(reg_araddr === mtimecmp_addr.U)
-                    {
-                        //read mtimecmp
-                        temp_read_data := reg_mtimecmp
-                    }.elsewhen(reg_araddr === mtime_addr.U)
-                    {
-                        //read mtime   
-                        temp_read_data := reg_mtime
-                    }.otherwise
-                    {
-                        //read ram
-                        temp_read_data := Cat((VecInit.tabulate(8){i => mem( ((reg_araddr + i.U)(AXI_real_addr_len-1,0)) )}).reverse)
-                    }
-
+                   //read mtimecmp
+                    temp_read_data := reg_mtimecmp
+                 }.elsewhen(reg_araddr === mtime_addr.U)
+                 {
+                     //read mtime   
+                    temp_read_data := reg_mtime
+                 }.otherwise
+                 {
+                    //read ram
+                    temp_read_data := Cat((VecInit.tabulate(8){i => mem( ((reg_araddr + i.U)(AXI_real_addr_len-1,0)) )}).reverse)
                 }
-                read_state := read_resp
             }
+                read_state := read_resp
+            
         }
         is(read_resp)
         {
             io.arready := false.B
-            io.rvalid  := true.B
             uart.io.getc := false.B
             io.rdata := temp_read_data
-
-            // when(reg_araddr === uart_read_addr.U)
-            // {
-            //     io.rdata := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
-            // }
-            read_state := read_idle
+            when(io.rready)
+            {
+                io.rvalid  := true.B
+                read_state := read_idle
+            }.otherwise
+            {
+                io.rvalid  := false.B
+                read_state := read_resp
+            }
         }
     }
 
@@ -305,12 +305,16 @@ class AXI4_Ram(memdir : String = "") extends Module
         {
             io.wready  := false.B
             io.awready := false.B
-            io.bvalid := true.B
             uart.io.putc := false.B
 
             when(io.bready)
             {
+                io.bvalid := true.B
                 write_state := write_idle
+            }.otherwise
+            {
+                io.bvalid := false.B
+                write_state := write_resp
             }
         }
     }

@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 import chisel3.experimental.BundleLiterals._
+import chisel3.util.experimental.BoringUtils
 
 import constants.RV64I._
 import constants.RV64M._
@@ -178,8 +179,13 @@ class Sramlike2AXI4 extends Module
 
     io.axi4.arvalid := (has_request && !info_wen && !addr_recv)
 
+    //the mul and div stall signal
+    val exe_stall = WireInit(false.B)
+    BoringUtils.addSink(exe_stall,"exe_stall")
+
     //r channel
-    io.axi4.rready := true.B
+    // io.axi4.rready := true.B
+    io.axi4.rready := !exe_stall
 
     //w channel
     io.axi4.wdata := info_wdata
@@ -188,7 +194,8 @@ class Sramlike2AXI4 extends Module
     io.axi4.wlast := true.B
 
     //b channel
-    io.axi4.bready := true.B
+    // io.axi4.bready := true.B
+    io.axi4.bready := !exe_stall
 
     //get read result from r channel
     when(do_data_request && data_back && !info_wen)

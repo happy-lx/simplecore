@@ -366,6 +366,7 @@ class Dpath extends Module {
 
     dp_alu.io.op := dp_exe_reg_alu_sel
     dp_alu.io.res_ext_op := dp_exe_reg_alu_ext_sel
+    dp_alu.io.pipeline_stall := io.c2d.cp_pipeline_stall
 
     dp_wire_exe_aluout := dp_alu.io.res
 
