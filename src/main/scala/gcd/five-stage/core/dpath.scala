@@ -370,6 +370,8 @@ class Dpath extends Module {
 
     dp_wire_exe_aluout := dp_alu.io.res
 
+
+
     //send the relation of op1 and op2 to cpath
     io.d2c.islt := (dp_exe_reg_op1_source.asSInt() < dp_exe_reg_op2_source.asSInt())
     io.d2c.isltu := (dp_exe_reg_op1_source < dp_exe_reg_op2_source)
@@ -559,5 +561,6 @@ class Dpath extends Module {
     BoringUtils.addSource(dp_wb_reg_pc,"pc_data")
     BoringUtils.addSource(csr.io.is_retire,"is_retire")
     BoringUtils.addSource(dp_wb_reg_instr,"dp_wb_reg_instr")
+    
     
 }

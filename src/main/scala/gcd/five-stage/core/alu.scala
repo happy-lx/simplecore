@@ -64,18 +64,16 @@ class alu_module extends Module {
     srlw_res := ((io.input1(31,0).asUInt() >> sham(4,0)).asUInt())
     cp1_res := (io.input1)
 
-    val is_mdu_op = (io.op === ALU_MUL || io.op === ALU_MULH || io.op === ALU_MULHSU || io.op === ALU_MULHU || io.op === ALU_REM || io.op === ALU_REMU || io.op === ALU_REMUW || io.op === ALU_DIV || io.op === ALU_DIVU || io.op === ALU_DIVUW || io.op === ALU_DIVW)
+    val is_mdu_op = WireInit(false.B)
+
+    is_mdu_op := (io.op === ALU_MUL || io.op === ALU_MULH || io.op === ALU_MULHSU || io.op === ALU_MULHU || io.op === ALU_REM || io.op === ALU_REMU || io.op === ALU_REMUW || io.op === ALU_REMW || io.op === ALU_DIV || io.op === ALU_DIVU || io.op === ALU_DIVUW || io.op === ALU_DIVW)
 
     mdu.io.op1 := io.input1
     mdu.io.op2 := io.input2
     mdu.io.op  := io.op
     mdu.io.en  := is_mdu_op
-
-    val exe_stall = WireInit(false.B) 
-    exe_stall := mdu.io.en && !(mdu.io.finish)
-
-    //WARNING
-    BoringUtils.addSource(exe_stall,"exe_stall")
+    BoringUtils.addSource(mdu.io.exe_stall,"exe_stall")
+    BoringUtils.addSource(mdu.io.exe_stall,"exe_stall2")
 
     mdu.io.result_got := mdu.io.en && mdu.io.finish && !io.pipeline_stall
 
@@ -118,6 +116,7 @@ class alu_module extends Module {
         (io.res_ext_op === alu_res_ws) -> Cat(Fill(32,res_temp(31)),res_temp(31,0)),
         (io.res_ext_op === alu_res_wu) -> Cat(Fill(32,0.U(1.W)),res_temp(31,0))
     ))
+    
 
 }
 
@@ -132,6 +131,7 @@ class MDU_io extends Bundle
 
     val result = Output(UInt(64.W))
     val finish = Output(Bool())
+    val exe_stall = Output(Bool())
 }
 
 class MDU extends Module
@@ -140,7 +140,7 @@ class MDU extends Module
 
     io := DontCare
 
-    val is_mdu_op = (io.op === ALU_MUL || io.op === ALU_MULH || io.op === ALU_MULHSU || io.op === ALU_MULHU || io.op === ALU_REM || io.op === ALU_REMU || io.op === ALU_REMUW || io.op === ALU_DIV || io.op === ALU_DIVU || io.op === ALU_DIVUW || io.op === ALU_DIVW)
+    val is_mdu_op = (io.op === ALU_MUL || io.op === ALU_MULH || io.op === ALU_MULHSU || io.op === ALU_MULHU || io.op === ALU_REMW || io.op === ALU_REM || io.op === ALU_REMU || io.op === ALU_REMUW || io.op === ALU_DIV || io.op === ALU_DIVU || io.op === ALU_DIVUW || io.op === ALU_DIVW)
     //check whether op1 is a word
     val op1_is_word = (io.op === ALU_REMW || io.op === ALU_REMUW) || (io.op === ALU_DIVW || io.op === ALU_DIVUW)
 
@@ -176,13 +176,20 @@ class MDU extends Module
     val mdu_idle :: mdu_exe :: mdu_finish :: Nil = Enum(3)
 
     val mdu_state = RegInit(mdu_idle)
-    val exe_cycles = RegInit(65.U(7.W))
+    val exe_cycles = RegInit(64.U(7.W))
 
     val mul_result = RegInit(0.U(128.W))
     val rem_result = RegInit(0.U(128.W))
     val div_op2 = RegInit(0.U(128.W))
     val div_result = RegInit(0.U(64.W))
     val mdu_result = WireInit(0.U(64.W))
+
+    BoringUtils.addSource(mul_result(127,64),"mul_result_hi")
+    BoringUtils.addSource(mul_result(63,0),"mul_result_lo")
+    BoringUtils.addSource(abs_op1,"abs_op1")
+    BoringUtils.addSource(abs_op2,"abs_op2")
+
+    io.exe_stall := io.en && !(io.finish)
 
     def mul_step() = {
         when(mul_result(0) === 1.U)
@@ -206,17 +213,20 @@ class MDU extends Module
         {
             div_result := div_result << 1 
         }
-        div_op2 := (div_op2 >> 1)(63,0)
+        // div_op2 := (div_op2 >> 1)(127,0)
+        div_op2 := Cat(0.U(1.W),div_op2(127,1))
     }
 
     switch(mdu_state)
     {
         is(mdu_idle)
         {
+            io.finish := false.B
+
             when(io.en)
             {
                 mdu_state := mdu_exe
-                exe_cycles := 65.U
+                exe_cycles := 64.U
 
                 mul_result := Cat(0.U(64.W),abs_op2)
 
@@ -227,6 +237,8 @@ class MDU extends Module
         }
         is(mdu_exe)
         {
+            io.finish := false.B
+
             exe_cycles := exe_cycles - 1.U
 
             when(is_mul_op)
@@ -257,10 +269,15 @@ class MDU extends Module
                 (io.op === ALU_MULHSU)  -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
                 (io.op === ALU_MULHU)   -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
                 
-                (io.op === ALU_REM)     -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                (io.op === ALU_REMU)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                (io.op === ALU_REMUW)   -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                (io.op === ALU_REMW)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                // (io.op === ALU_REM)     -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                // (io.op === ALU_REMU)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                // (io.op === ALU_REMUW)   -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                // (io.op === ALU_REMW)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+
+                (io.op === ALU_REM)     -> rem_result(63,0),
+                (io.op === ALU_REMU)    -> rem_result(63,0),
+                (io.op === ALU_REMUW)   -> rem_result(63,0),
+                (io.op === ALU_REMW)    -> rem_result(63,0),
 
                 (io.op === ALU_DIV)     -> Mux(sign_change,(~div_result(63,0)) + 1.U,div_result(63,0)),
                 (io.op === ALU_DIVU)    -> Mux(sign_change,(~div_result(63,0)) + 1.U,div_result(63,0)),

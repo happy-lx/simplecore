@@ -15,6 +15,11 @@ class difftestIO extends Bundle
     val instr_in_wb = Output(UInt(32.W))
     val is_valid = Output(Bool())
     // val pc_sel = Output(Bool())
+    val alu_exe_stall = Output(Bool())
+    val mul_result_hi = Output(UInt(64.W))
+    val mul_result_lo = Output(UInt(64.W))
+    val abs_op1 = Output(UInt(64.W))
+    val abs_op2 = Output(UInt(64.W))
 }
 
 class top extends Module {
@@ -37,6 +42,12 @@ class top extends Module {
     // BoringUtils.addSink(difftestwire.pc_sel,"pc_sel")
     BoringUtils.addSink(difftestwire.instr_in_wb,"dp_wb_reg_instr")
     BoringUtils.addSink(difftestwire.is_valid,"cs_valid_inst")
+    BoringUtils.addSink(difftestwire.alu_exe_stall,"exe_stall2")
+    BoringUtils.addSink(difftestwire.mul_result_hi,"mul_result_hi")
+    BoringUtils.addSink(difftestwire.mul_result_lo,"mul_result_lo")
+    BoringUtils.addSink(difftestwire.abs_op1,"abs_op1")
+    BoringUtils.addSink(difftestwire.abs_op2,"abs_op2")
+
 
     io.diff := difftestwire
 

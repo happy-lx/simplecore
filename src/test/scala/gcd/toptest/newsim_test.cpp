@@ -144,6 +144,10 @@ void print_retire(Vtop* target)
         printf("no legal instruction will commit \n");
     }
 }
+void print_exe_stall(Vtop* target)
+{
+    printf("exe_stall : [%d]\n",target->io_diff_alu_exe_stall);
+}
 void print_rfen(Vtop* target)
 {
     // if(target->io_diff_rf_wen)
@@ -180,6 +184,11 @@ void put_to_pipeline(Vtop* target,int cycle)
         target->clock = 1;
         target->eval();
     }
+}
+
+void print_mul_info(Vtop* target)
+{
+    printf("mul_result_hi : %lx\nmul_result_lo : %lx\nabs_op1 : %lx\nabs_op2 : %lx\n",target->io_diff_mul_result_hi,target->io_diff_mul_result_lo,target->io_diff_abs_op1,target->io_diff_abs_op2);
 }
 
 void reset_cycle(Vtop* target,int cycle)
@@ -233,6 +242,8 @@ int main(int argc,char** argv)
             printf("in cycle %d:\n",(int)main_time / 20);
             print_valid(top);
             print_pc(top);
+            print_exe_stall(top);
+            print_mul_info(top);
             // print_rfen(top);
             print_instr(top);
             print_wbsel(top);
@@ -247,10 +258,10 @@ int main(int argc,char** argv)
          
         main_time ++;
 
-        // if(main_time == 500000)
-        // {
-        //     break;
-        // }
+        if(main_time == 10000)
+        {
+            break;
+        }
     }
 
     return 0;
