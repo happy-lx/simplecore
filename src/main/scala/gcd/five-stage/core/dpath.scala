@@ -11,12 +11,15 @@ import constants.Constraints._
 
 class D2CIO extends Bundle
 {
+    //instruction in DEC
     val instr = Output(UInt(32.W))
     val islt = Output(Bool())
     val isltu = Output(Bool())
     val iseq = Output(Bool())
     val isredir =  Output(Bool())
     val mem_mem_valid = Output(Bool())
+    val IF_ins = Output(UInt(32.W))
+    val EXE_pc_branch = Output(UInt(2.W))
 }
 
 class DpathIO extends Bundle
@@ -43,6 +46,7 @@ class Dpath extends Module {
     val wire_pc_branch_target = Wire(UInt(64.W))
     //the following target is generated in mem stage
     val wire_pc_redirect_target = Wire(UInt(64.W))
+    val wire_pc_bpu_target = Wire(UInt(64.W))
 
     io.imem.memen := true.B
     io.imem.addr := reg_if_pc(31,0)
@@ -57,17 +61,25 @@ class Dpath extends Module {
         (io.c2d.cp_pc_sel === pc_redir) -> wire_pc_redirect_target,
         (io.c2d.cp_pc_sel === pc_j)     -> wire_pc_jump_target,
         (io.c2d.cp_pc_sel === pc_jr)    -> wire_pc_jr_target,
-        (io.c2d.cp_pc_sel === pc_branch)-> wire_pc_branch_target
+        (io.c2d.cp_pc_sel === pc_branch)-> wire_pc_branch_target,
+        (io.c2d.cp_pc_sel === pc_bpu)   -> wire_pc_bpu_target
     ))
 
 
     val wire_if_instr = WireInit(io.imem.rdata(31,0))
+    io.d2c.IF_ins := wire_if_instr
+
+    val if_bim = Cat(wire_if_instr(31),wire_if_instr(7),wire_if_instr(30,25),wire_if_instr(11,8))
+    val if_bim_ext = Cat(Fill(51,if_bim(11)),if_bim,0.U(1.W))
+    wire_pc_bpu_target := reg_if_pc + if_bim_ext
 
     //the instruction register in decode stage init to nop in case the cpath generates a 
     //excepiton in the init cycle for the first instruction is zero
     val reg_dec_instr = RegInit(NOP)
     val reg_dec_instr_valid = RegInit(false.B)
     val reg_dec_pc = RegInit(STARTADDR)
+    //for BPU
+    val reg_dec_pc_branch = RegInit(0.U(2.W))
     // reg_dec_instr := reg_dec_instr
 
     //update pc 
@@ -78,6 +90,7 @@ class Dpath extends Module {
         reg_if_pc := reg_if_pc
         reg_dec_instr_valid := reg_dec_instr_valid
         reg_dec_pc := reg_dec_pc
+        reg_dec_pc_branch := reg_dec_pc_branch
 
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -85,6 +98,7 @@ class Dpath extends Module {
         reg_if_pc := wire_pc_next
         reg_dec_instr_valid := false.B
         reg_dec_pc := 0.U(64.W)
+        reg_dec_pc_branch := 0.U(2.W)
 
     }.otherwise
     {
@@ -94,24 +108,28 @@ class Dpath extends Module {
             reg_if_pc := reg_if_pc
             reg_dec_instr_valid := true.B
             reg_dec_pc := reg_dec_pc
+            reg_dec_pc_branch := reg_dec_pc_branch
         }.elsewhen(io.c2d.cp_control_hazard)
         {
             reg_dec_instr := NOP
             reg_if_pc := wire_pc_next
             reg_dec_instr_valid := false.B
             reg_dec_pc := 0.U(64.W)
+            reg_dec_pc_branch := 0.U(2.W)
         }.elsewhen(io.c2d.cp_if_kill)
         {
             reg_dec_instr := NOP
             reg_if_pc := reg_if_pc
             reg_dec_instr_valid := false.B
             reg_dec_pc := 0.U(64.W)
+            reg_dec_pc_branch := 0.U(2.W)
         }.otherwise
         {
             reg_dec_instr := wire_if_instr
             reg_if_pc := wire_pc_next
             reg_dec_instr_valid := true.B
             reg_dec_pc := reg_if_pc
+            reg_dec_pc_branch := io.c2d.cp_if_pc_branch
         }
     }
 
@@ -227,6 +245,9 @@ class Dpath extends Module {
     val dp_exe_reg_bim_ext = RegInit(0.U(64.W))
     val dp_exe_reg_rs1_data = RegInit(0.U(64.W))
 
+    //for BPU
+    val dp_exe_pc_branch = RegInit(0.U(2.W))
+
     //pass signals from dec to exe stage due to all kinds of hazard 
     //needs rewrite that only control signal should be set to false 
     when(io.c2d.cp_pipeline_stall)
@@ -251,6 +272,7 @@ class Dpath extends Module {
         dp_exe_reg_bim_ext := dp_exe_reg_bim_ext
         dp_exe_reg_rs1_data := dp_exe_reg_rs1_data
         dp_exe_reg_wb_sel := dp_exe_reg_wb_sel
+        dp_exe_pc_branch := dp_exe_pc_branch
         
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -274,6 +296,7 @@ class Dpath extends Module {
         dp_exe_reg_bim_ext := 0.U(64.W)
         dp_exe_reg_rs1_data := 0.U(64.W)
         dp_exe_reg_wb_sel := 0.U(2.W)
+        dp_exe_pc_branch := 0.U(2.W)
     }.otherwise
     {
         when(io.c2d.cp_data_hazard)
@@ -298,6 +321,7 @@ class Dpath extends Module {
             dp_exe_reg_bim_ext := 0.U(64.W)
             dp_exe_reg_rs1_data := 0.U(64.W)
             dp_exe_reg_wb_sel := 0.U(2.W)
+            dp_exe_pc_branch := 0.U(2.W)
 
         }.elsewhen(io.c2d.cp_control_hazard)
         {
@@ -321,6 +345,7 @@ class Dpath extends Module {
             dp_exe_reg_bim_ext := 0.U(64.W)
             dp_exe_reg_rs1_data := 0.U(64.W)
             dp_exe_reg_wb_sel := 0.U(2.W)
+            dp_exe_pc_branch := 0.U(2.W)
         }.otherwise
         {
             dp_exe_reg_instr_valid := reg_dec_instr_valid
@@ -343,6 +368,7 @@ class Dpath extends Module {
             dp_exe_reg_bim_ext := dp_dec_bim_ext
             dp_exe_reg_rs1_data := dp_dec_rs1_data
             dp_exe_reg_wb_sel := io.c2d.cp_wb_sel
+            dp_exe_pc_branch := reg_dec_pc_branch
         }
     }
 
@@ -355,8 +381,9 @@ class Dpath extends Module {
     wire_pc_jump_target := (dp_exe_reg_pc.asSInt() + dp_exe_reg_jim_ext.asSInt()).asUInt()
     //not dp_exe_reg_rs1_data because there might be a data hazard
     wire_pc_jr_target := (((dp_exe_reg_op1_source.asSInt() + dp_exe_reg_iim_ext.asSInt()) >> 1) << 1).asUInt()
-    wire_pc_branch_target := (dp_exe_reg_pc.asSInt() + dp_exe_reg_bim_ext.asSInt()).asUInt()
+    wire_pc_branch_target := Mux(io.c2d.cp_exe_actual_branch === 1.U(2.W),(dp_exe_reg_pc.asSInt() + dp_exe_reg_bim_ext.asSInt()).asUInt(),(dp_exe_reg_pc.asSInt() + 4.U(64.W).asSInt()).asUInt())
 
+    io.d2c.EXE_pc_branch := dp_exe_pc_branch
 
     //let alu do it's work 
     val dp_alu = Module(new alu_module)

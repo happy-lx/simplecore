@@ -32,7 +32,9 @@ class C2DIO extends Bundle
     val cp_pipeline_data_stall = Output(Bool())
     val cp_pipeline_inst_stall = Output(Bool())
 
-
+    //for BPU
+    val cp_if_pc_branch = Output(UInt(2.W))
+    val cp_exe_actual_branch = Output(UInt(2.W))
 
     val hasexception = Output(Bool())
     val shouldstall = Output(Bool())
@@ -158,29 +160,6 @@ class Cpath extends Module {
     val cs_exe_branch = RegInit(BR_N)
 
     cs_exe_branch := cs_branch
-    
-    val temp_pc_sel = Wire(UInt(3.W))
-
-    temp_pc_sel := MuxCase(pc_4,Array(
-        (cs_exe_branch === BR_N) -> pc_4,
-        (cs_exe_branch === BR_EQ) -> (Mux(io.d2c.iseq,pc_branch,pc_4)),
-        (cs_exe_branch === BR_NEQ) -> (Mux(!io.d2c.iseq,pc_branch,pc_4)),
-        (cs_exe_branch === BR_GE) -> (Mux(!io.d2c.islt,pc_branch,pc_4)),
-        (cs_exe_branch === BR_GEU) -> (Mux(!io.d2c.isltu,pc_branch,pc_4)),
-        (cs_exe_branch === BR_LT) -> (Mux(io.d2c.islt,pc_branch,pc_4)),
-        (cs_exe_branch === BR_LTU) -> (Mux(io.d2c.isltu,pc_branch,pc_4)),
-        (cs_exe_branch === BR_J) -> pc_j,
-        (cs_exe_branch === BR_JR) -> pc_jr
-    ))
-
-    when(io.d2c.isredir)
-    {
-        temp_pc_sel := pc_redir
-    }
-
-    val temp_is_csr = ((cs_csr_op =/= csr_x) && (cs_csr_op =/= csr_prv))
-    val cs_reg_exe_is_csr = RegNext(temp_is_csr,false.B)
-    val cs_reg_exe_is_fencei = RegNext(cs_is_fencei,false.B)
 
     //if pc_sel is not pc_4 then control hazard happens or a mem's exception or ret happens
     //control hazard kills if and dec stages 
@@ -199,7 +178,57 @@ class Cpath extends Module {
     //pipeline_stall is only for d$ miss 
     val cs_wire_pipeline_stall = WireInit(false.B)
 
-    when(temp_pc_sel =/= pc_4)
+    val cp_bpu = Module(new BPU)
+    cp_bpu.io := DontCare
+
+    cp_bpu.io.IF_ins := io.d2c.IF_ins
+    cp_bpu.io.has_stall := cs_wire_pipeline_stall
+    cp_bpu.io.EXE_pc_branch := io.d2c.EXE_pc_branch
+
+    io.c2d.cp_if_pc_branch := cp_bpu.io.IF_pc_branch
+
+    
+    val temp_pc_sel = Wire(UInt(3.W))
+
+    val pc_sel_from_bpu = cp_bpu.io.IF_pc_sel
+
+    temp_pc_sel := MuxCase(pc_sel_from_bpu,Array(
+        (cs_exe_branch === BR_N) -> pc_sel_from_bpu,
+        (cs_exe_branch === BR_EQ) -> (Mux(io.d2c.iseq,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_NEQ) -> (Mux(!io.d2c.iseq,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_GE) -> (Mux(!io.d2c.islt,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_GEU) -> (Mux(!io.d2c.isltu,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_LT) -> (Mux(io.d2c.islt,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_LTU) -> (Mux(io.d2c.isltu,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
+        (cs_exe_branch === BR_J) -> pc_j,
+        (cs_exe_branch === BR_JR) -> pc_jr
+    ))
+
+    cp_bpu.io.EXE_actual_branch := MuxCase(0.U(2.W),Array(
+        (cs_exe_branch === BR_EQ) ->(Mux(io.d2c.iseq,1.U(2.W),2.U(2.W))),
+        (cs_exe_branch === BR_NEQ) ->(Mux(!io.d2c.iseq,1.U(2.W),2.U(2.W))),
+        (cs_exe_branch === BR_GE) ->(Mux(!io.d2c.islt,1.U(2.W),2.U(2.W))),
+        (cs_exe_branch === BR_GEU) ->(Mux(!io.d2c.isltu,1.U(2.W),2.U(2.W))),
+        (cs_exe_branch === BR_LT) ->(Mux(io.d2c.islt,1.U(2.W),2.U(2.W))),
+        (cs_exe_branch === BR_LTU) ->(Mux(io.d2c.isltu,1.U(2.W),2.U(2.W)))
+    ))
+
+    io.c2d.cp_exe_actual_branch := cp_bpu.io.EXE_actual_branch
+
+    when(io.d2c.isredir)
+    {
+        temp_pc_sel := pc_redir
+    }
+
+
+
+    val temp_is_csr = ((cs_csr_op =/= csr_x) && (cs_csr_op =/= csr_prv))
+    val cs_reg_exe_is_csr = RegNext(temp_is_csr,false.B)
+    val cs_reg_exe_is_fencei = RegNext(cs_is_fencei,false.B)
+
+
+    // when(temp_pc_sel =/= pc_4)
+    when(temp_pc_sel =/= pc_4 && temp_pc_sel =/= pc_bpu)
     {
         cs_wire_control_hazard := true.B
     }.otherwise

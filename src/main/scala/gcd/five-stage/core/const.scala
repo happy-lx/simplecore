@@ -164,6 +164,7 @@ trait CpathConstants
     val pc_branch = 2.U(3.W)
     val pc_jr = 3.U(3.W)
     val pc_redir = 4.U(3.W)
+    val pc_bpu = 5.U(3.W)
 
     //brach type selector
     val BR_N = 0.U(4.W)
