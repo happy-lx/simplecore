@@ -353,4 +353,7 @@ hs_err_pid*
 /tools/mytb/*.riscv.dump
 ./tools/elf
 ./tools/other
+./tools/am-test/*.s
+./tools/other/*.s
+./tools/other/*.asm
 
