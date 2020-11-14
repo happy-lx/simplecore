@@ -16,6 +16,8 @@
 + 修改处理器核对外接口为标准的`AXI4`接口,通过了自己写的测试用例
 + 添加了时钟中断，没有测试
 + 完成一个简单的串口，访真时从C++ `vector`实现的`fifo`中读入，输出则直接输出到终端，写了一个`hello world`的测试用例，测试通过
++ 流片的版本不带`cache`，可以正确跑通`hello`测试用例
++ 目前正在`working`的版本有一个简单的`cache`，可以跑通`RTT`以及现有的所有测试用例
 
 ### 问题列表
 
@@ -47,11 +49,13 @@
 - [x] 时钟中断相关的代码可能还存在一些问题
 - [x] 添加乘除法器
 - [x] 添加分支预测器
-- [ ] 添加cache
+- [x] 添加cache(简单的直接映射I$ , D$)
+- [ ] 添加sv39的PTW
+- [ ] 添加TLB
 
 ### 成果
 
 + 成功运行`coremark`
   + ![coremark](doc/screenshot/coremark测试.png)
-+ 成功启动`RT-Thread`
++ 成功运行RT-Thread`
   + ![RT-Thread](doc/screenshot/启动rtthread.png)
