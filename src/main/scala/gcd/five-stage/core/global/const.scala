@@ -46,6 +46,22 @@ trait AXI_const
     val INTR = 0
 }
 
+trait cache_const
+{
+    val offset_LSB = 0
+    val offset_MSB = 4
+
+    val index_LSB = 5
+    val index_MSB = 14
+
+    val tag_LSB = 15
+    val tag_MSB = 63
+
+    val offset_len = 5
+    val index_len = 10
+    val tag_len = 49
+}
+
 trait Uart_const
 {
     val uart_read_addr =  0x40600000L
@@ -319,5 +335,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with cache_const
 {}

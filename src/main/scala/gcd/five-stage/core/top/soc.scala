@@ -2,35 +2,26 @@ package mycore
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental._
+import chisel3.experimental.BundleLiterals._
 import chisel3.util.experimental.BoringUtils
 
+import constants.RV64I._
+import constants.RV64M._
+import constants.Constraints._
 
-class difftestIO extends Bundle
+class top extends Module
 {
-    val r = Output(Vec(32,UInt(64.W)))
-    val pc_data = Output(UInt(64.W))
-    val mstatus = Output(UInt(64.W))
-    val isredir = Output(Bool())
-    val is_retire = Output(Bool())
-    val instr_in_wb = Output(UInt(32.W))
-    val is_valid = Output(Bool())
-    // val pc_sel = Output(Bool())
-    val alu_exe_stall = Output(Bool())
-    val mul_result_hi = Output(UInt(64.W))
-    val mul_result_lo = Output(UInt(64.W))
-    val abs_op1 = Output(UInt(64.W))
-    val abs_op2 = Output(UInt(64.W))
-}
-
-class top extends Module {
-    val io = IO(new Bundle {
+    val io = IO(new Bundle{
         val diff = new difftestIO
     })
 
     val mycore = Module(new core)
-    val mymem  = Module(new AXI4_Ram("./test1.txt"))
+    val uart = Module(new AXI4_UART)
+    val mem  = Module(new AXI4_Ram("./test1.txt"))
 
-    mycore.io.axi4 <> mymem.io
+    mycore.io.axi4_mem <> mem.io
+    mycore.io.axi4_mmio<> uart.io
 
     val difftestwire = WireInit(0.U.asTypeOf(new difftestIO))
 
@@ -48,10 +39,7 @@ class top extends Module {
     BoringUtils.addSink(difftestwire.abs_op1,"abs_op1")
     BoringUtils.addSink(difftestwire.abs_op2,"abs_op2")
 
-
     io.diff := difftestwire
-
-    // io.pc_data := mycore.dpath.reg_pc
 
 }
 

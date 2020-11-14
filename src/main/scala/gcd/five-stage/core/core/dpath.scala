@@ -477,7 +477,22 @@ class Dpath extends Module {
     io.dmem.addr := dp_mem_reg_alu_out(31,0)
     io.dmem.mask := dp_mem_reg_mem_write_mask
     io.dmem.op := dp_mem_reg_mem_read_op
-    io.dmem.wdata := dp_mem_reg_rs2_data
+    when(dp_mem_reg_mem_write_mask === mask_b)
+    {
+        io.dmem.wdata := Fill(8,dp_mem_reg_rs2_data(7,0))
+    }.elsewhen(dp_mem_reg_mem_write_mask === mask_hb)
+    {
+        io.dmem.wdata := Fill(4,dp_mem_reg_rs2_data(15,0))
+    }
+    .elsewhen(dp_mem_reg_mem_write_mask === mask_w)
+    {
+        io.dmem.wdata := Fill(2,dp_mem_reg_rs2_data(31,0))
+    }
+    .elsewhen(dp_mem_reg_mem_write_mask === mask_dw)
+    {
+        io.dmem.wdata := dp_mem_reg_rs2_data
+    }
+    
     io.dmem.wen := dp_mem_reg_mem_wen
 
     val csr = Module(new CSRfile)
@@ -511,37 +526,37 @@ class Dpath extends Module {
     //connect mem and write back stage
     when(io.c2d.cp_pipeline_stall)
     {
-        when(io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
-        {
+        // when(io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
+        // {
             dp_wb_reg_rd_addr     := 0.U(5.W)
             dp_wb_reg_rf_wen      := false.B
             dp_wb_reg_wb_data     := 0.U(64.W)
             dp_wb_reg_instr_valid := false.B
             dp_wb_reg_pc          := dp_mem_reg_pc
             dp_wb_reg_instr       := dp_mem_reg_instr
-        }.elsewhen(!io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
-        {
-            //now we can commit the MEM stage and set the previous MEM stage invalid
-            dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
-            when(!csr.io.csr_illegal_ins_exception)
-            {
-                dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
-            }.otherwise
-            {
-                dp_wb_reg_rf_wen      := false.B
-            }
-            dp_wb_reg_wb_data     := dp_wire_mem_memstageout
-            dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
-            dp_wb_reg_pc          := dp_mem_reg_pc
-            dp_wb_reg_instr       := dp_mem_reg_instr
+        // }.elsewhen(!io.c2d.cp_pipeline_data_stall && io.c2d.cp_pipeline_inst_stall)
+        // {
+        //     //now we can commit the MEM stage and set the previous MEM stage invalid
+        //     dp_wb_reg_rd_addr     := dp_mem_reg_rd_addr
+        //     when(!csr.io.csr_illegal_ins_exception)
+        //     {
+        //         dp_wb_reg_rf_wen      := dp_mem_reg_rf_wen
+        //     }.otherwise
+        //     {
+        //         dp_wb_reg_rf_wen      := false.B
+        //     }
+        //     dp_wb_reg_wb_data     := dp_wire_mem_memstageout
+        //     dp_wb_reg_instr_valid := dp_mem_reg_instr_valid
+        //     dp_wb_reg_pc          := dp_mem_reg_pc
+        //     dp_wb_reg_instr       := dp_mem_reg_instr
 
-            dp_mem_reg_instr_valid := false.B
-            dp_mem_reg_mem_en := false.B
-            // for load use , let the bypass not detect a forwarding
-            //because the MEM stage has commit 
-            dp_mem_reg_rf_wen := false.B
+        //     dp_mem_reg_instr_valid := false.B
+        //     dp_mem_reg_mem_en := false.B
+        //     // for load use , let the bypass not detect a forwarding
+        //     //because the MEM stage has commit 
+        //     dp_mem_reg_rf_wen := false.B
 
-        }
+        // }
     }.elsewhen(csr.io.csr_illegal_ins_exception)
     {
         //when a illegal instruction or a illegal csr_read or write

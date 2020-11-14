@@ -9,29 +9,20 @@ import chisel3.util.experimental.BoringUtils
 
 import constants.Constraints._
 
-//might be a problem
-class word extends Bundle
-{
-    val bytes = Vec(8,UInt(8.W))
-}
-
-//a simple version 
-class AXI4_Ram(memdir : String = "") extends Module
+class AXI4_UART extends Module
 {
     val io = IO(new AXI4IO)
 
     io := DontCare
 
-    val mem = Mem(1 << AXI_real_addr_len ,UInt(8.W))
+    val uart = Module(new UART())
 
-    if(memdir != "")
-    {
-        loadMemoryFromFile(mem,memdir)
-    }
+    uart.io := DontCare
+    uart.io.putc := false.B
 
-    //address in memmory
+    val uart_control = RegInit(0.U(32.W))
+    val uart_state = RegInit(1.U(32.W))
 
-    //define the stage of read and write
     val (read_idle : UInt) :: (read_burst : UInt) :: (read_resp : UInt) :: Nil = Enum(3)
 
     val (write_idle : UInt) :: (write_burst : UInt) :: (write_resp : UInt) :: Nil = Enum(3)
@@ -44,7 +35,6 @@ class AXI4_Ram(memdir : String = "") extends Module
     val reg_araddr = RegInit(0.U(AXI_paddr_len.W))
     // val reg_wdata  = RegInit(0.U(AXI_data_len.W))
     val wire_wstrb  = WireInit(0.U(AXI_wstrb_len.W))
-
     val temp_read_data = Reg(UInt(64.W))
 
     //define the action of each state
@@ -54,6 +44,7 @@ class AXI4_Ram(memdir : String = "") extends Module
         {
             io.arready := true.B
             io.rvalid := false.B
+            uart.io.getc := false.B
             when(io.arvalid)
             {
                 //detect a request 
@@ -67,15 +58,31 @@ class AXI4_Ram(memdir : String = "") extends Module
             io.rvalid  := false.B
             
             // io.rdata := Cat((VecInit.tabulate(8){i => mem(reg_araddr + i.U)}).reverse)
-            
-            temp_read_data := Cat((VecInit.tabulate(8){i => mem( ((reg_araddr + i.U)(AXI_real_addr_len-1,0)) )}).reverse)
-
-            read_state := read_resp
+            when(reg_araddr === uart_read_addr.U)
+            {
+                //uart read
+                uart.io.getc := true.B
+                temp_read_data := Cat(Fill(56,0.U(1.W)),uart.io.ch_get)
+            }.otherwise
+            {
+                uart.io.getc := false.B
+                when(reg_araddr === uart_state_addr.U)
+                {
+                     //read state
+                    temp_read_data := Cat(Fill(32,0.U(1.W)),uart_state)
+                 }.elsewhen(reg_araddr === uart_contr_addr.U)
+                 {
+                     //read control
+                     temp_read_data := Cat(Fill(32,0.U(1.W)),uart_control)
+                 }
+            }
+                read_state := read_resp
             
         }
         is(read_resp)
         {
             io.arready := false.B
+            uart.io.getc := false.B
             io.rdata := temp_read_data
             when(io.rready)
             {
@@ -96,6 +103,7 @@ class AXI4_Ram(memdir : String = "") extends Module
             io.wready  := false.B
             io.awready := true.B
             io.bvalid := false.B
+            uart.io.putc := false.B
             when(io.awvalid)
             {
                 reg_awaddr := io.awaddr
@@ -109,20 +117,31 @@ class AXI4_Ram(memdir : String = "") extends Module
             io.bvalid := false.B
             when(io.wvalid)
             {
+                
                 wire_wstrb := io.wstrb
 
-                // val wstrb_bools = wire_wstrb.asBools()
+                
                 val wstrb_bools = VecInit.tabulate(8){i => (wire_wstrb(i) === 1.U)}
                 val write_data = (VecInit.tabulate(8){i => io.wdata(i*8+7,i*8)})
                 
-                //write ram
-                for(i <- (0 until 8))
+                when(reg_awaddr === uart_write_addr.U)
+                {
+                    //uart write
+                    uart.io.ch_put := io.wdata(7,0)
+                    uart.io.putc := true.B
+                }.otherwise
+                {
+                    uart.io.putc := false.B
+                    when(reg_awaddr === uart_state_addr.U)
                     {
-                        when(wstrb_bools(i))
-                        {
-                            mem((reg_awaddr + i.U)(AXI_real_addr_len-1,0)) := write_data(i)
-                        }
+                        //write state
+                        uart_state := io.wdata(31,0)
+                    }.elsewhen(reg_awaddr === uart_contr_addr.U)
+                    {
+                        //write control
+                        uart_control := io.wdata(31,0)
                     }
+                }
 
                 write_state := write_resp 
             }
@@ -131,6 +150,7 @@ class AXI4_Ram(memdir : String = "") extends Module
         {
             io.wready  := false.B
             io.awready := false.B
+            uart.io.putc := false.B
 
             when(io.bready)
             {
@@ -143,7 +163,4 @@ class AXI4_Ram(memdir : String = "") extends Module
             }
         }
     }
-
-
-
 }

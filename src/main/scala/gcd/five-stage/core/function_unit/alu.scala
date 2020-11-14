@@ -73,7 +73,9 @@ class alu_module extends Module {
     mdu.io.op  := io.op
     mdu.io.en  := is_mdu_op
     BoringUtils.addSource(mdu.io.exe_stall,"exe_stall")
-    BoringUtils.addSource(mdu.io.exe_stall,"exe_stall2")
+    // BoringUtils.addSource(mdu.io.exe_stall,"exe_stall_cache")
+    // BoringUtils.addSource(mdu.io.exe_stall,"exe_stall_cross_bar")
+    // BoringUtils.addSource(mdu.io.exe_stall,"exe_stall2")
 
     mdu.io.result_got := mdu.io.en && mdu.io.finish && !io.pipeline_stall
 
@@ -184,8 +186,8 @@ class MDU extends Module
     val div_result = RegInit(0.U(64.W))
     val mdu_result = WireInit(0.U(64.W))
 
-    BoringUtils.addSource(mul_result(127,64),"mul_result_hi")
-    BoringUtils.addSource(mul_result(63,0),"mul_result_lo")
+    // BoringUtils.addSource(mul_result(127,64),"mul_result_hi")
+    // BoringUtils.addSource(mul_result(63,0),"mul_result_lo")
     BoringUtils.addSource(abs_op1,"abs_op1")
     BoringUtils.addSource(abs_op2,"abs_op2")
 

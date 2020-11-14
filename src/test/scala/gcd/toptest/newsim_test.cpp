@@ -121,7 +121,136 @@ void print_mem(Vtop* target)
 {
     for(int i=0;i<32;i++)
     {
-        printf("mem[0x%x]: 0x%lx\n",(unsigned int)i*8,(unsigned long)target->top__DOT__mymem__DOT__mem[i]);
+        printf("mem[0x%x]: 0x%lx\n",(unsigned int)i*8,(unsigned long)target->top__DOT__mem__DOT__mem[i]);
+    }
+}
+void print_icache(Vtop* target)
+{
+    switch (target->top__DOT__mycore__DOT__icache__DOT__cache_stage)
+    {
+    case 0:
+        printf("icache is in cache_idle stage\n");
+        break;
+    case 1:
+        printf("icache is in cache_find_index stage\n");
+        break;
+    case 2:
+        printf("icache is in cache_resp stage\n");
+        break;
+    case 3:
+        printf("icache is in cache_write_back stage\n");
+        break;
+    case 4:
+        printf("icache is in cache_write_allocate stage\n");
+        break;
+    default:
+        break;
+    }
+
+    if(target->top__DOT__mycore__DOT__icache__DOT__cache_miss)
+    {
+        printf("icache miss\n");
+    }else
+    {
+        printf("icache hit\n");
+    }
+    
+}
+
+void print_dcache(Vtop* target)
+{
+    switch (target->top__DOT__mycore__DOT__dcache__DOT__cache_stage)
+    {
+    case 0:
+        printf("dcache is in cache_idle stage\n");
+        break;
+    case 1:
+        printf("dcache is in cache_find_index stage\n");
+        break;
+    case 2:
+        printf("dcache is in cache_resp stage\n");
+        break;
+    case 3:
+        printf("dcache is in cache_write_back stage\n");
+        break;
+    case 4:
+        printf("dcache is in cache_write_allocate stage\n");
+        break;
+    default:
+        break;
+    }
+
+    if(target->top__DOT__mycore__DOT__dcache__DOT__cache_miss)
+    {
+        printf("dcache miss\n");
+    }else
+    {
+        printf("dcache hit\n");
+    }
+    
+}
+
+void print_dcross_bar(Vtop* target)
+{
+    switch (target->top__DOT__mycore__DOT__dcache_cross_bar__DOT__write_state)
+    {
+    case 0:
+        printf("dcross_bar is in write_idle stage\n");
+        break;
+    case 1:
+        printf("dcross_bar is in write_burst stage\n");
+        break;
+    case 2:
+        printf("dcross_bar is in write_resp stage\n");
+        break;
+    default:
+        break;
+    }
+    switch (target->top__DOT__mycore__DOT__dcache_cross_bar__DOT__read_state)
+    {
+    case 0:
+        printf("dcross_bar is in read_idle stage\n");
+        break;
+    case 1:
+        printf("dcross_bar is in read_burst stage\n");
+        break;
+    case 2:
+        printf("dcross_bar is in read_resp stage\n");
+        break;
+    default:
+        break;
+    }
+}
+
+void print_icross_bar(Vtop* target)
+{
+    switch (target->top__DOT__mycore__DOT__icache_cross_bar__DOT__write_state)
+    {
+    case 0:
+        printf("icross_bar is in write_idle stage\n");
+        break;
+    case 1:
+        printf("icross_bar is in write_burst stage\n");
+        break;
+    case 2:
+        printf("icross_bar is in write_resp stage\n");
+        break;
+    default:
+        break;
+    }
+    switch (target->top__DOT__mycore__DOT__icache_cross_bar__DOT__read_state)
+    {
+    case 0:
+        printf("icross_bar is in read_idle stage\n");
+        break;
+    case 1:
+        printf("icross_bar is in read_burst stage\n");
+        break;
+    case 2:
+        printf("icross_bar is in read_resp stage\n");
+        break;
+    default:
+        break;
     }
 }
 
@@ -147,6 +276,7 @@ void print_retire(Vtop* target)
 void print_exe_stall(Vtop* target)
 {
     printf("exe_stall : [%d]\n",target->io_diff_alu_exe_stall);
+    printf("pipline stall : [%d]\n",target->top__DOT__mycore__DOT__cpath_io_c2d_cp_pipeline_stall);
 }
 void print_rfen(Vtop* target)
 {
@@ -239,26 +369,33 @@ int main(int argc,char** argv)
 
         if(main_time % 20 == 0)
         {
-            printf("in cycle %d:\n",(int)main_time / 20);
-            print_valid(top);
-            print_pc(top);
-            print_exe_stall(top);
-            print_mul_info(top);
-            // print_rfen(top);
-            print_instr(top);
-            print_wbsel(top);
-            print_rf_valid(top);
-            print_mem(top);
-            print_redir(top);
-            print_retire(top);
-            print_regs(top);
-            printcsrs(top);
-            printf("============================================   end  ================================================\n");
+            if(main_time > 0 && main_time < 100000)
+            {
+                printf("in cycle %d:\n",(int)main_time / 20);
+                print_valid(top);
+                print_pc(top);
+                print_exe_stall(top);
+                print_mul_info(top);
+                print_icache(top);
+                print_dcache(top);
+                print_icross_bar(top);
+                print_dcross_bar(top);
+                // print_rfen(top);
+                print_instr(top);
+                print_wbsel(top);
+                print_rf_valid(top);
+                print_mem(top);
+                print_redir(top);
+                print_retire(top);
+                print_regs(top);
+                printcsrs(top);
+                printf("============================================   end  ================================================\n");
+            }
         }
          
-        main_time ++;
+        main_time += 10;
 
-        if(main_time == 10000)
+        if(main_time == 100000)
         {
             break;
         }
