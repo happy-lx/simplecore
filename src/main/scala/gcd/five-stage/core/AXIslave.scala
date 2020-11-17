@@ -49,6 +49,7 @@ class AXI4IO extends Bundle
     val rdata = Output(UInt(AXI_data_len.W))
     val rresp = Output(UInt(2.W))
     val rlast = Output(Bool())
+    val ruser = Output(Bool())
 
     val rvalid = Output(Bool())
     val rready = Input(Bool())
@@ -64,6 +65,7 @@ class AXI4IO extends Bundle
     //write channel's write response 
     val bid = Output(Bool())
     val bresp = Output(UInt(2.W))
+    val buser = Output(Bool())
     
     val bvalid = Output(Bool())
     val bready = Input(Bool())
@@ -74,6 +76,8 @@ class AXIslave_io extends Bundle
     val axi4_in = new AXI4IO
     val axi4_mem = Flipped(new AXI4IO)
     val axi4_mmio = Flipped(new AXI4IO)
+
+    val time_interrupt = Output(Bool())
 }
 
 object shutdownAXI
@@ -140,7 +144,8 @@ class AXIslave extends Module
 
     has_time_interrupt := Mux(reg_mtime >= reg_mtimecmp , true.B , false.B)
 
-    BoringUtils.addSource(has_time_interrupt,"time_interrupt")
+    // BoringUtils.addSource(has_time_interrupt,"time_interrupt")
+    io.time_interrupt := has_time_interrupt
 
     val (read_idle : UInt) :: (read_burst : UInt) :: (read_resp : UInt) :: Nil = Enum(3)
 

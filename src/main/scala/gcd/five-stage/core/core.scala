@@ -15,6 +15,7 @@ import constants.Constraints._
 class core extends Module {
     val io = IO(new Bundle{
         val axi4  = Flipped(new AXI4IO)
+        val time_interrupt = Input(Bool())
     })
 
     io := DontCare
@@ -26,6 +27,8 @@ class core extends Module {
 
     dpath.io.c2d := cpath.io.c2d
     cpath.io.d2c := dpath.io.d2c
+
+    dpath.io.time_interrupt := io.time_interrupt
     
     // mymem.io.ports(0).req <> dpath.io.imem.req
     // mymem.io.ports(0).resp <> dpath.io.imem.resp
@@ -45,6 +48,8 @@ class core extends Module {
 
     bus_bridge.io.ports(DATA) <> dpath.io.dmem
     cpath.io.dmem.data_valid := bus_bridge.io.ports(DATA).data_valid
+
+    bus_bridge.io.exe_stall := dpath.io.exe_stall
 
     //axi4 interface
     io.axi4.awid := bus_bridge.io.axi4.awid
@@ -80,6 +85,7 @@ class core extends Module {
     bus_bridge.io.axi4.rresp := io.axi4.rresp
     bus_bridge.io.axi4.rlast := io.axi4.rlast
     bus_bridge.io.axi4.rvalid := io.axi4.rvalid
+    bus_bridge.io.axi4.ruser := io.axi4.ruser
 
     io.axi4.rready := bus_bridge.io.axi4.rready
 
@@ -93,6 +99,7 @@ class core extends Module {
     bus_bridge.io.axi4.bid := io.axi4.bid
     bus_bridge.io.axi4.bresp := io.axi4.bresp
     bus_bridge.io.axi4.bvalid := io.axi4.bvalid
+    bus_bridge.io.axi4.buser := io.axi4.buser
 
     io.axi4.bready := bus_bridge.io.axi4.bready
 

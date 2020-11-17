@@ -46,6 +46,7 @@ object connect
         slave.rdata := top.rdata
         slave.rresp := top.rresp
         slave.rlast := top.rlast
+        slave.ruser := top.ruser
 
         slave.rvalid := top.rvalid
         top.rready := slave.rready
@@ -59,6 +60,7 @@ object connect
 
         slave.bid := top.bid
         slave.bresp := top.bresp
+        slave.buser := top.buser
 
         slave.bvalid := top.bvalid
         top.bready := slave.bready
@@ -77,6 +79,8 @@ class ysyx_lx extends Module
 
     val core = Module(new core)
     val slave = Module(new AXIslave)
+
+    core.io.time_interrupt := slave.io.time_interrupt
 
     core.io.axi4 <> slave.io.axi4_in
 

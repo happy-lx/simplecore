@@ -28,6 +28,8 @@ class DpathIO extends Bundle
     val d2c = new D2CIO()
     val imem = new sram_like_io
     val dmem = new sram_like_io
+    val exe_stall = Output(Bool())
+    val time_interrupt = Input(Bool())
 }
 
 class Dpath extends Module {
@@ -388,6 +390,8 @@ class Dpath extends Module {
     //let alu do it's work 
     val dp_alu = Module(new alu_module)
 
+    io.exe_stall := dp_alu.io.exe_stall
+
     dp_alu.io.input1 := dp_exe_reg_op1_source
     dp_alu.io.input2 := dp_exe_reg_op2_source
 
@@ -496,6 +500,8 @@ class Dpath extends Module {
     io.dmem.wen := dp_mem_reg_mem_wen
 
     val csr = Module(new CSRfile)
+
+    csr.io.time_interrupt := io.time_interrupt
 
     csr.io.instruction := dp_mem_reg_instr
     csr.io.csr_op := dp_mem_reg_csr_op

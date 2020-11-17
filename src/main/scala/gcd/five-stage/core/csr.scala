@@ -72,6 +72,8 @@ class CSRIO extends Bundle
     val csr_info = Output(UInt(64.W))
     val isredir = Output(Bool())
     val csr_illegal_ins_exception = Output(Bool())
+
+    val time_interrupt = Input(Bool())
 }
 
 class CSRfile extends Module
@@ -280,7 +282,8 @@ class CSRfile extends Module
     // {
     //     reg_mip.mti := true.B
     // }
-    BoringUtils.addSink(reg_mip.mti,"time_interrupt")
+    // BoringUtils.addSink(reg_mip.mti,"time_interrupt")
+    reg_mip.mti := io.time_interrupt
     
     // reg_mtime := reg_mtime + 1.U
     reg_mcycle := reg_mcycle + 1.U

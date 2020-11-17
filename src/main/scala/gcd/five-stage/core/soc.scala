@@ -47,10 +47,21 @@ class top extends Module
 
 }
 
-object start 
+// object start 
+// {
+//     def main(args: Array[String]): Unit = {
+//         chisel3.Driver.execute(args, () => {new ysyx_lx
+//         })
+//     }
+// }
+object start extends App
 {
-    def main(args: Array[String]): Unit = {
-        chisel3.Driver.execute(args, () => {new ysyx_lx
-        })
-    }
+    (new chisel3.stage.ChiselStage).execute(
+        args,
+        Seq(
+            chisel3.stage.ChiselGeneratorAnnotation(() => new ysyx_lx),
+            firrtl.stage.RunFirrtlTransformAnnotation(new AddModulePrefix()),
+            ModulePrefixAnnotation("lx_")
+        )
+    )
 }

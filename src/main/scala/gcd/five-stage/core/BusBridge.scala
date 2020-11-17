@@ -17,6 +17,8 @@ class Sramlike2AXI4 extends Module
         val ports = Vec(2,Flipped(new sram_like_io))
 
         val axi4 = Flipped(new AXI4IO)
+
+        val exe_stall = Input(Bool())
     })
 
     io := DontCare
@@ -194,8 +196,8 @@ class Sramlike2AXI4 extends Module
     io.axi4.arvalid := (has_request && !info_wen && !addr_recv)
 
     //the mul and div stall signal
-    val exe_stall = WireInit(false.B)
-    BoringUtils.addSink(exe_stall,"exe_stall")
+    val exe_stall = WireInit(io.exe_stall)
+    // BoringUtils.addSink(exe_stall,"exe_stall")
 
     //r channel
     // io.axi4.rready := true.B
