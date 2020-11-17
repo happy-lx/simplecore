@@ -18,6 +18,7 @@
 + 完成一个简单的串口，访真时从C++ `vector`实现的`fifo`中读入，输出则直接输出到终端，写了一个`hello world`的测试用例，测试通过
 + 流片的版本不带`cache`，可以正确跑通`hello`测试用例
 + 目前正在`working`的版本有一个简单的`cache`，可以跑通`RTT`以及现有的所有测试用例
++ 已经冻结的版本在[here](https://github.com/happy-lx/ysyx_lx)
 
 ### 问题列表
 
