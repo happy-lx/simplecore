@@ -30,6 +30,11 @@ trait memory_const
     val memory_op_x = 0.U(1.W)
 }
 
+trait TLB_const
+{
+    val offset_len = 12
+}
+
 trait AXI_const
 {
     //ram's addr length
@@ -335,5 +340,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with cache_const
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with cache_const with TLB_const
 {}

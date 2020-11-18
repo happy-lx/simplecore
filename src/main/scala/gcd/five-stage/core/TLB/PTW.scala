@@ -63,6 +63,12 @@ class TLB_entry extends Bundle
     val VPN_1 = UInt(9.W)
     val VPN_2 = UInt(9.W)
 
+    //whether the TLB entry has been modified. eg. store will set the D bit in pte
+    val modify = Bool()
+
+    //0: top , 1: second , 2: third , 3: reserved
+    val level = UInt(2.W)
+
     val pte = new PTE
 }
 
