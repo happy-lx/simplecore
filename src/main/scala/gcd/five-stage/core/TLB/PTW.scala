@@ -70,6 +70,15 @@ class TLB_entry extends Bundle
     val level = UInt(2.W)
 
     val pte = new PTE
+
+    val pte_paddr = UInt(64.W)
+}
+
+class PTW2TLB_IO extends Bundle
+{
+    val pte = Output(new PTE)
+    val pte_paddr = Output(UInt(64.W))
+    val level = Output(UInt(2.W))
 }
 
 class PTW_IO extends Bundle
@@ -83,6 +92,8 @@ class PTW_IO extends Bundle
     val page_fault = Output(Bool())
 
     val cache_req = new cache_req_io
+
+    val ptw2tlb = new PTW2TLB_IO
 }
 
 class PTW extends Moudle
@@ -107,27 +118,20 @@ class PTW extends Moudle
     val ptw_va = io.va.asTypeOf(new VA)
     val ptw_pte = RegInit(0.U.also(new PTE))
 
-    //we just have sv39 0:off 8:sv39
-    val sv39_on = !(io.satp(63,60) === 0.U())
-
     switch(ptw_stage)
     {
         is(ptw_idle)
         {
             io.cache_req.memen = false.B
 
-            when(!io.sv39_on && io.ptw_en)
-            {
-                //no translation
-                io.pa := io.va
-                io.addr_valid := true.B
-                page_fault := false.B
-                ptw_stage := ptw_idle
-            }.elsewhen(io.sv39_on && io.ptw_en)
+            when(io.ptw_en)
             {
                 //detect a translation req
                 io.addr_valid := false.B
                 ptw_stage := ptw_vpn2
+            }.otherwise
+            {
+                ptw_stage := ptw_idle
             }
         }
         is(ptw_vpn2)
@@ -135,88 +139,73 @@ class PTW extends Moudle
             //now we have a translation req and we need to find 
             //the root page table
 
-            //first check the upper 63-39 bits equal to bit 38
-            io.page_fault := false.B
-            io.addr_valid := false.B
+            //so we have to fetch pte from cache
+            io.cache_req.memen := true.B
+            io.cache_req.op := op_d
+            io.cache_req.wen := false.B
+            io.cache_req.addr := Cat(0.U((20-offset_len).W),io.satp(43,0),0.U(offset_len.W)) + (ptw_va.VPN_2 << 3)
 
-            for(i <- (39 until 64))
+            when(io.cache_req.data_vaild)
             {
-                when(io.va(i) =/= io.va(38))
+                //let cache stage change to idle and wait for another req
+                io.cache_req.data_got := true.B
+
+                val temp_pte = (io.cache_req.rdata).asTypeOf(new PTE)
+                ptw_pte := temp_pte
+
+                when(!temp_pte.V || (!temp_pte.R && temp_pte.W))
                 {
+                    //pte is not valid so raise a page fault and over
                     io.page_fault := true.B
-                }
-            }
-
-            when(io.page_fault)
-            {
-                io.cache_req.memen := false.B
-                io.addr_valid := true.B
-                ptw_stage := ptw_idle
-            }.otherwise
-            {
-                //now the va is valid 
-                //so we have to fetch pte from cache
-                io.cache_req.memen := true.B
-                io.cache_req.op := op_d
-                io.cache_req.wen := false.B
-                io.cache_req.addr := Cat(0.U((20-offset_len).W),io.satp(43,0),0.U(offset_len.W)) + (ptw_va.VPN_2 << 3)
-
-                when(io.cache_req.data_vaild)
-                {
-                    //let cache stage change to idle and wait for another req
-                    io.cache_req.data_got := true.B
-
-                    val temp_pte = (io.cache_req.rdata).asTypeOf(new PTE)
-                    ptw_pte := temp_pte
-
-                    when(!temp_pte.V || (!temp_pte.R && temp_pte.W))
-                    {
-                        //pte is not valid so raise a page fault and over
-                        io.page_fault := true.B
-                        io.addr_valid := true.B
-                        ptw_stage := ptw_idle
-                    }.otherwise
-                    {
-                        //pte is valid 
-                        //check whether it is a leaf pte 
-                        when(temp_pte.R || temp_pte.X)
-                        {
-                            //it is a leaf pte
-                            //now we should check whether vpn_1 and vpn_0 is zero
-                            when(ptw_va.VPN_1 === 0.U && ptw_va.VPN_0 === 0.U)
-                            {
-                                //valid 
-                                //the physical addr is ppn_2 vpn1 vpn0 offset
-                                //TODO : X R W U A D
-                                //determine the request is allowed or not 
-                                io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,ptw_va.VPN_1,ptw_va.VPN_0,ptw_va.offset)
-                                io.page_fault := false.B
-                                io.addr_valid := true.B
-                                ptw_stage := ptw_idle
-                            }.otherwise
-                            {
-                                //not aligned 
-                                io.page_fault := true.B
-                                io.addr_valid := true.B
-                                ptw_stage := ptw_idle
-                            }
-
-                        }.otherwise
-                        {
-                            //pointer to next pte
-                            io.addr_valid := false.B
-                            ptw_stage := ptw_vpn1
-                        }
-                    }
-
-
+                    io.addr_valid := true.B
+                    ptw_stage := ptw_idle
                 }.otherwise
                 {
-                    //hold on 
-                    io.addr_valid := false.B
-                    ptw_stage := ptw_vpn2
+                    //pte is valid 
+                    //check whether it is a leaf pte 
+                    when(temp_pte.R || temp_pte.X)
+                    {
+                        //it is a leaf pte
+                        //now we should check whether vpn_1 and vpn_0 is zero
+                        when(ptw_va.VPN_1 === 0.U && ptw_va.VPN_0 === 0.U)
+                        {
+                            //valid 
+                            //the physical addr is ppn_2 vpn1 vpn0 offset
+                            //TODO : X R W U A D
+                            //determine the request is allowed or not 
+                            io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,ptw_va.VPN_1,ptw_va.VPN_0,ptw_va.offset)
+                            io.page_fault := false.B
+                            io.addr_valid := true.B
+
+                            io.ptw2tlb.pte := temp_pte
+                            io.ptw2tlb.pte_paddr := io.cache_req.addr
+                            io.ptw2tlb.level := 0.U
+
+                            ptw_stage := ptw_idle
+                        }.otherwise
+                        {
+                            //not aligned 
+                            io.page_fault := true.B
+                            io.addr_valid := true.B
+                            ptw_stage := ptw_idle
+                        }
+
+                    }.otherwise
+                    {
+                        //pointer to next pte
+                        io.addr_valid := false.B
+                        ptw_stage := ptw_vpn1
+                    }
                 }
+
+
+            }.otherwise
+            {
+                //hold on 
+                io.addr_valid := false.B
+                ptw_stage := ptw_vpn2
             }
+            
 
             
 
@@ -260,6 +249,11 @@ class PTW extends Moudle
                                 io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,ptw_va.VPN_0,ptw_va.offset)
                                 io.page_fault := false.B
                                 io.addr_valid := true.B
+
+                                io.ptw2tlb.pte := temp_pte
+                                io.ptw2tlb.pte_paddr := io.cache_req.addr
+                                io.ptw2tlb.level := 1.U
+
                                 ptw_stage := ptw_idle
                             }.otherwise
                             {
@@ -321,6 +315,11 @@ class PTW extends Moudle
                             io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,temp_pte.PPN_0,ptw_va.offset)
                             io.page_fault := false.B
                             io.addr_valid := true.B
+
+                            io.ptw2tlb.pte := temp_pte
+                            io.ptw2tlb.pte_paddr := io.cache_req.addr
+                            io.ptw2tlb.level := 2.U
+
                             ptw_stage := ptw_idle
                             
 

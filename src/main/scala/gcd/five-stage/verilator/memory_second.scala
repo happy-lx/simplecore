@@ -75,7 +75,7 @@ class memorymodule(memdir : String = "") extends Module
     io := DontCare
     
 
-    val mem = Mem((1L<<24),UInt(8.W))//why 32 cannot?
+    val mem = Mem((1L<<24),UInt(8.W))
 
     if(memdir != "")
     {
