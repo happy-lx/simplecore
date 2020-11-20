@@ -6,3 +6,4 @@
 
 + 11/15 为了给每一个module添加前缀，把core相关的使用到的BoringUtil去掉，因为他们之间会产生冲突导致报错
 + 11/16 添加buser，ruser信号，但不使用
++ 11/20 修改awaddr,araddr的位宽为32位

@@ -33,7 +33,7 @@ trait memory_const
 trait AXI_const
 {
     //ram's addr length
-    val AXI_paddr_len = 64
+    val AXI_paddr_len = 32
     val AXI_real_addr_len = 27 // 128 * 1024 * 1024
     val AXI_data_len = 64
     val AXI_wstrb_len = (AXI_data_len / 8)
