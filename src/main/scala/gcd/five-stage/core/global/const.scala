@@ -32,7 +32,7 @@ trait memory_const
 
 trait TLB_const
 {
-    val offset_len = 12
+    val tlb_offset_len = 12
     val tlb_entry_number = 16
 }
 

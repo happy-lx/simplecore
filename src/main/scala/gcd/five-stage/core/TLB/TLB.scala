@@ -44,20 +44,20 @@ class TLB_IO extends Bundle
 
 }
 
-class TLB(name : String) extends Moudle
+class TLB(name : String) extends Module
 {
     val io = IO(new TLB_IO)
 
     io := DontCare
 
     //we just have sv39 0:off 8:sv39
-    val sv39_on = !(io.satp(63,60) === 0.U())
+    val sv39_on = !(io.satp(63,60) === 0.U)
 
     val tlb_idle :: tlb_find_tlb :: tlb_find_entry :: tlb_write_back :: tlb_find_ptw :: Nil = Enum(5)
 
     val tlb_stage = RegInit(tlb_idle)
 
-    val ptw = Moudle(new PTW)
+    val ptw = Module(new PTW)
     val tlb = Mem(tlb_entry_number,new TLB_entry)
 
     val tlb_hit = WireInit(false.B)
@@ -92,26 +92,28 @@ class TLB(name : String) extends Moudle
     }
 
     //for validation check when TLB hit
-    val valid_access := WireInit(false.B)
+    val valid_access = WireInit(false.B)
 
 
     def getPA(index : UInt) : UInt = {
+        val result = WireInit(UInt(64.W))
         when(tlb(index).level === 0.U)
         {
             //top
             //the physical addr is ppn2 vpn1 vpn0 offset 
-            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb_va.VPN_1,tlb_va.VPN_0,tlb_va.offset)
+            result := Cat(0.U((20-tlb_offset_len).W),tlb(index).pte.PPN_2,tlb_va.VPN_1,tlb_va.VPN_0,tlb_va.offset)
         }.elsewhen(tlb(index).level === 1.U)
         {
             //second 
             //the physical addr is ppn2 ppn1 vpn0 offset 
-            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb_va.VPN_0,tlb_va.offset)
+            result := Cat(0.U((20-tlb_offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb_va.VPN_0,tlb_va.offset)
         }.otherwise
         {
             //third 
             //the physical addr is ppn2 ppn1 ppn0 offset 
-            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb(index).pte.PPN_0,tlb_va.offset)
+            result := Cat(0.U((20-tlb_offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb(index).pte.PPN_0,tlb_va.offset)
         }
+        result
     }
 
     switch(tlb_stage)
@@ -129,7 +131,7 @@ class TLB(name : String) extends Moudle
                 io.pa := io.va
                 io.tlb_valid := true.B
                 io.page_fault := false.B
-                ptw_stage := ptw_idle
+                tlb_stage := tlb_idle
             }.elsewhen(sv39_on && io.tlb_en)
             {
                 //detect a translation req
@@ -137,18 +139,18 @@ class TLB(name : String) extends Moudle
                 when(temp_correct_va)
                 {
                     io.tlb_valid := false.B
-                    ptw_stage := tlb_find_tlb
+                    tlb_stage := tlb_find_tlb
                 }.otherwise
                 {
                     //the virtual addr is not valid 
                     io.tlb_valid := true.B
                     io.page_fault := true.B
-                    ptw_stage := tlb_idle
+                    tlb_stage := tlb_idle
 
                 }
             }.otherwise
             {
-                ptw_stage := tlb_idle
+                tlb_stage := tlb_idle
             }
         }
         is(tlb_find_tlb)
@@ -316,7 +318,7 @@ class TLB(name : String) extends Moudle
             ptw.io.va := io.va 
             ptw.io.satp := io.satp
 
-            cache_req_connet(ptw.io.cache_req_io,io.tlb_cache_req)
+            cache_req_connet(ptw.io.cache_req,io.tlb_cache_req)
 
             when(ptw.io.addr_valid)
             {
@@ -335,9 +337,9 @@ class TLB(name : String) extends Moudle
                     tlb(tlb_replace_index).VPN_2 := tlb_va.VPN_2
 
                     tlb(tlb_replace_index).valid := true.B
-                    tlb(tlb_replace_index).level := ptw.ptw2tlb.level
-                    tlb(tlb_replace_index).pte := ptw.ptw2tlb.pte
-                    tlb(tlb_replace_index).pte_paddr := ptw.ptw2tlb.pte_paddr
+                    tlb(tlb_replace_index).level := ptw.io.ptw2tlb.level
+                    tlb(tlb_replace_index).pte := ptw.io.ptw2tlb.pte
+                    tlb(tlb_replace_index).pte_paddr := ptw.io.ptw2tlb.pte_paddr
 
                     // io.tlb_valid := true.B
                     // io.page_fault := false.B

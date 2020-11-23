@@ -12,20 +12,20 @@ import constants.Constraints._
 
 class VA extends Bundle
 {
-    val dontcare = UInt((37-offset_len).W)
+    val dontcare = UInt((37-tlb_offset_len).W)
     val VPN_2 = UInt(9.W)
     val VPN_1 = UInt(9.W)
     val VPN_0 = UInt(9.W)
-    val offset = UInt(offset_len.W)
+    val offset = UInt(tlb_offset_len.W)
 }
 
 class PA extends Bundle
 {
-    val dontcare = UInt((20-offset_len).W)
+    val dontcare = UInt((20-tlb_offset_len).W)
     val PPN_2 = UInt(26.W)
     val PPN_1 = UInt(9.W)
     val PPN_0 = UInt(9.W)
-    val offset = UInt(offset_len.W)
+    val offset = UInt(tlb_offset_len.W)
 }
 
 class PTE extends Bundle
@@ -95,7 +95,7 @@ class PTW_IO extends Bundle
     val ptw2tlb = new PTW2TLB_IO
 }
 
-class PTW extends Moudle
+class PTW extends Module
 {
     val io = IO(new PTW_IO)
 
@@ -115,13 +115,13 @@ class PTW extends Moudle
     val ptw_stage = RegInit(ptw_idle)
     
     val ptw_va = io.va.asTypeOf(new VA)
-    val ptw_pte = RegInit(0.U.also(new PTE))
+    val ptw_pte = RegInit(0.U.asTypeOf(new PTE))
 
     switch(ptw_stage)
     {
         is(ptw_idle)
         {
-            io.cache_req.memen = false.B
+            io.cache_req.memen := false.B
 
             when(io.ptw_en)
             {
@@ -142,9 +142,9 @@ class PTW extends Moudle
             io.cache_req.memen := true.B
             io.cache_req.op := op_d
             io.cache_req.wen := false.B
-            io.cache_req.addr := Cat(0.U((20-offset_len).W),io.satp(43,0),0.U(offset_len.W)) + (ptw_va.VPN_2 << 3)
+            io.cache_req.addr := Cat(0.U((20-tlb_offset_len).W),io.satp(43,0),0.U(tlb_offset_len.W)) + (ptw_va.VPN_2 << 3)
 
-            when(io.cache_req.data_vaild)
+            when(io.cache_req.data_valid)
             {
                 //let cache stage change to idle and wait for another req
                 io.cache_req.data_got := true.B
@@ -172,7 +172,7 @@ class PTW extends Moudle
                             //the physical addr is ppn_2 vpn1 vpn0 offset
                             //TODO : X R W U A D
                             //determine the request is allowed or not 
-                            io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,ptw_va.VPN_1,ptw_va.VPN_0,ptw_va.offset)
+                            io.pa := Cat(0.U((20-tlb_offset_len).W),temp_pte.PPN_2,ptw_va.VPN_1,ptw_va.VPN_0,ptw_va.offset)
                             io.page_fault := false.B
                             io.addr_valid := true.B
 
@@ -215,9 +215,9 @@ class PTW extends Moudle
             io.cache_req.memen := true.B
             io.cache_req.op := op_d
             io.cache_req.wen := false.B
-            io.cache_req.addr := Cat(0.U((20-offset_len).W),Cat(ptw_pte.PPN_2,ptw_pte.PPN_1,ptw_pte.PPN_0),0.U(offset_len.W)) + (ptw_va.VPN_1 << 3)
+            io.cache_req.addr := Cat(0.U((20-tlb_offset_len).W),Cat(ptw_pte.PPN_2,ptw_pte.PPN_1,ptw_pte.PPN_0),0.U(tlb_offset_len.W)) + (ptw_va.VPN_1 << 3)
 
-            when(io.cache_req.data_vaild)
+            when(io.cache_req.data_valid)
             {
                     //let cache stage change to idle and wait for another req
                     io.cache_req.data_got := true.B
@@ -245,7 +245,7 @@ class PTW extends Moudle
                                 //the physical addr is ppn_2 ppn_1 vpn0 offset
                                 //TODO : X R W U A D
                                 //determine the request is allowed or not 
-                                io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,ptw_va.VPN_0,ptw_va.offset)
+                                io.pa := Cat(0.U((20-tlb_offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,ptw_va.VPN_0,ptw_va.offset)
                                 io.page_fault := false.B
                                 io.addr_valid := true.B
 
@@ -283,9 +283,9 @@ class PTW extends Moudle
             io.cache_req.memen := true.B
             io.cache_req.op := op_d
             io.cache_req.wen := false.B
-            io.cache_req.addr := Cat(0.U((20-offset_len).W),Cat(ptw_pte.PPN_2,ptw_pte.PPN_1,ptw_pte.PPN_0),0.U(offset_len.W)) + (ptw_va.VPN_0 << 3)
+            io.cache_req.addr := Cat(0.U((20-tlb_offset_len).W),Cat(ptw_pte.PPN_2,ptw_pte.PPN_1,ptw_pte.PPN_0),0.U(tlb_offset_len.W)) + (ptw_va.VPN_0 << 3)
 
-            when(io.cache_req.data_vaild)
+            when(io.cache_req.data_valid)
             {
                     //let cache stage change to idle and wait for another req
                     io.cache_req.data_got := true.B
@@ -311,7 +311,7 @@ class PTW extends Moudle
                             //the physical addr is ppn_2 ppn_1 ppn_0 offset
                             //TODO : X R W U A D
                             //determine the request is allowed or not 
-                            io.pa := Cat(0.U((20-offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,temp_pte.PPN_0,ptw_va.offset)
+                            io.pa := Cat(0.U((20-tlb_offset_len).W),temp_pte.PPN_2,temp_pte.PPN_1,temp_pte.PPN_0,ptw_va.offset)
                             io.page_fault := false.B
                             io.addr_valid := true.B
 
