@@ -29,6 +29,8 @@ object cache_req_connet
 
 class TLB_IO extends Bundle
 {
+    val isWrite = Input(Bool())
+
     val va = Input(UInt(64.W))
     val tlb_en = Input(Bool())
     val satp = Input(UInt(64.W))
@@ -42,7 +44,7 @@ class TLB_IO extends Bundle
 
 }
 
-class TLB extends Moudle
+class TLB(name : String) extends Moudle
 {
     val io = IO(new TLB_IO)
 
@@ -51,7 +53,7 @@ class TLB extends Moudle
     //we just have sv39 0:off 8:sv39
     val sv39_on = !(io.satp(63,60) === 0.U())
 
-    val tlb_idle :: tlb_find_tlb :: tlb_find_entry :: tlb_write_back  :: tlb_find_ptw :: Nil = Enum(5)
+    val tlb_idle :: tlb_find_tlb :: tlb_find_entry :: tlb_write_back :: tlb_find_ptw :: Nil = Enum(5)
 
     val tlb_stage = RegInit(tlb_idle)
 
@@ -63,6 +65,9 @@ class TLB extends Moudle
     val tlb_replace_index = RegInit(0.U(log2Ceil(tlb_entry_number).W))
     val tlb_va = io.va.asTypeOf(new VA)
 
+    //for coherence
+    val tlb_writeback_index = RegInit(0.U(log2Ceil(tlb_entry_number).W))
+
     //for replace 
     val tlb_victim = RegInit(0.U(log2Ceil(tlb_entry_number).W))
 
@@ -73,6 +78,41 @@ class TLB extends Moudle
     tlb_victim := tlb_victim + 1.U
 
     // cache_req_connet(ptw.io.cache_req_io,io.ptw_cache_req)
+
+    val isEXE = WireInit(false.B)
+    val isWRITE = WireInit(io.isWrite)
+    val isREAD = WireInit(!io.isWrite)
+
+    if(name == "itlb")
+    {
+        isEXE := true.B
+    }else
+    {
+        isEXE := false.B
+    }
+
+    //for validation check when TLB hit
+    val valid_access := WireInit(false.B)
+
+
+    def getPA(index : UInt) : UInt = {
+        when(tlb(index).level === 0.U)
+        {
+            //top
+            //the physical addr is ppn2 vpn1 vpn0 offset 
+            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb_va.VPN_1,tlb_va.VPN_0,tlb_va.offset)
+        }.elsewhen(tlb(index).level === 1.U)
+        {
+            //second 
+            //the physical addr is ppn2 ppn1 vpn0 offset 
+            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb_va.VPN_0,tlb_va.offset)
+        }.otherwise
+        {
+            //third 
+            //the physical addr is ppn2 ppn1 ppn0 offset 
+            Cat(0.U((20-offset_len).W),tlb(index).pte.PPN_2,tlb(index).pte.PPN_1,tlb(index).pte.PPN_0,tlb_va.offset)
+        }
+    }
 
     switch(tlb_stage)
     {
@@ -129,29 +169,73 @@ class TLB extends Moudle
 
             when(tlb_hit)
             {
-                //do the translation just now 
-                when(tlb(tlb_hit_index).level === 0.U)
+                //we can do the translation now 
+                //also we have to check the validation of this access 
+                //TODO : the U bit 
+                
+                when(isREAD && !tlb(tlb_hit_index).pte.R)
                 {
-                    //top
-                    //the physical addr is ppn2 vpn1 vpn0 offset 
-                    io.pa := Cat(0.U((20-offset_len).W),tlb(tlb_hit_index).pte.PPN_2,tlb_va.VPN_1,tlb_va.VPN_0,tlb_va.offset)
-
-                }.elsewhen(tlb(tlb_hit_index).level === 1.U)
+                    //exe only 
+                    valid_access := false.B
+                }.elsewhen(isEXE && !tlb(tlb_hit_index).pte.X)
                 {
-                    //second 
-                    //the physical addr is ppn2 ppn1 vpn0 offset 
-                    io.pa := Cat(0.U((20-offset_len).W),tlb(tlb_hit_index).pte.PPN_2,tlb(tlb_hit_index).pte.PPN_1,tlb_va.VPN_0,tlb_va.offset)
-
-                }.elsewhen(tlb(tlb_hit_index).level === 2.U)
+                    //read only page or read and write page
+                    valid_access := false.B
+                }.elsewhen(isWRITE && !tlb(tlb_hit_index).pte.W)
                 {
-                    //third 
-                    //the physical addr is ppn2 ppn1 ppn0 offset 
-                    io.pa := Cat(0.U((20-offset_len).W),tlb(tlb_hit_index).pte.PPN_2,tlb(tlb_hit_index).pte.PPN_1,tlb(tlb_hit_index).pte.PPN_0,tlb_va.offset)
-
+                    //can not be written
+                    valid_access := false.B
+                }.otherwise
+                {
+                    valid_access := true.B
                 }
-                io.tlb_valid := true.B
-                io.page_fault := false.B
-                tlb_stage := tlb_idle
+
+                when(valid_access)
+                {
+                    //now we have to determine whether we will change D or A bit
+                    //in order to obtain coherence we have to write the entry to 
+                    //ram when the D or A bit changes
+                    when(!tlb(tlb_hit_index).pte.A)
+                    {
+                        //we must write it as true
+                        tlb(tlb_hit_index).pte.A := true.B
+                        when(isWRITE)
+                        {
+                            tlb(tlb_hit_index).pte.D := true.B
+                        }
+
+                        io.tlb_valid := false.B
+                        tlb_writeback_index := tlb_hit_index
+                        tlb_stage := tlb_write_back
+
+                    }.elsewhen(!tlb(tlb_hit_index).pte.D && isWRITE)
+                    {
+                        tlb(tlb_hit_index).pte.D := true.B
+                        io.tlb_valid := false.B
+                        tlb_writeback_index := tlb_hit_index
+                        tlb_stage := tlb_write_back
+
+                    }.otherwise
+                    {
+                        //finally get the valid PA
+                        io.tlb_valid := true.B
+                        io.page_fault := false.B
+                        io.pa := getPA(tlb_hit_index)
+                        tlb_stage := tlb_idle
+                    }
+
+                }.otherwise
+                {
+                    //this access is not valid 
+                    io.tlb_valid := true.B
+                    io.page_fault := true.B
+                    tlb_stage := tlb_idle
+                }
+
+                // io.pa := getPA(tlb_hit_index)
+                // io.tlb_valid := true.B
+                // io.page_fault := false.B
+                // tlb_stage := tlb_idle
             }.otherwise
             {
                 //tlb miss 
@@ -182,7 +266,7 @@ class TLB extends Moudle
             {
                 //we have a not valid entry
                 //so we just use this entry
-                //becasue it's not valid so no need to write back to ram
+                
                 tlb_replace_index := tlb_not_valid_index
                 tlb_stage := tlb_find_ptw
 
@@ -190,15 +274,9 @@ class TLB extends Moudle
             {
                 //now all the entry has a copy from page table 
                 //so we should pick a victim and replace it 
-                //also if the entry has been modified , write back it to ram 
+                
                 tlb_replace_index := tlb_victim
-                when(tlb(tlb_victim).modified)
-                {
-                    tlb_stage := tlb_write_back
-                }.otherwise
-                {
-                    tlb_stage := tlb_find_ptw
-                }
+                tlb_stage := tlb_find_ptw
 
             }
 
@@ -206,22 +284,24 @@ class TLB extends Moudle
         is(tlb_write_back)
         {
             //now we have a entry which has been modified before
-            //but now it will be replace so we have to write it back to ram
-            //to ensure the coherence 
+            //in tlb_find_index stage the entry's A or D bit has been modified
+            //to ensure the coherence , we have to write the whole entry to ram
             ptw.io.ptw_en := false.B
             io.tlb_valid := false.B
             
             io.tlb_cache_req.memen := true.B
             io.tlb_cache_req.wen := true.B
-            io.tlb_cache_req.addr := tlb(tlb_replace_index).pte_paddr
+            io.tlb_cache_req.addr := tlb(tlb_writeback_index).pte_paddr
             io.tlb_cache_req.mask := mask_dw
-            io.tlb_cache_req.wdata := tlb(tlb_replace_index).pte.asUInt
+            io.tlb_cache_req.wdata := tlb(tlb_writeback_index).pte.asUInt
 
             when(io.tlb_cache_req.data_valid)
             {
                 io.tlb_cache_req.data_got := true.B
-                tlb(tlb_replace_index).valid := false.B
-                tlb_stage := tlb_find_ptw
+                io.tlb_valid := true.B
+                io.pa := getPA(tlb_writeback_index)
+                io.page_fault := false.B
+                tlb_stage := tlb_idle
 
             }.otherwise
             {
@@ -255,16 +335,16 @@ class TLB extends Moudle
                     tlb(tlb_replace_index).VPN_2 := tlb_va.VPN_2
 
                     tlb(tlb_replace_index).valid := true.B
-                    tlb(tlb_replace_index).modify := false.B
                     tlb(tlb_replace_index).level := ptw.ptw2tlb.level
                     tlb(tlb_replace_index).pte := ptw.ptw2tlb.pte
                     tlb(tlb_replace_index).pte_paddr := ptw.ptw2tlb.pte_paddr
 
-                    io.tlb_valid := true.B
-                    io.page_fault := false.B
-                    io.pa := ptw.io.pa
+                    // io.tlb_valid := true.B
+                    // io.page_fault := false.B
+                    // io.pa := ptw.io.pa
+                    io.tlb_valid := false.B
 
-                    tlb_stage := tlb_idle
+                    tlb_stage := tlb_find_tlb
 
                 }
             }.otherwise
