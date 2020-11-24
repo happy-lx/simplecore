@@ -23,7 +23,7 @@ class AXI4IO extends Bundle
     val awprot = Input(UInt(3.W))
     val awqos = Input(UInt(4.W))
     val awregion = Input(UInt(4.W))
-    val awuser = Input(UInt(16.W))
+    val awuser = Input(Bool())
 
     val awvalid = Input(Bool())
     val awready = Output(Bool())
@@ -39,7 +39,7 @@ class AXI4IO extends Bundle
     val arprot = Input(UInt(3.W))
     val arqos = Input(UInt(4.W))
     val arregion = Input(UInt(4.W))
-    val aruser = Input(UInt(16.W))
+    val aruser = Input(Bool())
 
     val arvalid = Input(Bool())
     val arready = Output(Bool())
@@ -63,7 +63,7 @@ class AXI4IO extends Bundle
     val wready = Output(Bool())
 
     //write channel's write response 
-    val bid = Output(Bool())
+    val bid = Output(UInt(4.W))
     val bresp = Output(UInt(2.W))
     val buser = Output(Bool())
     
