@@ -64,6 +64,8 @@ class MDU extends Module
     val is_mul_op = (io.op === ALU_MUL || io.op === ALU_MULH || io.op === ALU_MULHSU || io.op === ALU_MULHU)
     val is_div_op = is_mdu_op && ! is_mul_op
 
+    val rem_sign_change = (op1_is_neg && !op2_is_neg) || (op1_is_neg && op2_is_neg)
+
     val mdu_idle :: mdu_exe :: mdu_finish :: Nil = Enum(3)
 
     val mdu_state = RegInit(mdu_idle)
@@ -160,15 +162,15 @@ class MDU extends Module
                 (io.op === ALU_MULHSU)  -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
                 (io.op === ALU_MULHU)   -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
                 
-                // (io.op === ALU_REM)     -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                // (io.op === ALU_REMU)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                // (io.op === ALU_REMUW)   -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
-                // (io.op === ALU_REMW)    -> Mux(sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                (io.op === ALU_REM)     -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                (io.op === ALU_REMU)    -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                (io.op === ALU_REMUW)   -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
+                (io.op === ALU_REMW)    -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
 
-                (io.op === ALU_REM)     -> rem_result(63,0),
-                (io.op === ALU_REMU)    -> rem_result(63,0),
-                (io.op === ALU_REMUW)   -> rem_result(63,0),
-                (io.op === ALU_REMW)    -> rem_result(63,0),
+                // (io.op === ALU_REM)     -> rem_result(63,0),
+                // (io.op === ALU_REMU)    -> rem_result(63,0),
+                // (io.op === ALU_REMUW)   -> rem_result(63,0),
+                // (io.op === ALU_REMW)    -> rem_result(63,0),
 
                 (io.op === ALU_DIV)     -> Mux(sign_change,(~div_result(63,0)) + 1.U,div_result(63,0)),
                 (io.op === ALU_DIVU)    -> Mux(sign_change,(~div_result(63,0)) + 1.U,div_result(63,0)),
