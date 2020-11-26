@@ -8,3 +8,4 @@
 + 11/16 添加buser，ruser信号，但不使用
 + 11/20 修改awaddr,araddr的位宽为32位
 + 11/24 修改awuser，aruser，bid的位宽
++ 11/26 修改核内的一个bug，当取余的时候操作数如果有负数的时候会发生
