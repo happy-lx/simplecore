@@ -131,6 +131,7 @@ int main(int argc , char** argv)
 
     int error_cnt = 0;
     int total_cnt = 0;
+    int finish_cnt = 0;
 
     while(!Verilated::gotFinish())
     {
@@ -188,6 +189,21 @@ int main(int argc , char** argv)
         // {
         //     break;
         // }
+        
+        //when 6f appears one by one 10 times 
+        //end this program
+        if((unsigned)core->getTop()->io_diff_instr_in_wb == 0x6f)
+        {
+            finish_cnt += 1;
+        }else
+        {
+            finish_cnt = 0;
+        }
+        if(finish_cnt == 10)
+        {
+            break;
+        }
+
         if(error_cnt > 0)
         {
             break;
