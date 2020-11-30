@@ -108,6 +108,11 @@ class CSRfile extends Module
     val regs_mhpmevet = RegInit(VecInit.tabulate(mhpmevent_number){i => (0.U(64.W))})
 
 
+    //S mode
+    val reg_satp = RegInit(0.U(64.W))
+    BoringUtils.addSource(reg_satp,"satp_val")
+
+
     val prv_now = WireInit(PRV_M)
 
     val wire_csr_op = Wire(UInt(csr_op_sz))//reset csr operation if op is read only

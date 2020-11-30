@@ -23,9 +23,9 @@ class MMU_IO extends Bundle
     val in = Flipped(new cache_req_io)
     
     val info = new Bundle{
-        val isWrite = Output(Bool())
-        val satp = Output(UInt(64.W))
-        val mmu_en = Output(Bool())
+        val isWrite = Input(Bool())
+        val satp = Input(UInt(64.W))
+        val mmu_en = Input(Bool())
     }
     
     val pf = new Bundle
@@ -68,7 +68,8 @@ class MMU(name : String) extends Module
 
     //now we just need to focus on va -> pa process 
 
-    val tlb = Moudle(new TLB(name))
+    val tlb = if(name == "immu") Module(new TLB("itlb")) else Module(new TLB("dtlb"))
+    tlb.io := DontCare
 
     //state machine to control the whole mem access process 
     val s_idle :: s_translate :: s_access :: Nil = Enum(3)
@@ -155,8 +156,16 @@ class MMU(name : String) extends Module
             tlb.io.tlb_en := false.B
             io.pf.valid := false.B
 
-            io.in <> io.out 
+            // io.in <> io.out 
             io.out.addr := pa
+            io.out.mask := io.in.mask
+            io.out.op := io.in.op
+            io.out.wdata := io.in.wdata
+            io.out.memen := io.in.memen
+            io.out.wen := io.in.wen
+            io.out.data_got := io.in.data_got
+            io.in.rdata := io.out.rdata
+            io.in.data_valid := io.out.data_valid
 
             when(io.in.data_got)
             {
@@ -165,6 +174,18 @@ class MMU(name : String) extends Module
             }
             
         }
+    }
+    when(mmu_stage === s_access)
+    {
+        io.out.addr := pa
+        io.out.mask := io.in.mask
+        io.out.op := io.in.op
+        io.out.wdata := io.in.wdata
+        io.out.memen := io.in.memen
+        io.out.wen := io.in.wen
+        io.out.data_got := io.in.data_got
+        io.in.rdata := io.out.rdata
+        io.in.data_valid := io.out.data_valid
     }
 
 }

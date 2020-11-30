@@ -95,7 +95,7 @@ class PTW_IO extends Bundle
     val ptw2tlb = new PTW2TLB_IO
 }
 
-class PTW extends Module
+class PTW(name : String) extends Module
 {
     val io = IO(new PTW_IO)
 
@@ -338,5 +338,9 @@ class PTW extends Module
                 ptw_stage := ptw_vpn0
             }
         }
+    }
+    if(name == "iptw")
+    {
+        BoringUtils.addSource(ptw_stage,"ptw_stage")
     }
 }

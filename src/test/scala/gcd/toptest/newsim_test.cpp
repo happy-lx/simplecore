@@ -30,6 +30,87 @@ void print_redir(Vtop* target)
     }
 }
 
+void print_MMU_stage(Vtop* target)
+{
+    switch (target->top__DOT__mycore__DOT__dmmu__DOT__mmu_stage)
+    {
+        case 0:
+            printf("dmmu is in idle stage\n");
+            break;
+        case 1:
+            printf("dmmu is in translate stage\n");
+            break;
+        case 2:
+            printf("dmmu is in access stage\n");
+            break;
+        
+        default:
+            break;
+    }
+
+    switch (target->top__DOT__mycore__DOT__immu__DOT__mmu_stage)
+    {
+        case 0:
+            printf("immu is in idle stage\n");
+            break;
+        case 1:
+            printf("immu is in translate stage\n");
+            break;
+        case 2:
+            printf("immu is in access stage\n");
+            break;
+        
+        default:
+            break;
+    }
+}
+
+void print_tlb_ptw_stage(Vtop* target)
+{
+    switch (target->io_diff_tlb_stage)
+    {
+        case 0:
+            printf("itlb is in tlb_idle stage\n");
+            break;
+        case 1:
+            printf("itlb is in tlb_find_tlb stage\n");
+            break;
+        case 2:
+            printf("itlb is in tlb_find_entry stage\n");
+            break;
+        case 3:
+            printf("itlb is in tlb_write_back stage\n");
+            break;
+        case 4:
+            printf("itlb is in tlb_find_ptw stage\n");
+            break;
+        
+        default:
+            break;
+    }
+
+    switch (target->io_diff_ptw_stage)
+    {
+        case 0:
+            printf("iptw is in ptw_idle stage\n");
+            break;
+        case 1:
+            printf("iptw is in ptw_vpn2 stage\n");
+            break;
+        case 2:
+            printf("iptw is in ptw_vpn1 stage\n");
+            break;
+        case 3:
+            printf("iptw is in ptw_vpn0 stage\n");
+            break;
+        
+        default:
+            break;
+    }
+}
+
+
+
 void print_regs(Vtop* target)
 {
     int temp_cnt = 0;
@@ -378,6 +459,8 @@ int main(int argc,char** argv)
                 print_mul_info(top);
                 print_icache(top);
                 print_dcache(top);
+                print_MMU_stage(top);
+                print_tlb_ptw_stage(top);
                 print_icross_bar(top);
                 print_dcross_bar(top);
                 // print_rfen(top);

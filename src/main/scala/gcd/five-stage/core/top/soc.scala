@@ -38,6 +38,8 @@ class top extends Module
     BoringUtils.addSink(difftestwire.mul_result_lo,"mul_result_lo")
     BoringUtils.addSink(difftestwire.abs_op1,"abs_op1")
     BoringUtils.addSink(difftestwire.abs_op2,"abs_op2")
+    BoringUtils.addSink(difftestwire.tlb_stage,"tlb_stage")
+    BoringUtils.addSink(difftestwire.ptw_stage,"ptw_stage")
 
     io.diff := difftestwire
 

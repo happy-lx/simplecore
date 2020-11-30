@@ -26,8 +26,14 @@ class DpathIO extends Bundle
 {
     val c2d = Flipped(new C2DIO()) 
     val d2c = new D2CIO()
-    val imem = new sram_like_io
-    val dmem = new sram_like_io
+    val imem = new sram_like_io{
+        val isWrite = Output(Bool())
+        val mmu_en = Output(Bool())
+    }
+    val dmem = new sram_like_io{
+        val isWrite = Output(Bool())
+        val mmu_en = Output(Bool())
+    }
 }
 
 class Dpath extends Module {
@@ -49,6 +55,8 @@ class Dpath extends Module {
     val wire_pc_bpu_target = Wire(UInt(64.W))
 
     io.imem.memen := true.B
+    io.imem.isWrite := false.B
+    io.imem.mmu_en := true.B
     io.imem.addr := reg_if_pc(31,0)
     io.imem.op := op_wu
     io.imem.wen := false.B
@@ -474,6 +482,8 @@ class Dpath extends Module {
 
     //access memory for store instruction and access csr file for csr instructions 
     io.dmem.memen := dp_mem_reg_mem_en
+    io.dmem.mmu_en := dp_mem_reg_mem_en
+    io.dmem.isWrite := dp_mem_reg_mem_wen
     io.dmem.addr := dp_mem_reg_alu_out(31,0)
     io.dmem.mask := dp_mem_reg_mem_write_mask
     io.dmem.op := dp_mem_reg_mem_read_op

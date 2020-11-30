@@ -18,8 +18,17 @@ class core extends Module {
     val dpath = Module(new Dpath())
     val cpath = Module(new Cpath())
 
+    cpath.io.imem := DontCare
+    cpath.io.dmem := DontCare
+
+    dpath.io.imem := DontCare
+    dpath.io.dmem := DontCare
+
     val exe_stall = WireInit(false.B)
     BoringUtils.addSink(exe_stall,"exe_stall")
+
+    val satp = WireInit(0.U(64.W))
+    BoringUtils.addSink(satp,"satp_val")
 
     val bus_bridge_mem = Module(new Sramlike2AXI4)
     bus_bridge_mem.io.exe_stall := exe_stall
@@ -31,6 +40,48 @@ class core extends Module {
     val dcache = Module(new cache())
     dcache.io.exe_stall := exe_stall
 
+    // -------       mmu begin          -------    
+    // ------- ------------------------ -------     
+    val dmmu = Module(new MMU("dmmu"))
+    //in
+    dmmu.io.in.addr := dpath.io.dmem.addr
+    dmmu.io.in.mask := dpath.io.dmem.mask
+    dmmu.io.in.op := dpath.io.dmem.op
+    dmmu.io.in.wdata := dpath.io.dmem.wdata
+    dmmu.io.in.memen := dpath.io.dmem.memen
+    dmmu.io.in.wen := dpath.io.dmem.wen
+    dpath.io.dmem.rdata := dmmu.io.in.rdata
+    dpath.io.dmem.data_valid := dmmu.io.in.data_valid
+    dmmu.io.in.data_got := !cpath.io.c2d.cp_pipeline_stall
+    //info
+    dmmu.io.info.isWrite := dpath.io.dmem.isWrite
+    dmmu.io.info.satp := satp
+    dmmu.io.info.mmu_en := dpath.io.dmem.mmu_en
+    //pf
+    cpath.io.dmem.valid := dmmu.io.pf.valid
+    cpath.io.dmem.loadPageFault := dmmu.io.pf.loadPageFault
+    cpath.io.dmem.storePageFault := dmmu.io.pf.storePageFault
+    val immu = Module(new MMU("immu"))
+    //in
+    immu.io.in.addr := dpath.io.imem.addr
+    immu.io.in.mask := dpath.io.imem.mask
+    immu.io.in.op := dpath.io.imem.op
+    immu.io.in.wdata := dpath.io.imem.wdata
+    immu.io.in.memen := dpath.io.imem.memen
+    immu.io.in.wen := dpath.io.imem.wen
+    dpath.io.imem.rdata := immu.io.in.rdata
+    dpath.io.imem.data_valid := immu.io.in.data_valid
+    immu.io.in.data_got := !cpath.io.c2d.cp_pipeline_stall
+    //info
+    immu.io.info.isWrite := dpath.io.imem.isWrite
+    immu.io.info.satp := satp
+    immu.io.info.mmu_en := dpath.io.imem.mmu_en
+    //pf
+    cpath.io.imem.valid := immu.io.pf.valid
+    cpath.io.imem.instrPageFault := immu.io.pf.instrPageFault
+    // -------       mmu end            -------    
+    // ------- ------------------------ -------    
+
     val icache_cross_bar = Module(new cross_bar(false))
     icache_cross_bar.io.exe_stall := exe_stall
     val dcache_cross_bar = Module(new cross_bar(true))
@@ -39,17 +90,14 @@ class core extends Module {
     dpath.io.c2d := cpath.io.c2d
     cpath.io.d2c := dpath.io.d2c
 
-    cpath.io.imem := DontCare
-    cpath.io.dmem := DontCare
 
-    dpath.io.imem := DontCare
-    dpath.io.dmem := DontCare
+    // icache_cross_bar.io.cpu_req <> dpath.io.imem
+    // icache_cross_bar.io.data_got := !cpath.io.c2d.cp_pipeline_stall
+    icache_cross_bar.io.cpu_req <> immu.io.out
 
-    icache_cross_bar.io.cpu_req <> dpath.io.imem
-    icache_cross_bar.io.data_got := !cpath.io.c2d.cp_pipeline_stall
-
-    dcache_cross_bar.io.cpu_req <> dpath.io.dmem
-    dcache_cross_bar.io.data_got := !cpath.io.c2d.cp_pipeline_stall
+    // dcache_cross_bar.io.cpu_req <> dpath.io.dmem
+    // dcache_cross_bar.io.data_got := !cpath.io.c2d.cp_pipeline_stall
+    dcache_cross_bar.io.cpu_req <> dmmu.io.out
 
     icache.io.cpu_req <> icache_cross_bar.io.cache_req
     dcache.io.cpu_req <> dcache_cross_bar.io.cache_req
@@ -65,13 +113,9 @@ class core extends Module {
     connect(io.axi4_mmio,bus_bridge_mmio.io.axi4)
 
 
-    // bus_bridge.io.ports(INTR) <> dpath.io.imem
-    // cpath.io.imem.data_valid := bus_bridge.io.ports(INTR).data_valid
-    cpath.io.imem.data_valid := icache_cross_bar.io.cpu_req.data_valid
+    cpath.io.imem.data_valid := immu.io.in.data_valid
 
-    // bus_bridge.io.ports(DATA) <> dpath.io.dmem
-    // cpath.io.dmem.data_valid := bus_bridge.io.ports(DATA).data_valid
-    cpath.io.dmem.data_valid := dcache_cross_bar.io.cpu_req.data_valid
+    cpath.io.dmem.data_valid := dmmu.io.in.data_valid
 
     //axi4 interface
     // io.axi4.awid := bus_bridge.io.axi4.awid

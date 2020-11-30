@@ -14,8 +14,8 @@ import constants.Constraints._
 class cross_bar_io extends Bundle
 {
     //input to cross_bar 
-    val cpu_req = Flipped(new sram_like_io)
-    val data_got = Input(Bool())
+    val cpu_req = Flipped(new cache_req_io)
+    // val data_got = Input(Bool())
 
     //output of cross bar
     val cache_req = new cache_req_io
@@ -118,7 +118,7 @@ class cross_bar(isdata : Boolean) extends Module
                 io.cpu_req.rdata := temp_read_data
                 rdata_valid := !exe_stall
 
-                when(io.data_got)
+                when(io.cpu_req.data_got)
                 {
                     read_state := read_idle
                 }.otherwise
@@ -162,7 +162,7 @@ class cross_bar(isdata : Boolean) extends Module
             {
                 wdata_valid := !exe_stall
 
-                when(io.data_got)
+                when(io.cpu_req.data_got)
                 {
                     write_state := write_idle
                 }.otherwise
@@ -242,7 +242,7 @@ class cross_bar(isdata : Boolean) extends Module
         io.cache_req.wdata := io.cpu_req.wdata
         io.cache_req.memen := io.cpu_req.memen
         io.cache_req.wen := io.cpu_req.wen
-        io.cache_req.data_got := io.data_got
+        io.cache_req.data_got := io.cpu_req.data_got
 
         io.cpu_req.rdata := io.cache_req.rdata
         io.cpu_req.data_valid := io.cache_req.data_valid

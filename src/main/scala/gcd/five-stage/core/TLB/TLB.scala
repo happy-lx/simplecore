@@ -57,7 +57,8 @@ class TLB(name : String) extends Module
 
     val tlb_stage = RegInit(tlb_idle)
 
-    val ptw = Module(new PTW)
+    val ptw = if(name == "itlb") Module(new PTW("iptw")) else Module(new PTW("dptw"))
+    ptw.io := DontCare
     val tlb = Mem(tlb_entry_number,new TLB_entry)
 
     val tlb_hit = WireInit(false.B)
@@ -96,7 +97,7 @@ class TLB(name : String) extends Module
 
 
     def getPA(index : UInt) : UInt = {
-        val result = WireInit(UInt(64.W))
+        val result = Wire(UInt(64.W))
         when(tlb(index).level === 0.U)
         {
             //top
@@ -354,5 +355,9 @@ class TLB(name : String) extends Module
                 tlb_stage := tlb_find_ptw
             }
         }
+    }
+    if(name == "itlb")
+    {
+        BoringUtils.addSource(tlb_stage,"tlb_stage")
     }
 }

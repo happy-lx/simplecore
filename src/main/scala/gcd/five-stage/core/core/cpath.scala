@@ -44,8 +44,15 @@ class CpathIO extends Bundle
 {
     val c2d = new C2DIO()
     val d2c = Flipped(new D2CIO())
-    val imem = new sram_like_io
-    val dmem = new sram_like_io
+    val imem = new sram_like_io{
+        val valid = Input(Bool())
+        val instrPageFault = Input(Bool())
+    }
+    val dmem = new sram_like_io{
+        val valid = Input(Bool())
+        val loadPageFault  = Input(Bool())
+        val storePageFault = Input(Bool())
+    }
     
 }
 
