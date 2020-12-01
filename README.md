@@ -9,3 +9,4 @@
 + 11/20 修改awaddr,araddr的位宽为32位
 + 11/24 修改awuser，aruser，bid的位宽
 + 11/26 修改核内的一个bug，当取余的时候操作数如果有负数的时候会发生
++ 12/01 修改bus_bridge的awvalid和arvalid置位的条件，并且让rready和bready始终为1,使得核不需要依赖外设的设计

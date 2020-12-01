@@ -49,6 +49,10 @@ class Sramlike2AXI4 extends Module
     //for write : write data has been written
     val data_back = WireInit(false.B)
 
+    //the mul and div stall signal
+    val exe_stall = WireInit(io.exe_stall)
+    // BoringUtils.addSink(exe_stall,"exe_stall")
+
     io.ports(DATA).data_valid := data_back && do_data_request
     io.ports(INTR).data_valid := data_back && do_inst_request
 
@@ -167,12 +171,12 @@ class Sramlike2AXI4 extends Module
     io.axi4.awburst := 0.U(2.W)
     io.axi4.awlock := false.B
     io.axi4.awcache := 0.U(4.W)
-    io.axi4.awprot := 1.U(3.W)
+    io.axi4.awprot := 0.U(3.W)
     io.axi4.awqos := 0.U(4.W)
     io.axi4.awregion := 0.U(4.W)
     io.axi4.awuser := 0.U(16.W)
 
-    io.axi4.awvalid := (has_request && info_wen && !addr_recv)
+    io.axi4.awvalid := (has_request && info_wen && !addr_recv && !exe_stall)
 
     //ar channel
     io.axi4.arid := 0.U(4.W)
@@ -188,20 +192,18 @@ class Sramlike2AXI4 extends Module
     io.axi4.arburst := 0.U(2.W)
     io.axi4.arlock := false.B
     io.axi4.arcache := 0.U(4.W)
-    io.axi4.arprot := 1.U(3.W)
+    io.axi4.arprot := 0.U(3.W)
     io.axi4.arqos := 0.U(4.W)
     io.axi4.arregion := 0.U(4.W)
     io.axi4.aruser := 0.U(16.W)
 
-    io.axi4.arvalid := (has_request && !info_wen && !addr_recv)
+    io.axi4.arvalid := (has_request && !info_wen && !addr_recv && !exe_stall)
 
-    //the mul and div stall signal
-    val exe_stall = WireInit(io.exe_stall)
-    // BoringUtils.addSink(exe_stall,"exe_stall")
+    
 
     //r channel
-    // io.axi4.rready := true.B
-    io.axi4.rready := !exe_stall
+    io.axi4.rready := true.B
+    // io.axi4.rready := !exe_stall
 
     //w channel
     val temp_info_wdata = WireInit(0.U(64.W))
@@ -236,8 +238,8 @@ class Sramlike2AXI4 extends Module
     io.axi4.wlast := true.B
 
     //b channel
-    // io.axi4.bready := true.B
-    io.axi4.bready := !exe_stall
+    io.axi4.bready := true.B
+    // io.axi4.bready := !exe_stall
 
     //get read result from r channel
     when(do_data_request && data_back && !info_wen)
