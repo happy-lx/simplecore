@@ -133,6 +133,7 @@ class AXIslave extends Module
 
     val cnt = RegInit(0.U(16.W))
     val nextcnt = cnt + 1.U
+    // val nextcnt = cnt 
     val has_time_interrupt = WireInit(false.B)
 
     cnt := Mux(nextcnt === freq,0.U,nextcnt)
@@ -143,6 +144,7 @@ class AXIslave extends Module
     }
 
     has_time_interrupt := Mux(reg_mtime >= reg_mtimecmp , true.B , false.B)
+    // has_time_interrupt := Mux(reg_mtime > reg_mtimecmp , true.B , false.B)
 
     // BoringUtils.addSource(has_time_interrupt,"time_interrupt")
     io.time_interrupt := has_time_interrupt
