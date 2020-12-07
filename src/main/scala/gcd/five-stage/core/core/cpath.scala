@@ -287,6 +287,159 @@ class Cpath extends Module {
     val cs_reg_exe_exception = RegNext(cs_wire_dec_exception,false.B)
     val cs_reg_mem_exception = RegNext(cs_reg_exe_exception,false.B)
 
+    //! I don't use pipelien_stall signal for wire , not sure whether it's correct 
+    //get instruction page fault from MMU when no stall , pf.valid , instrPageFault(IF)
+    val cs_wire_if_instr_page_fault = WireInit(io.imem.valid && io.imem.instrPageFault)
+    val cs_reg_dec_instr_page_fault = RegNext(cs_wire_if_instr_page_fault,false.B)
+    val cs_reg_exe_instr_page_fault = RegNext(cs_reg_dec_instr_page_fault,false.B)
+    val cs_reg_mem_instr_page_fault = RegNext(cs_reg_exe_instr_page_fault,false.B)
+
+    //get instruction missaligned from IF when pc(1.0) != 0(IF)
+    //TODO : when misaligned happens no need to access memory 
+    val cs_wire_if_instr_missaligned = WireInit(io.d2c.pc_if(1,0) =/= 0.U)
+    val cs_reg_dec_instr_missaligned = RegNext(cs_wire_if_instr_missaligned,false.B)
+    val cs_reg_exe_instr_missaligned = RegNext(cs_reg_dec_instr_missaligned,false.B)
+    val cs_reg_mem_instr_missaligned = RegNext(cs_reg_exe_instr_missaligned,false.B)
+
+    //get load page fault from MMU when mem_mem_valid,no stall , pf.valid , LoadPageFault(MEM)
+    val cs_wire_mem_load_page_fault = WireInit(io.d2c.mem_mem_valid && io.dmem.valid && io.dmem.loadPageFault && !io.d2c.mem_isWrite)
+
+    //get load missaligned according to mask and addr and also mem_mem_valid(MEM)
+    //TODO : when misaligned happens no need to access memory 
+    val cs_wire_mem_load_missaligned = WireInit(false.B)
+    when(io.d2c.mem_mem_valid && !io.d2c.mem_isWrite)
+    {
+        //it's a load instruction
+        //now we should use mem_op and addr to make sure of missalignment 
+        switch(io.d2c.mem_op)
+        {
+            is(op_b)
+            {
+                cs_wire_mem_load_missaligned := false.B
+            }
+            is(op_bu)
+            {
+                cs_wire_mem_load_missaligned := false.B
+            }
+            is(op_hb)
+            {
+                when(io.d2c.mem_addr(0) =/= 0.U)
+                {
+                    cs_wire_mem_load_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_load_missaligned := false.B
+                }
+            }
+            is(op_hbu)
+            {
+                when(io.d2c.mem_addr(0) =/= 0.U)
+                {
+                    cs_wire_mem_load_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_load_missaligned := false.B
+                }
+            }
+            is(op_w)
+            {
+                when(io.d2c.mem_addr(1,0) =/= 0.U)
+                {
+                    cs_wire_mem_load_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_load_missaligned := false.B
+                }
+            }
+            is(op_wu)
+            {
+                when(io.d2c.mem_addr(1,0) =/= 0.U)
+                {
+                    cs_wire_mem_load_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_load_missaligned := false.B
+                }
+            }
+            is(op_d)
+            {
+                when(io.d2c.mem_addr(2,0) =/= 0.U)
+                {
+                    cs_wire_mem_load_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_load_missaligned := false.B
+                }
+            }
+        }
+
+    }.otherwise
+    {
+        cs_wire_mem_load_missaligned := false.B
+    }
+
+    //get store page fault from MMU when mem_mem_valid,no stall , pf.valid , StorePageFault(MEM)
+    val cs_wire_mem_store_page_fault = WireInit(io.d2c.mem_mem_valid && io.dmem.valid && io.dmem.storePageFault && io.d2c.mem_isWrite)
+
+    //get store missaligned according to mask an addr and also mem_mem_valid(MEM)
+    val cs_wire_mem_store_missaligned = WireInit(false.B)
+    when(io.d2c.mem_mem_valid && io.d2c.mem_isWrite)
+    {
+        //it's a store instruction
+        //now we should use mem_mask and addr to make sure of missalignment 
+        switch(io.d2c.mem_mask)
+        {
+            is(mask_b)
+            {
+                cs_wire_mem_store_missaligned := false.B
+            }
+            is(mask_hb)
+            {
+                when(io.d2c.mem_addr(0) =/= 0.U)
+                {
+                    cs_wire_mem_store_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_store_missaligned := false.B
+                }
+            }
+            is(mask_w)
+            {
+                when(io.d2c.mem_addr(1,0) =/= 0.U)
+                {
+                    cs_wire_mem_store_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_store_missaligned := false.B
+                }
+            }
+            is(mask_dw)
+            {
+                when(io.d2c.mem_addr(2,0) =/= 0.U)
+                {
+                    cs_wire_mem_store_missaligned := true.B
+                }.otherwise
+                {
+                    cs_wire_mem_store_missaligned := false.B
+                }
+            }
+        }
+
+    }.otherwise
+    {
+        cs_wire_mem_store_missaligned := false.B
+    }
+
+    //use BoringUtil to connect exception wire between cpath and csr
+    BoringUtils.addSource(cs_reg_mem_instr_page_fault,"cs_reg_mem_instr_page_fault")
+    BoringUtils.addSource(cs_reg_mem_instr_missaligned,"cs_reg_mem_instr_missaligned")
+    BoringUtils.addSource(cs_wire_mem_load_page_fault,"cs_wire_mem_load_page_fault")
+    BoringUtils.addSource(cs_wire_mem_load_missaligned,"cs_wire_mem_load_missaligned")
+    BoringUtils.addSource(cs_wire_mem_store_page_fault,"cs_wire_mem_store_page_fault")
+    BoringUtils.addSource(cs_wire_mem_store_missaligned,"cs_wire_mem_store_missaligned")
+
+
+
     io.c2d.hasexception := cs_reg_mem_exception
 
     cs_wire_pipeline_kill := io.d2c.isredir
@@ -343,6 +496,15 @@ class Cpath extends Module {
         cs_reg_exe_is_fencei:= cs_reg_exe_is_fencei
         cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
 
+        cs_reg_dec_instr_page_fault := cs_reg_dec_instr_page_fault
+        cs_reg_exe_instr_page_fault := cs_reg_exe_instr_page_fault
+        cs_reg_mem_instr_page_fault := cs_reg_mem_instr_page_fault
+
+        cs_reg_dec_instr_missaligned := cs_reg_dec_instr_missaligned
+        cs_reg_exe_instr_missaligned := cs_reg_exe_instr_missaligned
+        cs_reg_mem_instr_missaligned := cs_reg_mem_instr_missaligned
+
+
     }.elsewhen(cs_wire_pipeline_kill)
     {
         cs_exe_branch       := BR_N
@@ -355,6 +517,13 @@ class Cpath extends Module {
         // cs_reg_mem_mem_valid:= N
         cs_reg_exe_is_fencei:= N
         cs_reg_dec_imem_valid := N
+
+        cs_reg_dec_instr_page_fault := N
+        cs_reg_exe_instr_page_fault := N
+        cs_reg_mem_instr_page_fault := N
+        cs_reg_dec_instr_missaligned := N
+        cs_reg_exe_instr_missaligned := N
+        cs_reg_mem_instr_missaligned := N
         
     }.otherwise
     {
@@ -368,6 +537,11 @@ class Cpath extends Module {
             // cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
             cs_reg_dec_imem_valid := cs_reg_dec_imem_valid
+
+            cs_reg_dec_instr_page_fault := cs_reg_dec_instr_page_fault
+            cs_reg_exe_instr_page_fault := N
+            cs_reg_dec_instr_missaligned := cs_reg_dec_instr_missaligned
+            cs_reg_exe_instr_missaligned := N
         }.elsewhen(cs_wire_control_hazard)
         {
             cs_exe_branch       := BR_N
@@ -378,6 +552,11 @@ class Cpath extends Module {
             // cs_reg_exe_mem_valid:= N
             cs_reg_exe_is_fencei:= N
             cs_reg_dec_imem_valid := N
+
+            cs_reg_dec_instr_page_fault := N
+            cs_reg_exe_instr_page_fault := N
+            cs_reg_dec_instr_missaligned := N
+            cs_reg_exe_instr_missaligned := N
         }
     }
 

@@ -269,16 +269,35 @@ class CSRfile extends Module
     }
 
     //check exception
+    //! notice: io.hasException is just invalid instruction exception from DEC 
     val csr_illegal_ins_exception = exception_in_csr || io.hasException
+
+    //recieve exception from cpath 
+    val csr_instr_page_fault    = WireInit(false.B)
+    val csr_instr_missaligned   = WireInit(false.B)
+    val csr_load_page_fault     = WireInit(false.B)
+    val csr_load_missaligned    = WireInit(false.B)
+    val csr_store_page_fault    = WireInit(false.B)
+    val csr_store_missaligned   = WireInit(false.B)
+
+    BoringUtils.addSink(csr_instr_page_fault,"cs_reg_mem_instr_page_fault")
+    BoringUtils.addSink(csr_instr_missaligned,"cs_reg_mem_instr_missaligned")
+    BoringUtils.addSink(csr_load_page_fault,"cs_wire_mem_load_page_fault")
+    BoringUtils.addSink(csr_load_missaligned,"cs_wire_mem_load_missaligned")
+    BoringUtils.addSink(csr_store_page_fault,"cs_wire_mem_store_page_fault")
+    BoringUtils.addSink(csr_store_missaligned,"cs_wire_mem_store_missaligned")
+
 
     val csr_isecall = (io.csr_op === csr_prv) && (wire_csr_index === 0.U)
     val csr_isebreak = (io.csr_op === csr_prv) && (wire_csr_index === 1.U)
     val csr_ismret = (io.csr_op === csr_prv) && (wire_csr_index === 0x302.U)
 
-    val csr_hasexception = csr_illegal_ins_exception || csr_isecall || csr_isebreak
+    val csr_hasexception = csr_illegal_ins_exception || csr_instr_page_fault || csr_instr_missaligned || csr_load_page_fault || csr_load_missaligned || csr_store_page_fault || csr_store_missaligned || csr_isecall || csr_isebreak
     //check if there is a time interrupt
 
-    io.csr_illegal_ins_exception := csr_illegal_ins_exception
+    //! csr_illegal_ins_exception contians invalid instruction exception and other kinds of exceptions 
+    //! it's just to tell dpath's WB stage not to write RF
+    io.csr_illegal_ins_exception := csr_illegal_ins_exception || csr_instr_page_fault || csr_instr_missaligned || csr_load_page_fault || csr_load_missaligned || csr_store_page_fault || csr_store_missaligned
 
     //not sure
     // when(reg_mtime >= reg_mtimecmp)
@@ -360,7 +379,34 @@ class CSRfile extends Module
         {
             val wire_mstatus_new = WireInit(reg_mstatus)
             val wire_mstatus_old = WireInit(reg_mstatus)
-            when(csr_illegal_ins_exception)
+            //according to the priority to process each of the exception
+            when(csr_isebreak)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.in_mem_pc
+
+                reg_mcause := breakpoint
+                
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_instr_page_fault)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.in_mem_pc
+
+                reg_mcause := instr_page_fault
+                
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_illegal_ins_exception)
             {
                 reg_mepc := io.in_mem_pc
                 reg_mtval := io.instruction
@@ -372,7 +418,20 @@ class CSRfile extends Module
                 wire_mstatus_new.mpp := prv_now
 
                 reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_instr_missaligned)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.in_mem_pc
+
+                reg_mcause := instr_addr_misalign
                 
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
             }.elsewhen(csr_isecall)
             {
                 reg_mepc := io.in_mem_pc
@@ -385,19 +444,61 @@ class CSRfile extends Module
                 wire_mstatus_new.mpp := prv_now
 
                 reg_mstatus := wire_mstatus_new
-            }.elsewhen(csr_isebreak)
+
+            }.elsewhen(csr_store_missaligned)
             {
                 reg_mepc := io.in_mem_pc
-                reg_mtval := io.in_mem_pc
+                reg_mtval := io.instruction
 
-                reg_mcause := breakpoint
+                reg_mcause := store_addr_misalign
                 
                 wire_mstatus_new.mie := false.B
                 wire_mstatus_new.mpie := wire_mstatus_old.mie
                 wire_mstatus_new.mpp := prv_now
 
                 reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_load_missaligned)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.instruction
+
+                reg_mcause := load_addr_misalign
+                
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_store_page_fault)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.instruction
+
+                reg_mcause := store_page_fault
+                
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
+            }.elsewhen(csr_load_page_fault)
+            {
+                reg_mepc := io.in_mem_pc
+                reg_mtval := io.instruction
+
+                reg_mcause := load_page_fault
+                
+                wire_mstatus_new.mie := false.B
+                wire_mstatus_new.mpie := wire_mstatus_old.mie
+                wire_mstatus_new.mpp := prv_now
+
+                reg_mstatus := wire_mstatus_new
+
             }
+
         }
 
 

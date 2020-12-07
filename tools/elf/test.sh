@@ -16,7 +16,7 @@ do
     make install depth=16384 file=$file > /dev/null;
     cd ~/work/ChiselProjects/simpleshell3_master/src/test/scala/gcd/fivestage_difftest/obj_dir;
     echo "$file : "
-    ./Vtop | grep "correct rate"  ;
+    ./Vtop | grep -E "(correct|error).*rate"  ;
     # if [ correct_rate -eq 100.00 ];then
     #     echo "$file : ok"
     # else

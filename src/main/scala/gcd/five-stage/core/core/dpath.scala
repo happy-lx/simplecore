@@ -20,6 +20,15 @@ class D2CIO extends Bundle
     val mem_mem_valid = Output(Bool())
     val IF_ins = Output(UInt(32.W))
     val EXE_pc_branch = Output(UInt(2.W))
+
+    //for instruction missaligned judgement 
+    val pc_if = Output(UInt(64.W))
+
+    //for load and store missaligned judgement 
+    val mem_isWrite = Output(Bool())
+    val mem_addr = Output(UInt(64.W))
+    val mem_mask = Output(UInt(8.W))
+    val mem_op = Output(UInt(3.W))
 }
 
 class DpathIO extends Bundle
@@ -62,6 +71,8 @@ class Dpath extends Module {
     io.imem.wen := false.B
 
     wire_pc_next_4 := reg_if_pc + 4.U
+
+    io.d2c.pc_if := reg_if_pc
 
     //the pc_sel from cpath is always for if stage
     wire_pc_next := MuxCase(wire_pc_next_4,Array(
@@ -487,6 +498,13 @@ class Dpath extends Module {
     io.dmem.addr := dp_mem_reg_alu_out(31,0)
     io.dmem.mask := dp_mem_reg_mem_write_mask
     io.dmem.op := dp_mem_reg_mem_read_op
+
+    //for load and store missaligned judgement 
+    io.d2c.mem_isWrite := dp_mem_reg_mem_wen
+    io.d2c.mem_addr := dp_mem_reg_alu_out
+    io.d2c.mem_mask := dp_mem_reg_mem_write_mask
+    io.d2c.mem_op := dp_mem_reg_mem_read_op
+
     when(dp_mem_reg_mem_write_mask === mask_b)
     {
         io.dmem.wdata := Fill(8,dp_mem_reg_rs2_data(7,0))
