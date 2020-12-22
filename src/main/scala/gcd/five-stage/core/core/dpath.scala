@@ -63,7 +63,10 @@ class Dpath extends Module {
     val wire_pc_redirect_target = Wire(UInt(64.W))
     val wire_pc_bpu_target = Wire(UInt(64.W))
 
-    io.imem.memen := true.B
+    val dcache_doing_flush = WireInit(false.B)
+    BoringUtils.addSink(dcache_doing_flush,"dcache_doing_flush")
+    // io.imem.memen := true.B
+    io.imem.memen := !dcache_doing_flush
     io.imem.isWrite := false.B
     io.imem.mmu_en := true.B
     io.imem.addr := reg_if_pc(31,0)

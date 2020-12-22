@@ -297,8 +297,8 @@ trait CSRmap
     //machine mode trap setup registers
     val mstatus = 0x300
     val misa = 0x301
-    val medelege = 0x302
-    val midelege = 0x303
+    val medeleg = 0x302
+    val mideleg = 0x303
     val mie = 0x304
     val mtvec = 0x305
     val mcounteren = 0x306
@@ -337,6 +337,22 @@ trait CSRmap
     val mcounterinhibit = 0x320
     val mhpmevent_start = 0x323
     val mhpmevent_number = 29
+
+    //S mode trap setup
+    val sstatus = 0x100
+    val sie = 0x104
+    val stvec = 0x105
+    val scounteren = 0x106
+
+    //S mode trap handling 
+    val sscratch = 0x140
+    val sepc = 0x141
+    val scause = 0x142
+    val stval = 0x143
+    val sip = 0x144
+    
+    //S mode protection and translation
+    val satp = 0x180
     
 
 }

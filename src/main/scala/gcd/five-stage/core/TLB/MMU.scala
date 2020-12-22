@@ -26,6 +26,7 @@ class MMU_IO extends Bundle
         val isWrite = Input(Bool())
         val satp = Input(UInt(64.W))
         val mmu_en = Input(Bool())
+        val flush_req = Input(Bool())
     }
     
     val pf = new Bundle
@@ -70,6 +71,7 @@ class MMU(name : String) extends Module
 
     val tlb = if(name == "immu") Module(new TLB("itlb")) else Module(new TLB("dtlb"))
     tlb.io := DontCare
+    tlb.io.flush_req := io.info.flush_req
 
     //state machine to control the whole mem access process 
     val s_idle :: s_translate :: s_access :: Nil = Enum(3)

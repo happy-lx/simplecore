@@ -46,6 +46,8 @@ class cache_io extends Bundle
     val cpu_req = Flipped(new cache_req_io)
     val ram_req = new sram_like_io
     val exe_stall = Input(Bool())
+    val flush_req = Input(Bool())
+    val dcache_flush_stall = Input(Bool())
 }
 
 class cache_block_struct extends Bundle
@@ -69,7 +71,7 @@ object disable_mem_req
 }
 
 //a simple direct map cache
-class cache() extends Module
+class cache(name : String) extends Module
 {
     val io = IO(new cache_io)
 
@@ -79,7 +81,7 @@ class cache() extends Module
     val cache_tags   = Mem(1L<<index_len,new cache_tag_struct)
 
 
-    val cache_idle :: cache_find_index :: cache_resp :: cache_write_back :: cache_write_allocate :: Nil = Enum(5)
+    val cache_idle :: cache_find_index :: cache_resp :: cache_write_back :: cache_write_allocate :: cache_do_flush :: cache_flush_block :: icache_flush :: cache_flush_finish :: Nil = Enum(9)
 
     val cache_stage = RegInit(cache_idle)
     val cache_miss = WireInit(false.B)
@@ -96,9 +98,35 @@ class cache() extends Module
     //when we use cache , make sure the mdu has down it's work
     val exe_stall = WireInit(io.exe_stall)
 
+    //for dcache flush
+    val flush_total = (1 << index_len)
+    val flush_now   = RegInit(0.U(64.W))
+    val flush_write_time = RegInit(4.U(3.W))
+    //indicate that dcache is doing the flush operation
+    //and IF stage should not access cache now  
+    val dcache_doing_flush = WireInit(false.B)
+
+    //for icache flush 
+    val icache_flush_now = RegInit(0.U(64.W))
+    if(name == "dcache")
+    {
+        BoringUtils.addSource(dcache_doing_flush,"dcache_doing_flush")
+    }
+
+    //for dcache flush finish
+    val dcache_flush_stall = WireInit(io.dcache_flush_stall)
+
     temp_tag := io.cpu_req.addr(tag_MSB,tag_LSB)
     temp_index := io.cpu_req.addr(index_MSB,index_LSB)
     temp_offset := io.cpu_req.addr(offset_MSB,offset_LSB)
+
+
+    // def flush_Icache() = {
+    //     for(i <- (0 until (1 << index_len)))
+    //     {
+    //         cache_tags(i).valid := false.B
+    //     }
+    // }
     
 
     //stage function 
@@ -111,14 +139,36 @@ class cache() extends Module
 
             //in case of dead lock
             disable_mem_req(io.ram_req)
+            dcache_doing_flush := false.B
+
+            if(name == "icache")
+            {
+                //icache's flush does not need to write dirty block to ram
+                //just set tag's valid bit to zero
+                when(io.flush_req)
+                {
+                    // flush_Icache()
+                    cache_stage := icache_flush
+                    icache_flush_now := 0.U
+                }
+            }else
+            {
+                //dcache should write all dirty blocks to ram
+                //and set these blocks's valid to zero
+                when(io.flush_req)
+                {
+                    cache_stage := cache_do_flush
+                    flush_now   := 0.U
+                    dcache_doing_flush := true.B
+                }
+            }
 
             when(io.cpu_req.memen)
             {
                 cache_stage := cache_find_index
-            }.otherwise
-            {
-                cache_stage := cache_idle
             }
+
+
             cache_miss := false.B
 
             io.cpu_req.data_valid := false.B
@@ -132,6 +182,7 @@ class cache() extends Module
             //make sure I$ and D$ can both send message to bus
             //but D$ first
             disable_mem_req(io.ram_req)
+            dcache_doing_flush := false.B
 
             //judge if the access to cache is hit or miss 
             cache_miss := !cache_tags(temp_index).valid || temp_tag =/= cache_tags(temp_index).tag
@@ -231,6 +282,7 @@ class cache() extends Module
         {
 
             disable_mem_req(io.ram_req)
+            dcache_doing_flush := false.B
             
             io.cpu_req.data_valid := !exe_stall
 
@@ -245,6 +297,7 @@ class cache() extends Module
             //send four times 
 
             io.cpu_req.data_valid := false.B
+            dcache_doing_flush := false.B
 
             when(write_time === 0.U(3.W))
             {
@@ -278,6 +331,7 @@ class cache() extends Module
             //read four times 
 
             io.cpu_req.data_valid := false.B
+            dcache_doing_flush := false.B
 
             when(read_time === 0.U(3.W))
             {
@@ -310,6 +364,93 @@ class cache() extends Module
             }
 
         }
+        is(cache_do_flush)
+        {
+            //loop according to the number of blocks 
+            //first check valid :
+            //invalid -> skip this block
+            //valid   -> check dirty:
+            //                       clean ->skip this block
+            //                       dirty ->flush this block to ram
+            disable_mem_req(io.ram_req)
+            dcache_doing_flush := true.B
+            when(flush_now === flush_total.U)
+            {
+                cache_stage := cache_flush_finish
+            }.otherwise
+            {
+                when(!cache_tags(flush_now).valid)
+                {
+                    flush_now := flush_now + 1.U
+                }.otherwise
+                {
+                    when(!cache_tags(flush_now).dirty)
+                    {
+                        flush_now := flush_now + 1.U
+                    }.otherwise
+                    {
+                        cache_stage := cache_flush_block
+                        flush_write_time := 4.U(3.W)
+                    }
+                }
+            }
+        }
+        is(cache_flush_block)
+        {
+            dcache_doing_flush := true.B
+            when(flush_write_time === 0.U(3.W))
+            {
+                io.ram_req.memen := false.B
+            }.otherwise
+            {
+                io.ram_req.memen := true.B
+            }
+            io.ram_req.mask  := mask_dw
+            io.ram_req.op  := op_x
+            io.ram_req.wdata  := cache_blocks(flush_now).data(4.U(3.W) - flush_write_time)
+            io.ram_req.wen   := true.B
+            io.ram_req.addr := Cat(cache_tags(flush_now).tag,flush_now(index_len-1,0),(4.U(3.W) - flush_write_time)(1,0),0.U(3.W))
+
+            when(io.ram_req.data_valid)
+            {
+                flush_write_time := flush_write_time - 1.U(3.W)
+            }
+
+            when(flush_write_time === 0.U(3.W))
+            {
+                //the block has been written back to ram
+                flush_now := flush_now + 1.U
+                cache_tags(flush_now).dirty := false.B
+                cache_stage := cache_do_flush
+            }
+        }
+        is(icache_flush)
+        {
+            disable_mem_req(io.ram_req)
+            dcache_doing_flush := false.B
+            io.cpu_req.data_valid := false.B
+
+            when(icache_flush_now === flush_total.U)
+            {
+                cache_stage := cache_idle
+            }.otherwise
+            {
+                cache_tags(icache_flush_now).valid := false.B
+                icache_flush_now := icache_flush_now + 1.U
+            }
+
+        }
+        is(cache_flush_finish)
+        {
+            disable_mem_req(io.ram_req)
+            dcache_doing_flush := false.B
+
+            when(!dcache_flush_stall)
+            {
+                cache_stage := cache_idle
+            }
+        }
+        
     }
 
 }

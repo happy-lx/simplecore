@@ -42,6 +42,8 @@ class TLB_IO extends Bundle
     // val ptw_cache_req = new cache_req_io
     val tlb_cache_req = new cache_req_io
 
+    val flush_req = Input(Bool())
+
 }
 
 class TLB(name : String) extends Module
@@ -77,6 +79,13 @@ class TLB(name : String) extends Module
 
     //just like a ramdon choose 
     tlb_victim := tlb_victim + 1.U
+
+    def flush_TLB() = {
+        for(i <- (0 until tlb_entry_number))
+        {
+            tlb(i).valid := false.B
+        }
+    }
 
     // cache_req_connet(ptw.io.cache_req_io,io.ptw_cache_req)
 
@@ -125,6 +134,12 @@ class TLB(name : String) extends Module
             io.tlb_cache_req.memen := false.B
             
             val temp_correct_va = (io.va(63,39) === Fill(25,io.va(38)))
+
+            //for tlb flush 
+            when(io.flush_req)
+            {
+                flush_TLB()
+            }
             
             when(!sv39_on && io.tlb_en)
             {
@@ -233,6 +248,11 @@ class TLB(name : String) extends Module
                     io.tlb_valid := true.B
                     io.page_fault := true.B
                     tlb_stage := tlb_idle
+
+                    when(io.flush_req)
+                    {
+                        flush_TLB()
+                    }
                 }
 
                 // io.pa := getPA(tlb_hit_index)
@@ -328,6 +348,11 @@ class TLB(name : String) extends Module
                     io.tlb_valid := true.B
                     io.page_fault := true.B
                     tlb_stage := tlb_idle
+
+                    when(io.flush_req)
+                    {
+                        flush_TLB()
+                    }
                 }.otherwise
                 {
                     //no page fault

@@ -182,6 +182,7 @@ int main(int argc , char** argv)
         total_cnt++;
         
         printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
+        printf("IPC is : %f\n",(double)(core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_minstret)/core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcycle);
 
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 

@@ -224,6 +224,19 @@ void print_icache(Vtop* target)
     case 4:
         printf("icache is in cache_write_allocate stage\n");
         break;
+    case 5:
+        printf("icache is in cache_do_flush stage\n");
+        break;
+    case 6:
+        printf("icache is in cache_flush_block stage\n");
+        break;
+    case 7:
+        printf("icache is in icache_flush stage\n");
+        printf("icache's flush index is : %ld\n",(unsigned long)target->top__DOT__mycore__DOT__icache__DOT__icache_flush_now);
+        break;
+    case 8:
+        printf("icache is in cache_flush_finish stage\n");
+        break;
     default:
         break;
     }
@@ -256,6 +269,20 @@ void print_dcache(Vtop* target)
         break;
     case 4:
         printf("dcache is in cache_write_allocate stage\n");
+        break;
+    case 5:
+        printf("dcache is in cache_do_flush stage\n");
+        printf("dcache's flush index is : %ld\n",(unsigned long)target->top__DOT__mycore__DOT__dcache__DOT__flush_now);
+        break;
+    case 6:
+        printf("dcache is in cache_flush_block stage\n");
+        printf("dcache's flush index is : %ld\n",(unsigned long)target->top__DOT__mycore__DOT__dcache__DOT__flush_now);
+        break;
+    case 7:
+        printf("dcache is in icache_flush stage\n");
+        break;
+    case 8:
+        printf("dcache is in cache_flush_finish stage\n");
         break;
     default:
         break;
