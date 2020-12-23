@@ -135,3 +135,11 @@
   + 级别：严重
   + 原因：由于dcache在执行flush的时候，是不让IF阶段访存的，所以IF一直不访存流水线一直stall，然而dcache刷新操作完成之后回到了idle状态，这个时候由于流水线一直是stall的，所以MEM阶段仍然是`fence.i`指令，所以dcache又跑去执行flush操作了，陷入死循环
   + 解决办法：重新增加一个cache的状态，标明dcache已经完成flush操作，设置可以让IF访存，然后IF访存发生在icache刷新完后回到idle阶段检测到访存要求去访存，取到指令后，流水线准备就绪，stall信号降下来，让icache和dcache全部回到idle状态
+
+### From 12/23
+
++ [ ] 描述：发生page fault之后可能发生错误
+  + 级别：不定
+  + 原因：由于TLB发生page fault的标志信号只保留一个周期，MMU的page fault信号也只保留一个周期，这个信号传给cpath后也只保留一个周期，然而这个时候只是没有data_stall了，还可能存在instr_stall，所以流水线不能向前，然而这个周期过了之后，page fault的信号就消失了，而异常只在没有stall的时候才处理，所以当没有stall之后，这个异常信号就消失了而没有处理
+  + 解决办法：给MMU增加三个状态，分别保留好page fault 信号等没有stall了之后才在下一个周期进入idle状态
+

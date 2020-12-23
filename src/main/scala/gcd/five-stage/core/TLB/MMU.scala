@@ -74,7 +74,7 @@ class MMU(name : String) extends Module
     tlb.io.flush_req := io.info.flush_req
 
     //state machine to control the whole mem access process 
-    val s_idle :: s_translate :: s_access :: Nil = Enum(3)
+    val s_idle :: s_translate :: s_access :: s_IPF :: s_LPF :: s_SPF :: Nil = Enum(6)
     val mmu_stage = RegInit(s_idle)
 
     switch(mmu_stage)
@@ -120,7 +120,7 @@ class MMU(name : String) extends Module
                         //page fault happens nothing can be read 
                         //so treat it as a NOP instruction
                         io.in.rdata := NOP
-                        mmu_stage := s_idle
+                        mmu_stage := s_IPF
 
                     }else if(name == "dmmu")
                     {
@@ -130,17 +130,19 @@ class MMU(name : String) extends Module
                             instrPageFault := false.B
                             loadPageFault  := false.B
                             storePageFault := true.B
+                            mmu_stage := s_SPF
                         }.otherwise
                         {
                             //load page fault
                             instrPageFault := false.B
                             loadPageFault  := true.B
                             storePageFault := false.B
+                            mmu_stage := s_LPF
                         }
                         io.in.data_valid := true.B
                         //nothing will be read 
                         io.in.rdata := 0xdead.U(64.W)
-                        mmu_stage := s_idle
+                        // mmu_stage := s_idle
                     }
                 }.otherwise
                 {
@@ -175,6 +177,64 @@ class MMU(name : String) extends Module
                 mmu_stage := s_idle
             }
             
+        }
+        //the aim of the fllowing three stage is to hold the page fault signal
+        //until IF and MEM are not stalled , so that the exception can be process 
+        //otherwise when IF and MEM are not stalled,the exception signal may disappear
+        is(s_IPF)
+        {
+            io.in.data_valid := true.B
+            io.in.rdata := NOP
+            io.pf.valid := true.B
+            instrPageFault := true.B
+            loadPageFault  := false.B
+            storePageFault := false.B
+            tlb.io.tlb_en := false.B
+            io.out.memen := false.B
+            when(io.in.data_got)
+            {
+                mmu_stage := s_idle
+            }.otherwise
+            {
+                mmu_stage := s_IPF
+            }
+        }
+        is(s_LPF)
+        {
+            io.in.data_valid := true.B
+            io.in.rdata := NOP
+            io.pf.valid := true.B
+            instrPageFault := false.B
+            loadPageFault  := true.B
+            storePageFault := false.B
+            tlb.io.tlb_en := false.B
+            io.out.memen := false.B
+            when(io.in.data_got)
+            {
+                mmu_stage := s_idle
+            }.otherwise
+            {
+                mmu_stage := s_LPF
+            }
+        }
+        is(s_SPF)
+        {
+
+            io.in.data_valid := true.B
+            io.in.rdata := NOP
+            io.pf.valid := true.B
+            instrPageFault := false.B
+            loadPageFault  := false.B
+            storePageFault := true.B
+            tlb.io.tlb_en := false.B
+            io.out.memen := false.B
+            when(io.in.data_got)
+            {
+                mmu_stage := s_idle
+            }.otherwise
+            {
+                mmu_stage := s_SPF
+            }
         }
     }
     when(mmu_stage === s_access)
