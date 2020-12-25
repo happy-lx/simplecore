@@ -6,6 +6,7 @@ import chisel3.util.experimental.BoringUtils
 
 import constants.RV64I._
 import constants.RV64M._
+import constants.RV64A._
 import constants.Constraints._
 
 class C2DIO extends Bundle
@@ -585,4 +586,9 @@ class Cpath extends Module {
 
     BoringUtils.addSource(cs_valid_inst,"cs_valid_inst")
 
+
+    //for AMO accesser
+    BoringUtils.addSource(io.dmem.valid,"cpath_pf_valid")
+    BoringUtils.addSource(io.dmem.loadPageFault,"cpath_loadPageFault")
+    BoringUtils.addSource(io.dmem.storePageFault,"cpath_storePageFault")
 }

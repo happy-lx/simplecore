@@ -69,7 +69,8 @@ class Dpath extends Module {
     io.imem.memen := !dcache_doing_flush
     io.imem.isWrite := false.B
     io.imem.mmu_en := true.B
-    io.imem.addr := reg_if_pc(31,0)
+    // io.imem.addr := reg_if_pc(31,0)
+    io.imem.addr := reg_if_pc
     io.imem.op := op_wu
     io.imem.wen := false.B
 
@@ -498,7 +499,8 @@ class Dpath extends Module {
     io.dmem.memen := dp_mem_reg_mem_en
     io.dmem.mmu_en := dp_mem_reg_mem_en
     io.dmem.isWrite := dp_mem_reg_mem_wen
-    io.dmem.addr := dp_mem_reg_alu_out(31,0)
+    // io.dmem.addr := dp_mem_reg_alu_out(31,0)
+    io.dmem.addr := dp_mem_reg_alu_out
     io.dmem.mask := dp_mem_reg_mem_write_mask
     io.dmem.op := dp_mem_reg_mem_read_op
 
@@ -527,6 +529,8 @@ class Dpath extends Module {
     io.dmem.wen := dp_mem_reg_mem_wen
 
     val csr = Module(new CSRfile)
+    val amo = Module(new amoAccesser)
+    amo.io := DontCare
 
     csr.io.instruction := dp_mem_reg_instr
     csr.io.csr_op := dp_mem_reg_csr_op

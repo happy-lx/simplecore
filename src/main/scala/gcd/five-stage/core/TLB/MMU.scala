@@ -20,7 +20,9 @@ import constants.Constraints._
 */  
 class MMU_IO extends Bundle
 {
-    val in = Flipped(new cache_req_io)
+    val in = Flipped(new sram_like_io{
+        val data_got = Output(Bool())
+    })
     
     val info = new Bundle{
         val isWrite = Input(Bool())

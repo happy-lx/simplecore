@@ -36,6 +36,24 @@ trait TLB_const
     val tlb_entry_number = 16
 }
 
+trait A_extension_const
+{
+    //for ALU operation code 
+    val A_op_x      = 0.U(4.W)
+    val A_op_add    = 1.U(4.W)
+    val A_op_and    = 2.U(4.W)
+    val A_op_max    = 3.U(4.W)
+    val A_op_maxu   = 4.U(4.W)
+    val A_op_min    = 5.U(4.W)
+    val A_op_minu   = 6.U(4.W)
+    val A_op_or     = 7.U(4.W)
+    val A_op_swap   = 8.U(4.W)
+    val A_op_xor    = 9.U(4.W)
+
+    val A_op_lr     = 10.U(4.W)
+    val A_op_sc     = 11.U(4.W)
+}
+
 trait AXI_const
 {
     //ram's addr length
@@ -50,22 +68,22 @@ trait AXI_const
     //for sram-like's ports
     val DATA = 1 
     val INTR = 0
-}
+// }
 
-trait cache_const
-{
+// trait cache_const
+// {
     val offset_LSB = 0
     val offset_MSB = 4
 
     val index_LSB = 5
     val index_MSB = 14
 
-    val tag_LSB = 15
-    val tag_MSB = 63
-
     val offset_len = 5
     val index_len = 10
-    val tag_len = 49
+    val tag_len = AXI_paddr_len - 15
+
+    val tag_LSB = 15
+    val tag_MSB = tag_LSB + tag_len - 1
 }
 
 trait Uart_const
@@ -357,5 +375,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with cache_const with TLB_const
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with TLB_const with A_extension_const
 {}

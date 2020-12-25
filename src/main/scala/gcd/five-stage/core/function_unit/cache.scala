@@ -30,7 +30,7 @@ class cache_req_io extends sram_like_io
     val data_got = Output(Bool())
     
     // from sram_like_io
-    // val addr = Output(UInt(AXI_paddr_len.W))
+    override val addr = Output(UInt(AXI_paddr_len.W))
     // val mask = Output(UInt(8.W))//写memory时候的掩码
     // val op = Output(UInt(3.W))//读memory时候的操作码
     // val wdata = Output(UInt(64.W))
