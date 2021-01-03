@@ -194,6 +194,10 @@ trait CSRConstants extends PRV
     //for am-test
     // val mtimecmp_addr = 0x38004000L
     // val mtime_addr    = 0x3800bff8L
+
+    val clint_freq = 0x40708000L
+    val clint_inc  = 0x40708008L
+    val clint_msi  = 0x40700000L
 }
 
 trait CpathConstants 
@@ -224,11 +228,12 @@ trait CpathConstants
     val OP1_U = 2.U(2.W)
 
     //OP2 selector
-    val OP2_X = 0.U(2.W)
-    val OP2_RS2 = 0.U(2.W)
-    val OP2_PC = 1.U(2.W)
-    val OP2_IIM = 2.U(2.W)
-    val OP2_SIM = 3.U(2.W)
+    val OP2_X = 0.U(3.W)
+    val OP2_RS2 = 0.U(3.W)
+    val OP2_PC = 1.U(3.W)
+    val OP2_IIM = 2.U(3.W)
+    val OP2_SIM = 3.U(3.W)
+    val OP2_ZERO = 4.U(3.W)
 
     //reg file write enable
     val rf_wr_Y = true.B
@@ -241,11 +246,13 @@ trait CpathConstants
     val mem_wr_X = false.B
 
     //write back selector
-    val wback_aluout = 0.U(2.W)
-    val wback_memout = 1.U(2.W)
-    val wback_pc_4 = 2.U(2.W)
-    val wback_csrout = 3.U(2.W)
-    val wback_X = 0.U(2.W)
+    val wback_aluout = 0.U(3.W)
+    val wback_memout = 1.U(3.W)
+    val wback_pc_4 = 2.U(3.W)
+    val wback_csrout = 3.U(3.W)
+    val wback_amo = 4.U(3.W)
+    val wback_sc  = 5.U(3.W)
+    val wback_X = 0.U(3.W)
 
     
     

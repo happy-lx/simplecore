@@ -384,7 +384,7 @@ void print_retire(Vtop* target)
 void print_exe_stall(Vtop* target)
 {
     printf("exe_stall : [%d]\n",target->io_diff_alu_exe_stall);
-    printf("pipline stall : [%d]\n",target->top__DOT__mycore__DOT__cpath_io_c2d_cp_pipeline_stall);
+    printf("pipline stall : [%d]\n",target->top__DOT__mycore__DOT__cpath_io___05Fc2d_cp_pipeline_stall);
 }
 void print_rfen(Vtop* target)
 {
@@ -445,7 +445,7 @@ void reset_cycle(Vtop* target,int cycle)
             print_instr(target);
             print_wbsel(target);
             print_rf_valid(target);
-            print_mem(target);
+            // print_mem(target);
             print_redir(target);
             print_retire(target);
             print_regs(target);
@@ -477,7 +477,7 @@ int main(int argc,char** argv)
 
         if(main_time % 20 == 0)
         {
-            if(main_time > 0 && main_time < 100000)
+            if(main_time > 0 && main_time < 71980)
             {
                 printf("in cycle %d:\n",(int)main_time / 20);
                 print_valid(top);
@@ -494,7 +494,7 @@ int main(int argc,char** argv)
                 print_instr(top);
                 print_wbsel(top);
                 print_rf_valid(top);
-                print_mem(top);
+                // print_mem(top);
                 print_redir(top);
                 print_retire(top);
                 print_regs(top);
@@ -505,7 +505,7 @@ int main(int argc,char** argv)
          
         main_time += 10;
 
-        if(main_time == 100000)
+        if(main_time == 71980)
         {
             break;
         }

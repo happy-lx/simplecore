@@ -37,6 +37,8 @@ class cross_bar(isdata : Boolean) extends Module
     val reg_mtimecmp = RegInit(0.U(64.W))
     val reg_mtime = RegInit(0.U(64.W))
 
+    //also use as clint
+    
     //make mtime to incline 
     val freq = RegInit(40.U(16.W))
     val inc = RegInit(1.U(16.W))
@@ -45,6 +47,12 @@ class cross_bar(isdata : Boolean) extends Module
     val nextcnt = cnt + 1.U
     val has_time_interrupt = WireInit(false.B)
     val exe_stall = WireInit(io.exe_stall)
+    val msi = RegInit(0.U(64.W))
+
+    if(isdata)
+    {
+        BoringUtils.addSource((msi =/= 0.U),"clint_msi")
+    }
 
 
     cnt := Mux(nextcnt === freq,0.U,nextcnt)
@@ -74,7 +82,7 @@ class cross_bar(isdata : Boolean) extends Module
     val rdata_valid = WireInit(false.B)
     val wdata_valid = WireInit(false.B)
 
-    when(io.cpu_req.addr === mtimecmp_addr.U || io.cpu_req.addr === mtime_addr.U)
+    when(io.cpu_req.addr === mtimecmp_addr.U || io.cpu_req.addr === mtime_addr.U || io.cpu_req.addr === clint_freq.U || io.cpu_req.addr === clint_inc.U || io.cpu_req.addr === clint_msi.U)
     {
         //read or write memory mapped csrs
 
@@ -109,6 +117,18 @@ class cross_bar(isdata : Boolean) extends Module
                 {
                     //read mtime   
                     temp_read_data := reg_mtime
+                }.elsewhen(reg_addr === clint_freq.U)
+                {
+                    //read freq 
+                    temp_read_data := freq
+                }.elsewhen(reg_addr === clint_inc.U)
+                {
+                    //read inc
+                    temp_read_data := inc
+                }.elsewhen(reg_addr === clint_msi.U)
+                {
+                    //read inc
+                    temp_read_data := msi
                 }
                 read_state := read_resp
                 
@@ -153,6 +173,18 @@ class cross_bar(isdata : Boolean) extends Module
                 {
                     //write mtime   
                     reg_mtime := io.cpu_req.wdata
+                }.elsewhen(reg_addr === clint_freq.U)
+                {
+                    //write freq
+                    freq := io.cpu_req.wdata
+                }.elsewhen(reg_addr === clint_inc.U)
+                {
+                    //write inc   
+                    inc := io.cpu_req.wdata
+                }.elsewhen(reg_addr === clint_msi.U)
+                {
+                    //write software interrupt    
+                    msi := io.cpu_req.wdata
                 }
 
                 write_state := write_resp 

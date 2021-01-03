@@ -29,6 +29,16 @@ class D2CIO extends Bundle
     val mem_addr = Output(UInt(64.W))
     val mem_mask = Output(UInt(8.W))
     val mem_op = Output(UInt(3.W))
+
+    val amo_stall = Output(Bool())
+
+    val amo_exception = new Bundle{
+        val valid = Output(Bool())
+        val missalign = Output(Bool())
+        val page_fault = Output(Bool())
+    }
+
+    val dp_mem_wire_is_amo = Output(Bool())
 }
 
 class DpathIO extends Bundle
@@ -230,7 +240,8 @@ class Dpath extends Module {
         (io.c2d.cp_op2_sel === OP2_RS2) -> dp_dec_rs2_data,
         (io.c2d.cp_op2_sel === OP2_PC)  -> reg_dec_pc,
         (io.c2d.cp_op2_sel === OP2_IIM) -> dp_dec_iim_ext,
-        (io.c2d.cp_op2_sel === OP2_SIM) -> dp_dec_sim_ext
+        (io.c2d.cp_op2_sel === OP2_SIM) -> dp_dec_sim_ext,
+        (io.c2d.cp_op2_sel === OP2_ZERO) -> 0.U
     ))
 
     dp_dec_wire_op2_source := MuxCase(dp_dec_wire_op2_temp,Array(
@@ -256,7 +267,7 @@ class Dpath extends Module {
     val dp_exe_reg_mem_write_mask = RegInit(0.U(8.W))
     val dp_exe_reg_mem_wen = RegInit(false.B)
     val dp_exe_reg_alu_ext_sel = RegInit(0.U(3.W))
-    val dp_exe_reg_wb_sel = RegInit(0.U(2.W))
+    val dp_exe_reg_wb_sel = RegInit(0.U(3.W))
     val dp_exe_reg_csr_op = RegInit(0.U(csr_op_sz))
     
     val dp_exe_reg_pc = RegInit(STARTADDR)
@@ -267,6 +278,11 @@ class Dpath extends Module {
     val dp_exe_reg_iim_ext = RegInit(0.U(64.W))
     val dp_exe_reg_bim_ext = RegInit(0.U(64.W))
     val dp_exe_reg_rs1_data = RegInit(0.U(64.W))
+
+    //for A extension
+    val dp_exe_reg_is_Ainstr = RegInit(false.B)
+    val dp_exe_reg_A_op = RegInit(A_op_x)
+    val dp_exe_reg_A_is_word = RegInit(false.B)
 
     //for BPU
     val dp_exe_pc_branch = RegInit(0.U(2.W))
@@ -296,6 +312,10 @@ class Dpath extends Module {
         dp_exe_reg_rs1_data := dp_exe_reg_rs1_data
         dp_exe_reg_wb_sel := dp_exe_reg_wb_sel
         dp_exe_pc_branch := dp_exe_pc_branch
+
+        dp_exe_reg_is_Ainstr := dp_exe_reg_is_Ainstr
+        dp_exe_reg_A_op := dp_exe_reg_A_op
+        dp_exe_reg_A_is_word := dp_exe_reg_A_is_word
         
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -318,8 +338,13 @@ class Dpath extends Module {
         dp_exe_reg_iim_ext := 0.U(64.W)
         dp_exe_reg_bim_ext := 0.U(64.W)
         dp_exe_reg_rs1_data := 0.U(64.W)
-        dp_exe_reg_wb_sel := 0.U(2.W)
+        dp_exe_reg_wb_sel := 0.U(3.W)
         dp_exe_pc_branch := 0.U(2.W)
+
+        dp_exe_reg_is_Ainstr := false.B
+        dp_exe_reg_A_op := A_op_x
+        dp_exe_reg_A_is_word := false.B
+
     }.otherwise
     {
         when(io.c2d.cp_data_hazard)
@@ -343,8 +368,12 @@ class Dpath extends Module {
             dp_exe_reg_iim_ext := 0.U(64.W)
             dp_exe_reg_bim_ext := 0.U(64.W)
             dp_exe_reg_rs1_data := 0.U(64.W)
-            dp_exe_reg_wb_sel := 0.U(2.W)
+            dp_exe_reg_wb_sel := 0.U(3.W)
             dp_exe_pc_branch := 0.U(2.W)
+
+            dp_exe_reg_is_Ainstr := false.B
+            dp_exe_reg_A_op := A_op_x
+            dp_exe_reg_A_is_word := false.B
 
         }.elsewhen(io.c2d.cp_control_hazard)
         {
@@ -367,8 +396,12 @@ class Dpath extends Module {
             dp_exe_reg_iim_ext := 0.U(64.W)
             dp_exe_reg_bim_ext := 0.U(64.W)
             dp_exe_reg_rs1_data := 0.U(64.W)
-            dp_exe_reg_wb_sel := 0.U(2.W)
+            dp_exe_reg_wb_sel := 0.U(3.W)
             dp_exe_pc_branch := 0.U(2.W)
+
+            dp_exe_reg_is_Ainstr := false.B
+            dp_exe_reg_A_op := A_op_x
+            dp_exe_reg_A_is_word := false.B
         }.otherwise
         {
             dp_exe_reg_instr_valid := reg_dec_instr_valid
@@ -392,6 +425,10 @@ class Dpath extends Module {
             dp_exe_reg_rs1_data := dp_dec_rs1_data
             dp_exe_reg_wb_sel := io.c2d.cp_wb_sel
             dp_exe_pc_branch := reg_dec_pc_branch
+
+            dp_exe_reg_is_Ainstr := io.c2d.cp_is_Ainstr
+            dp_exe_reg_A_op := io.c2d.cp_A_op
+            dp_exe_reg_A_is_word := io.c2d.cp_A_is_word
         }
     }
 
@@ -438,7 +475,11 @@ class Dpath extends Module {
     val dp_mem_reg_csr_op           = RegInit(0.U(csr_op_sz))
     val dp_mem_reg_pc               = RegInit(STARTADDR)
     val dp_mem_reg_alu_out          = RegInit(0.U(64.W))
-    val dp_mem_reg_wb_sel           = RegInit(0.U(2.W))
+    val dp_mem_reg_wb_sel           = RegInit(0.U(3.W))
+
+    val dp_mem_reg_is_Ainstr        = RegInit(false.B)
+    val dp_mem_reg_A_op             = RegInit(A_op_x)
+    val dp_mem_reg_A_is_word        = RegInit(false.B)
 
     //connect exe with mem
     when(io.c2d.cp_pipeline_stall)
@@ -456,6 +497,9 @@ class Dpath extends Module {
         dp_mem_reg_wb_sel := dp_mem_reg_wb_sel
         dp_mem_reg_rd_addr := dp_mem_reg_rd_addr
         dp_mem_reg_rf_wen := dp_mem_reg_rf_wen
+        dp_mem_reg_is_Ainstr := dp_mem_reg_is_Ainstr
+        dp_mem_reg_A_op := dp_mem_reg_A_op
+        dp_mem_reg_A_is_word := dp_mem_reg_A_is_word
 
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -469,9 +513,12 @@ class Dpath extends Module {
         dp_mem_reg_csr_op := 0.U(csr_op_sz)
         dp_mem_reg_pc := 0.U(64.W)
         dp_mem_reg_alu_out := 0.U(64.W)
-        dp_mem_reg_wb_sel := 0.U(2.W)
+        dp_mem_reg_wb_sel := 0.U(3.W)
         dp_mem_reg_rd_addr := 0.U(5.W)
         dp_mem_reg_rf_wen := false.B
+        dp_mem_reg_is_Ainstr := false.B
+        dp_mem_reg_A_op := A_op_x
+        dp_mem_reg_A_is_word := false.B
 
     }.otherwise
     {
@@ -488,21 +535,77 @@ class Dpath extends Module {
         dp_mem_reg_wb_sel := dp_exe_reg_wb_sel
         dp_mem_reg_rd_addr := dp_exe_reg_rd_addr
         dp_mem_reg_rf_wen := dp_exe_reg_rf_wen
+        dp_mem_reg_is_Ainstr := dp_exe_reg_is_Ainstr
+        dp_mem_reg_A_op := dp_exe_reg_A_op
+        dp_mem_reg_A_is_word := dp_exe_reg_A_is_word
 
     }
     //mem stage
+    val amo = Module(new amoAccesser)
+    amo.io := DontCare
 
+    val station = Module(new amoStation)
+    station.io := DontCare
+
+    //detect whether this instruction is a AMO type instruction
+    val dp_mem_wire_is_amo = dp_mem_reg_is_Ainstr && (dp_mem_reg_A_op =/= A_op_lr) && (dp_mem_reg_A_op =/= A_op_sc)
+
+    //detect whether this instruction is a lr instruction
+    val dp_mem_wire_is_lr = dp_mem_reg_is_Ainstr && (dp_mem_reg_A_op ===  A_op_lr)
+
+    //detect whether this instruction is a sc instruction
+    val dp_mem_wire_is_sc = dp_mem_reg_is_Ainstr && (dp_mem_reg_A_op ===  A_op_sc)
+
+    //when it's a lr instruction we use amostation to hold the addr 
+    station.io.en := dp_mem_wire_is_lr || dp_mem_wire_is_sc
+    station.io.is_word := dp_mem_reg_A_is_word
+    station.io.push := dp_mem_wire_is_lr 
+    station.io.compare := dp_mem_wire_is_sc 
+    station.io.in_addr := dp_mem_reg_alu_out
+    station.io.flush := io.c2d.cp_wire_mem_load_page_fault || io.c2d.cp_wire_mem_load_missaligned
+    //when it's a sc instruction , we can access memory only when the addr and is_word can match station 
+    val sc_mem_valid = dp_mem_wire_is_sc && station.io.valid
+    val sc_result = WireInit(0.U(64.W))//0 : sc is valid , 1 : sc is not valid
+    sc_result := Mux(sc_mem_valid,0.U(64.W),1.U(64.W))
+
+    //when it's a amo instruction we use amo-accesser and connect dmem to amo-accesser's dmem
     //mem stage's mem enable to control path
-    io.d2c.mem_mem_valid := dp_mem_reg_mem_en
+    when(!dp_mem_wire_is_sc)
+    {
+        io.d2c.mem_mem_valid := dp_mem_reg_mem_en
+    }.otherwise
+    {
+        when(sc_mem_valid)
+        {
+            io.d2c.mem_mem_valid := dp_mem_reg_mem_en
+        }.otherwise
+        {
+            io.d2c.mem_mem_valid := false.B
+        }
+    }
 
     //access memory for store instruction and access csr file for csr instructions 
-    io.dmem.memen := dp_mem_reg_mem_en
-    io.dmem.mmu_en := dp_mem_reg_mem_en
-    io.dmem.isWrite := dp_mem_reg_mem_wen
+    when(!dp_mem_wire_is_sc)
+    {
+        io.dmem.memen := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
+        io.dmem.mmu_en := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
+    }.otherwise
+    {
+        when(sc_mem_valid)
+        {
+            io.dmem.memen := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
+            io.dmem.mmu_en := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
+        }.otherwise
+        {
+            io.dmem.memen := false.B
+            io.dmem.mmu_en := false.B
+        }
+    }
+    io.dmem.isWrite := Mux(dp_mem_wire_is_amo,amo.io.dmem.isWrite,dp_mem_reg_mem_wen)
     // io.dmem.addr := dp_mem_reg_alu_out(31,0)
-    io.dmem.addr := dp_mem_reg_alu_out
-    io.dmem.mask := dp_mem_reg_mem_write_mask
-    io.dmem.op := dp_mem_reg_mem_read_op
+    io.dmem.addr := Mux(dp_mem_wire_is_amo,amo.io.dmem.addr,dp_mem_reg_alu_out)
+    io.dmem.mask := Mux(dp_mem_wire_is_amo,amo.io.dmem.mask,dp_mem_reg_mem_write_mask)
+    io.dmem.op := Mux(dp_mem_wire_is_amo,amo.io.dmem.op,dp_mem_reg_mem_read_op)
 
     //for load and store missaligned judgement 
     io.d2c.mem_isWrite := dp_mem_reg_mem_wen
@@ -510,27 +613,63 @@ class Dpath extends Module {
     io.d2c.mem_mask := dp_mem_reg_mem_write_mask
     io.d2c.mem_op := dp_mem_reg_mem_read_op
 
-    when(dp_mem_reg_mem_write_mask === mask_b)
+    //access amo when the instruction is a amo instruciton
+    amo.io.en := dp_mem_wire_is_amo
+    amo.io.rs1 := dp_mem_reg_alu_out
+    amo.io.rs2 := dp_mem_reg_rs2_data
+    amo.io.is_word := dp_mem_reg_A_is_word
+    amo.io.op_code := dp_mem_reg_A_op
+    amo.io.pipeline_stall := io.c2d.cp_pipeline_stall
+    amo.io.dmem.data_valid := io.dmem.data_valid
+    amo.io.dmem.rdata := io.dmem.rdata
+
+    io.d2c.amo_stall := dp_mem_wire_is_amo && !amo.io.amo_valid
+    io.d2c.amo_exception.valid := amo.io.amo_exception.valid
+    io.d2c.amo_exception.missalign := amo.io.amo_exception.missalign
+    io.d2c.amo_exception.page_fault := amo.io.amo_exception.page_fault
+
+    io.d2c.dp_mem_wire_is_amo := dp_mem_wire_is_amo
+
+
+    when(!dp_mem_wire_is_amo)
     {
-        io.dmem.wdata := Fill(8,dp_mem_reg_rs2_data(7,0))
-    }.elsewhen(dp_mem_reg_mem_write_mask === mask_hb)
+        when(dp_mem_reg_mem_write_mask === mask_b)
+        {
+            io.dmem.wdata := Fill(8,dp_mem_reg_rs2_data(7,0)) 
+        }.elsewhen(dp_mem_reg_mem_write_mask === mask_hb)
+        {
+            io.dmem.wdata := Fill(4,dp_mem_reg_rs2_data(15,0))
+        }
+        .elsewhen(dp_mem_reg_mem_write_mask === mask_w)
+        {
+            io.dmem.wdata := Fill(2,dp_mem_reg_rs2_data(31,0))
+        }
+        .elsewhen(dp_mem_reg_mem_write_mask === mask_dw)
+        {
+            io.dmem.wdata := dp_mem_reg_rs2_data
+        }
+    }.otherwise
     {
-        io.dmem.wdata := Fill(4,dp_mem_reg_rs2_data(15,0))
-    }
-    .elsewhen(dp_mem_reg_mem_write_mask === mask_w)
-    {
-        io.dmem.wdata := Fill(2,dp_mem_reg_rs2_data(31,0))
-    }
-    .elsewhen(dp_mem_reg_mem_write_mask === mask_dw)
-    {
-        io.dmem.wdata := dp_mem_reg_rs2_data
+        when(amo.io.dmem.mask === mask_b)
+        {
+            io.dmem.wdata := Fill(8,amo.io.dmem.wdata(7,0)) 
+        }.elsewhen(amo.io.dmem.mask === mask_hb)
+        {
+            io.dmem.wdata := Fill(4,amo.io.dmem.wdata(15,0))
+        }
+        .elsewhen(amo.io.dmem.mask === mask_w)
+        {
+            io.dmem.wdata := Fill(2,amo.io.dmem.wdata(31,0))
+        }
+        .elsewhen(amo.io.dmem.mask === mask_dw)
+        {
+            io.dmem.wdata := amo.io.dmem.wdata
+        }
     }
     
-    io.dmem.wen := dp_mem_reg_mem_wen
+    io.dmem.wen := Mux(dp_mem_wire_is_amo,amo.io.dmem.wen,dp_mem_reg_mem_wen)
 
     val csr = Module(new CSRfile)
-    val amo = Module(new amoAccesser)
-    amo.io := DontCare
 
     csr.io.instruction := dp_mem_reg_instr
     csr.io.csr_op := dp_mem_reg_csr_op
@@ -549,7 +688,9 @@ class Dpath extends Module {
         (dp_mem_reg_wb_sel === wback_aluout) -> dp_mem_reg_alu_out,
         (dp_mem_reg_wb_sel === wback_memout) -> io.dmem.rdata,
         (dp_mem_reg_wb_sel === wback_pc_4) -> (dp_mem_reg_pc + 4.U),
-        (dp_mem_reg_wb_sel === wback_csrout) -> csr.io.csr_info
+        (dp_mem_reg_wb_sel === wback_csrout) -> csr.io.csr_info,
+        (dp_mem_reg_wb_sel === wback_amo) -> amo.io.amo_result,
+        (dp_mem_reg_wb_sel === wback_sc) -> sc_result
     ))
 
     //wb's regs

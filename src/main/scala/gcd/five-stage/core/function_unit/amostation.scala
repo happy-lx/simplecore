@@ -34,6 +34,7 @@ class amoStation extends Module
 
     when(io.en && io.push)
     {
+        io.valid := false.B
         is_empty := false.B
         data := io.in_addr
         is_word := io.is_word 
@@ -51,7 +52,8 @@ class amoStation extends Module
         {
             io.valid := false.B
         }
-    }.elsewhen(io.en && io.flush)
+    }
+    when(io.en && io.flush)
     {
         is_empty := true.B
         data := 0.U(64.W)

@@ -171,18 +171,18 @@ int main(int argc , char** argv)
         int has_error = memcmp(info_core,info_nemu,sizeof(system_word)*(REGNUM + 1));//compare the 32 common register and pc 
         if(has_error)
         {
-            printf("\033[1;31;40m[ERROR] core's regs is not equal with nemu's regs \033[0m \n");
+            printf("\033[1;31;40m[ERROR] core's regs are not equal with nemu's regs \033[0m \n");
             getDiff(info_nemu,info_core);
             error_cnt++;
 
         }else
         {
-            printf("\033[1;32;40m[PASS] core's regs is equal with nemu's regs \033[0m \n");
+            printf("\033[1;32;40m[PASS] core's regs are equal with nemu's regs \033[0m \n");
         }
         total_cnt++;
         
         printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
-        printf("IPC is : %f\n",(double)(core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_minstret)/core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcycle);
+        // printf("IPC is : %f\n",(double)(core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_minstret)/core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcycle);
 
         printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
 

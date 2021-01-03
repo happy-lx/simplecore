@@ -24,7 +24,11 @@ class amoAccesser_IO extends Bundle
     val pipeline_stall = Input(Bool())
 
     val amo_valid = Output(Bool())
-    val amo_exception = Output(Bool())
+    val amo_exception = new Bundle{
+        val valid = Output(Bool())
+        val missalign = Output(Bool())
+        val page_fault = Output(Bool())
+    }
     val amo_result = Output(UInt(64.W))
 
 }
@@ -160,7 +164,14 @@ class amoAccesser extends Module
             alu.io.en := false.B
             
             io.amo_valid  := true.B
-            io.amo_exception := true.B
+            io.amo_exception.valid := true.B
+            when(pf_valid)
+            {
+                io.amo_exception.page_fault := true.B
+            }.elsewhen(!valid_access_req)
+            {
+                io.amo_exception.missalign := true.B
+            }
             io.amo_result := DontCare
             when(!io.pipeline_stall)
             {
@@ -177,7 +188,7 @@ class amoAccesser extends Module
             alu.io.en := false.B
 
             io.amo_valid  := true.B
-            io.amo_exception := false.B
+            io.amo_exception.valid := false.B
             io.amo_result := data_out
             when(!io.pipeline_stall)
             {
