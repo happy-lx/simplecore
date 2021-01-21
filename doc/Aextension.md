@@ -21,7 +21,8 @@
 + 关于AMO的Accesser，可以分为几个状态，idle，access，exe，write_back，其他的指令在数据通路对外的访存信号使用原来的那一套，即译码出来该如何访存就如何访存，cpath管理的data_stall信号就是原来那样如果要访存在得到结果之后拉低，如果不访存就一直低。如果是AMO指令，数据通路的对外访存信号就不能使用原来那一套，而是连接到AMO的Accesser里面去，让AMO的Accesser去在不同的状态下进行访存(Accesser要访存两次)，所以AMO的Accesser本身需要有一个让流水线stall的信号，这个信号代替cpath的data_stall信号，只有当完成写回操作之后这个stall信号才拉低，这样就可以比较方便地把AMO的Accesser融入到流水线中。
 + 关于Accesser，如果有异常发生，可能在access阶段就有page fault或者write_back阶段的page fault，那就可以直接终止整个过程，这个时候其实是指令发生了异常的，这个异常算到store的那个异常里面去，AMO指令可以在译码的时候让它不访存，即mem_valid为false，这个只是为了让原来的那种page fault不发生，store的page fault再或上一个条件:AMO指令且发生异常
 + 数据通路需要再增加一个片选信号，选择Accesser的输出，这个输出应该是第一次访存得到的值
-+ 注意：前面的设计有不合理的情况，如果是store的missalign，必须是不能访存，不能是访存完了才处理异常，这样存储器的状态就已经改变了
++ **注意：前面的设计有不合理的情况，如果是store的missalign，必须是不能访存，不能是访存完了才处理异常，这样存储器的状态就已经改变了**
+  + 解决方式：`cs_wire_mem_load_missaligned`和`cs_wire_mem_store_missaligned`会在是特定load或者store并且发生了missaligned的时候置位，那么这个时候就不用去访存了，直接把dpath的访存请求信号清除，但是发送给cpath的访存请求信号不能清除要保持missaligned信号，这时data_stall的信号会一直置位，所以这要作为一个特殊情况来处理，只要有load或者store的missalign就不访存并且不stall，在这个周期处理完异常之后，流水线直接前移
 
 #### 4.功能部件接入流水线
 + 从A指令集的扩展出发，需要对cpath的译码部分进行修改，先把指令写进去，然后在添加额外的控制信号
