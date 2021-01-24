@@ -188,16 +188,26 @@ trait CSRConstants extends PRV
     val MTVEC_ADDR = 0x8000c09cL
 
     //for RT-Thread
-    val mtimecmp_addr = 0x40704000L
-    val mtime_addr    = 0x4070bff8L
+    // val mtimecmp_addr = 0x40704000L
+    // val mtime_addr    = 0x4070bff8L
+
+    //for XV6
+    val mtimecmp_addr = 0x40700008L
+    val mtime_addr    = 0x40700000L
 
     //for am-test
     // val mtimecmp_addr = 0x38004000L
     // val mtime_addr    = 0x3800bff8L
 
+    //for RT-Thread
+    // val clint_freq = 0x40708000L
+    // val clint_inc  = 0x40708008L
+    // val clint_msi  = 0x40700000L
+
+    //for XV6
     val clint_freq = 0x40708000L
     val clint_inc  = 0x40708008L
-    val clint_msi  = 0x40700000L
+    val clint_msi  = 0x4070bff8L
 }
 
 trait CpathConstants 

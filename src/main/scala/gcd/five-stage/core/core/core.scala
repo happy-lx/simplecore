@@ -111,6 +111,12 @@ class core extends Module {
     val dcache_cross_bar = Module(new cross_bar(true))
     dcache_cross_bar.io.exe_stall := exe_stall
 
+    val djtu = Module(new DJTU)
+
+    djtu.io.req_IMMU <> immu.io.translate
+    djtu.io.req_DMMU <> dcache_cross_bar.io.cache_req
+    dmmu.io.translate := DontCare
+
     dpath.io.c2d := cpath.io.c2d
     cpath.io.d2c := dpath.io.d2c
 
@@ -124,7 +130,8 @@ class core extends Module {
     dcache_cross_bar.io.cpu_req <> dmmu.io.out
 
     icache.io.cpu_req <> icache_cross_bar.io.cache_req
-    dcache.io.cpu_req <> dcache_cross_bar.io.cache_req
+    // dcache.io.cpu_req <> dcache_cross_bar.io.cache_req
+    dcache.io.cpu_req <> djtu.io.req_Dcache
 
     icache.io.ram_req <> bus_bridge_mem.io.ports(INTR)
     dcache.io.ram_req <> bus_bridge_mem.io.ports(DATA)

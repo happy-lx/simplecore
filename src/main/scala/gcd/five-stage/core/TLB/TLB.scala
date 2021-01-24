@@ -335,6 +335,7 @@ class TLB(name : String) extends Module
         }
         is(tlb_find_ptw)
         {
+            io.tlb_valid := false.B
             ptw.io.ptw_en := true.B
             ptw.io.va := io.va 
             ptw.io.satp := io.satp

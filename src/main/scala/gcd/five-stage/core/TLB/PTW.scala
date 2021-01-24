@@ -144,6 +144,13 @@ class PTW(name : String) extends Module
             io.cache_req.wen := false.B
             io.cache_req.addr := Cat(0.U((20-tlb_offset_len).W),io.satp(43,0),0.U(tlb_offset_len.W)) + (ptw_va.VPN_2 << 3)
 
+            //for toptest 
+            if(name == "iptw")
+            {
+                BoringUtils.addSource(io.cache_req.addr,"ptw_req_addr")
+                BoringUtils.addSource(io.cache_req.rdata,"ptw_resp_data")
+            }
+
             when(io.cache_req.data_valid)
             {
                 //let cache stage change to idle and wait for another req

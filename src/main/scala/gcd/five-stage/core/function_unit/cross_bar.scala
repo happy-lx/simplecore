@@ -40,11 +40,12 @@ class cross_bar(isdata : Boolean) extends Module
     //also use as clint
     
     //make mtime to incline 
-    val freq = RegInit(40.U(16.W))
+    val freq = RegInit(60000.U(16.W))
     val inc = RegInit(1.U(16.W))
 
     val cnt = RegInit(0.U(16.W))
     val nextcnt = cnt + 1.U
+    // val nextcnt = cnt 
     val has_time_interrupt = WireInit(false.B)
     val exe_stall = WireInit(io.exe_stall)
     val msi = RegInit(0.U(64.W))

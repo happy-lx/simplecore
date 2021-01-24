@@ -43,6 +43,15 @@ void print_MMU_stage(Vtop* target)
         case 2:
             printf("dmmu is in access stage\n");
             break;
+        case 3:
+            printf("dmmu is in s_IPF stage\n");
+            break;
+        case 4:
+            printf("dmmu is in s_LPF stage\n");
+            break;
+        case 5:
+            printf("dmmu is in s_SPF stage\n");
+            break;
         
         default:
             break;
@@ -58,6 +67,15 @@ void print_MMU_stage(Vtop* target)
             break;
         case 2:
             printf("immu is in access stage\n");
+            break;
+        case 3:
+            printf("immu is in s_IPF stage\n");
+            break;
+        case 4:
+            printf("immu is in s_LPF stage\n");
+            break;
+        case 5:
+            printf("immu is in s_SPF stage\n");
             break;
         
         default:
@@ -455,6 +473,12 @@ void reset_cycle(Vtop* target,int cycle)
     }
 }
 
+void print_ptw_addr_data(Vtop* target)
+{
+    printf("iptw's mem request address is : %lx\n",(unsigned long)target->io_diff_ptw_req_addr);
+    printf("iptw's mem response data is   : %lx\n",(unsigned long)target->io_diff_ptw_resp_data);
+}
+
 int main(int argc,char** argv)
 {
     Verilated::commandArgs(argc,argv);
@@ -488,6 +512,7 @@ int main(int argc,char** argv)
                 print_dcache(top);
                 print_MMU_stage(top);
                 print_tlb_ptw_stage(top);
+                print_ptw_addr_data(top);
                 print_icross_bar(top);
                 print_dcross_bar(top);
                 // print_rfen(top);

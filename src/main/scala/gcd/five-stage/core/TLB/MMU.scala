@@ -40,6 +40,7 @@ class MMU_IO extends Bundle
     }
 
     val out = new cache_req_io
+    val translate = new cache_req_io
 }
 
 class MMU(name : String) extends Module
@@ -79,6 +80,11 @@ class MMU(name : String) extends Module
     val s_idle :: s_translate :: s_access :: s_IPF :: s_LPF :: s_SPF :: Nil = Enum(6)
     val mmu_stage = RegInit(s_idle)
 
+    if(name == "dmmu")
+    {
+        BoringUtils.addSource(mmu_stage,"dmmu_stage")
+    }
+
     switch(mmu_stage)
     {
         is(s_idle)
@@ -88,6 +94,10 @@ class MMU(name : String) extends Module
             io.out.memen := false.B
             io.in.data_valid := false.B
             io.pf.valid := false.B
+            if(name == "immu")
+            {
+                io.translate.memen := false.B
+            }
 
             when(io.info.mmu_en){mmu_stage := s_translate}
             .otherwise{mmu_stage := s_idle}
@@ -101,7 +111,13 @@ class MMU(name : String) extends Module
             tlb.io.va := io.in.addr
             tlb.io.tlb_en := true.B
             tlb.io.satp := io.info.satp
-            cache_req_connet(sink=io.out,source=tlb.io.tlb_cache_req)
+            if(name == "immu")
+            {
+                cache_req_connet(sink=io.translate,source=tlb.io.tlb_cache_req)
+            }else
+            {
+                cache_req_connet(sink=io.out,source=tlb.io.tlb_cache_req)
+            }
 
             when(tlb.io.tlb_valid)
             {
@@ -118,7 +134,7 @@ class MMU(name : String) extends Module
                         loadPageFault  := false.B
                         storePageFault := false.B
 
-                        io.in.data_valid := true.B
+                        io.in.data_valid := false.B
                         //page fault happens nothing can be read 
                         //so treat it as a NOP instruction
                         io.in.rdata := NOP
@@ -141,7 +157,7 @@ class MMU(name : String) extends Module
                             storePageFault := false.B
                             mmu_stage := s_LPF
                         }
-                        io.in.data_valid := true.B
+                        io.in.data_valid := false.B
                         //nothing will be read 
                         io.in.rdata := 0xdead.U(64.W)
                         // mmu_stage := s_idle
@@ -161,6 +177,10 @@ class MMU(name : String) extends Module
             //we access memory($) here 
             tlb.io.tlb_en := false.B
             io.pf.valid := false.B
+            if(name == "immu")
+            {
+                io.translate.memen := false.B
+            }
 
             // io.in <> io.out 
             io.out.addr := pa
@@ -193,6 +213,10 @@ class MMU(name : String) extends Module
             storePageFault := false.B
             tlb.io.tlb_en := false.B
             io.out.memen := false.B
+            if(name == "immu")
+            {
+                io.translate.memen := false.B
+            }
             when(io.in.data_got)
             {
                 mmu_stage := s_idle
@@ -211,6 +235,10 @@ class MMU(name : String) extends Module
             storePageFault := false.B
             tlb.io.tlb_en := false.B
             io.out.memen := false.B
+            if(name == "immu")
+            {
+                io.translate.memen := false.B
+            }
             when(io.in.data_got)
             {
                 mmu_stage := s_idle
@@ -230,6 +258,10 @@ class MMU(name : String) extends Module
             storePageFault := true.B
             tlb.io.tlb_en := false.B
             io.out.memen := false.B
+            if(name == "immu")
+            {
+                io.translate.memen := false.B
+            }
             when(io.in.data_got)
             {
                 mmu_stage := s_idle

@@ -187,7 +187,7 @@ class CSRfile extends Module
         wire_csr_op := csr_r
     }
 
-    val str_isa = "im"//impliment rv64im
+    val str_isa = "ima"//impliment rv64ima
 
     def gen_isa(str : String) = str_isa.map{case x:Char => 1 << (x - 'a')}.reduce(_ | _)
     val wire_isa = WireInit(gen_isa(str_isa).U(64.W))
