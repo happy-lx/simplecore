@@ -50,6 +50,9 @@ class C2DIO extends Bundle
     val cp_wire_mem_load_page_fault = Output(Bool())
     val cp_wire_mem_load_missaligned= Output(Bool())
 
+    //for missaligned problem
+    val cp_has_missalign_exp = Output(Bool())
+
 }
 class CpathIO extends Bundle
 {
@@ -470,6 +473,9 @@ class Cpath extends Module {
         cs_wire_mem_store_missaligned := false.B
     }
 
+    val cs_wire_mem_has_missalign_exp = cs_wire_mem_store_missaligned || cs_wire_mem_load_missaligned
+    io.c2d.cp_has_missalign_exp := cs_wire_mem_has_missalign_exp
+
     //use BoringUtil to connect exception wire between cpath and csr
     BoringUtils.addSource(cs_reg_mem_instr_page_fault,"cs_reg_mem_instr_page_fault")
     BoringUtils.addSource(cs_reg_mem_instr_missaligned,"cs_reg_mem_instr_missaligned")
@@ -492,7 +498,7 @@ class Cpath extends Module {
     val cs_wire_pipeline_data_stall = WireInit(false.B)
     val cs_wire_pipeline_inst_stall = WireInit(false.B)
 
-    cs_wire_pipeline_data_stall := (!((!io.d2c.mem_mem_valid) || (io.d2c.mem_mem_valid && io.dmem.data_valid))) || io.d2c.amo_stall
+    cs_wire_pipeline_data_stall := Mux(cs_wire_mem_has_missalign_exp,false.B,(!((!io.d2c.mem_mem_valid) || (io.d2c.mem_mem_valid && io.dmem.data_valid))) || io.d2c.amo_stall)
     cs_wire_pipeline_inst_stall := !io.imem.data_valid
 
     cs_wire_pipeline_stall := cs_wire_pipeline_inst_stall || cs_wire_pipeline_data_stall

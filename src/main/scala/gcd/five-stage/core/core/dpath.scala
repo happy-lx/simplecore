@@ -587,8 +587,11 @@ class Dpath extends Module {
     //access memory for store instruction and access csr file for csr instructions 
     when(!dp_mem_wire_is_sc)
     {
-        io.dmem.memen := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
-        io.dmem.mmu_en := Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en)
+        //missaligned problem only happens when the instruction is not store condition instruction
+        io.dmem.memen := Mux(io.c2d.cp_has_missalign_exp,false.B
+                        ,Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en))
+        io.dmem.mmu_en := Mux(io.c2d.cp_has_missalign_exp,false.B
+                         ,Mux(dp_mem_wire_is_amo,amo.io.dmem.memen,dp_mem_reg_mem_en))
     }.otherwise
     {
         when(sc_mem_valid)
