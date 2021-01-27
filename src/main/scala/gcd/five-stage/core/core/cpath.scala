@@ -487,7 +487,12 @@ class Cpath extends Module {
     io.c2d.cp_wire_mem_load_page_fault  := cs_wire_mem_load_page_fault
     io.c2d.cp_wire_mem_load_missaligned := cs_wire_mem_load_missaligned
 
-    io.c2d.hasexception := cs_reg_mem_exception
+    val TVM_broken = WireInit(false.B)
+    val TSR_broken = WireInit(false.B)
+    BoringUtils.addSink(TVM_broken,"TVM_broken")
+    BoringUtils.addSink(TSR_broken,"TSR_broken")
+
+    io.c2d.hasexception := cs_reg_mem_exception || TVM_broken || TSR_broken
 
     cs_wire_pipeline_kill := io.d2c.isredir
 
@@ -511,6 +516,9 @@ class Cpath extends Module {
     val cs_reg_exe_is_sfencevma = RegNext(cs_is_sfencevma,false.B)
     val cs_reg_mem_is_sfencevma = RegNext(cs_reg_exe_is_sfencevma,false.B)
     BoringUtils.addSource(cs_reg_mem_is_sfencevma,"mem_is_sfencevma")
+
+    //for implementing mstatus
+    BoringUtils.addSource(cs_reg_mem_is_sfencevma,"mem_csr_is_sfencevma")
 
     //assgin inside signal to output
     io.c2d.cp_pc_sel := temp_pc_sel

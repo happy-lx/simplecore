@@ -62,7 +62,7 @@ int main(int argc,char** argv)
 
     // put_to_pipeline(top,4);
     //for RT-Thread
-    //uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nmemcheck\nmemtrace\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
+    // uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nmemcheck\nmemtrace\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
     //for xv6
     uart_init("ls\nls\nls\nmkdir\n");
     
@@ -100,12 +100,12 @@ int main(int argc,char** argv)
         // break;
 
         // for XV6
-        if(cnt >= 80000000)
-        {
-            printf("mtime   : %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtime);
-            printf("mtimecmp: %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtimecmp);
-            printf("pc in WB: 0x%lx\n", (unsigned long)top->io_diff_pc_data);
-        }
+        // if(cnt >= 80000000)
+        // {
+        //     printf("mtime   : %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtime);
+        //     printf("mtimecmp: %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtimecmp);
+        //     printf("pc in WB: 0x%lx\n", (unsigned long)top->io_diff_pc_data);
+        // }
 
         // if(cnt == (80000000 + 2000000))
         // {

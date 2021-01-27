@@ -178,6 +178,13 @@ class CSRfile extends Module
     //! change it from wire to reg not tested
     val prv_now = RegInit(PRV_M)
 
+    //for implememting mstatus
+    BoringUtils.addSource(prv_now,"prv_now_for_iTLB")
+    BoringUtils.addSource(prv_now,"prv_now_for_dTLB")
+    BoringUtils.addSource(reg_mstatus.mxr,"reg_mstatus_mxr")
+    BoringUtils.addSource(reg_mstatus.sum,"reg_mstatus_sum_for_iTLB")
+    BoringUtils.addSource(reg_mstatus.sum,"reg_mstatus_sum_for_dTLB")
+
     val wire_csr_op = Wire(UInt(csr_op_sz))//reset csr operation if op is read only
     val wire_csr_index = WireInit(io.instruction(csr_MSB,csr_LSB))
 
@@ -289,9 +296,14 @@ class CSRfile extends Module
     //when satp is modified , the pipeline should kill IF , EXE , DEC and flush TLB
     val satp_modified = WireInit(false.B)
     
-    satp_modified := csr_wen && is_csr_of(satp)
+    satp_modified := csr_wen && (is_csr_of(satp) || is_csr_of(mstatus) || is_csr_of(sstatus))
 
     BoringUtils.addSource(satp_modified,"satp_tlb_flush")
+
+    val R_satp  = (wire_csr_op === csr_r) && is_csr_of(satp)
+    val W_satp  = (wire_csr_op === csr_c || wire_csr_op === csr_s || wire_csr_op === csr_w) && is_csr_of(satp)
+    val RW_satp = R_satp || W_satp
+
 
     when(csr_wen)
     {
@@ -471,6 +483,35 @@ class CSRfile extends Module
 
     val csr_hasinterrupt = Wire(Bool())
 
+    //for implementing mstatus
+    val mem_is_sfencevma = WireInit(false.B)
+    BoringUtils.addSink(mem_is_sfencevma,"mem_csr_is_sfencevma")
+
+    //TVM
+    val TVM_broken = WireInit(false.B)
+    when(reg_mstatus.tvm && prv_now === PRV_S)
+    {
+        //exec sfence.vma or read or write satp
+        when(RW_satp || mem_is_sfencevma)
+        {
+            TVM_broken := true.B
+        }.otherwise{ TVM_broken := false.B }
+    }.otherwise{ TVM_broken := false.B }
+
+    //TSR
+    val TSR_broken = WireInit(false.B)
+    when(reg_mstatus.tsr && prv_now === PRV_S)
+    {
+        //exec SRET
+        when(csr_issret)
+        {
+            TSR_broken := true.B
+        }.otherwise{ TSR_broken := false.B }
+    }.otherwise{ TSR_broken := false.B }
+
+    BoringUtils.addSource(TVM_broken,"TVM_broken")
+    BoringUtils.addSource(TSR_broken,"TSR_broken")
+
     //learn the way of handling interrupt from NutShell
     //the csr_hasinterrupt signal is the whole control signal
     val intr_vec = reg_mip.asUInt
@@ -602,28 +643,6 @@ class CSRfile extends Module
             {
                 io.redir_target := wire_trap_addr_m
             }
-        }.elsewhen(csr_ismret)
-        {
-            val wire_mstatus_new = WireInit(reg_mstatus)
-            val wire_mstatus_old = WireInit(reg_mstatus)
-            io.redir_target := wire_ret_addr_m
-            wire_mstatus_new.mie := wire_mstatus_old.mpie
-            wire_mstatus_new.mpie := true.B
-            wire_mstatus_new.mpp := PRV_U
-            prv_now := wire_mstatus_old.mpp
-
-            reg_mstatus := wire_mstatus_new
-        }.elsewhen(csr_issret)
-        {
-            val wire_mstatus_new = WireInit(reg_mstatus)
-            val wire_mstatus_old = WireInit(reg_mstatus)
-            io.redir_target := wire_ret_addr_s
-            wire_mstatus_new.sie := wire_mstatus_old.spie
-            wire_mstatus_new.spie := true.B
-            wire_mstatus_new.spp := PRV_U
-            prv_now := wire_mstatus_old.spp
-
-            reg_mstatus := wire_mstatus_new
         }.elsewhen(csr_hasexception)
         {
             //according to the priority to process each of the exception
@@ -700,6 +719,28 @@ class CSRfile extends Module
                 process_exception(Etype = load_page_fault,tval = io.instruction) 
             }
 
+        }.elsewhen(csr_ismret)
+        {
+            val wire_mstatus_new = WireInit(reg_mstatus)
+            val wire_mstatus_old = WireInit(reg_mstatus)
+            io.redir_target := wire_ret_addr_m
+            wire_mstatus_new.mie := wire_mstatus_old.mpie
+            wire_mstatus_new.mpie := true.B
+            wire_mstatus_new.mpp := PRV_U
+            prv_now := wire_mstatus_old.mpp
+
+            reg_mstatus := wire_mstatus_new
+        }.elsewhen(csr_issret)
+        {
+            val wire_mstatus_new = WireInit(reg_mstatus)
+            val wire_mstatus_old = WireInit(reg_mstatus)
+            io.redir_target := wire_ret_addr_s
+            wire_mstatus_new.sie := wire_mstatus_old.spie
+            wire_mstatus_new.spie := true.B
+            wire_mstatus_new.spp := PRV_U
+            prv_now := wire_mstatus_old.spp
+
+            reg_mstatus := wire_mstatus_new
         }
 
 

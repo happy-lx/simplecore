@@ -89,9 +89,35 @@ class TLB(name : String) extends Module
 
     // cache_req_connet(ptw.io.cache_req_io,io.ptw_cache_req)
 
-    val isEXE = WireInit(false.B)
+    val isEXE   = WireInit(false.B)
     val isWRITE = WireInit(io.isWrite)
-    val isREAD = WireInit(!io.isWrite)
+    val isREAD  = WireInit(!io.isWrite)
+
+    val prv_now = WireInit(PRV_M)
+    if(name == "itlb")
+    {
+        BoringUtils.addSink(prv_now,"prv_now_for_iTLB")
+    }
+    else
+    {
+        BoringUtils.addSink(prv_now,"prv_now_for_dTLB")
+    }
+
+    val reg_mstatus_mxr = WireInit(false.B)
+    if(name == "dtlb")
+    {
+        BoringUtils.addSink(reg_mstatus_mxr,"reg_mstatus_mxr")
+    }
+
+    val reg_mstatus_sum = WireInit(false.B)
+    if(name == "itlb")
+    {
+        BoringUtils.addSink(reg_mstatus_sum,"reg_mstatus_sum_for_iTLB")
+    }
+    else
+    {
+        BoringUtils.addSink(reg_mstatus_sum,"reg_mstatus_sum_for_dTLB")
+    }
 
     if(name == "itlb")
     {
@@ -100,6 +126,8 @@ class TLB(name : String) extends Module
     {
         isEXE := false.B
     }
+
+    val is_load = !isEXE && isREAD
 
     //for validation check when TLB hit
     val valid_access = WireInit(false.B)
@@ -191,21 +219,37 @@ class TLB(name : String) extends Module
                 //also we have to check the validation of this access 
                 //TODO : the U bit 
                 
+                valid_access := true.B
                 when(isREAD && !tlb(tlb_hit_index).pte.R)
                 {
                     //exe only 
                     valid_access := false.B
-                }.elsewhen(isEXE && !tlb(tlb_hit_index).pte.X)
+                }
+                when(isEXE && !tlb(tlb_hit_index).pte.X)
                 {
                     //read only page or read and write page
                     valid_access := false.B
-                }.elsewhen(isWRITE && !tlb(tlb_hit_index).pte.W)
+                }
+                when(isWRITE && !tlb(tlb_hit_index).pte.W)
                 {
                     //can not be written
                     valid_access := false.B
-                }.otherwise
+                }
+                when(is_load && reg_mstatus_mxr)
                 {
-                    valid_access := true.B
+                    when(tlb(tlb_hit_index).pte.R || tlb(tlb_hit_index).pte.X)
+                    {
+                        valid_access := true.B
+                    }
+                }
+
+                //check for U bit
+                when(!reg_mstatus_sum && prv_now === PRV_S)
+                {
+                    when(tlb(tlb_hit_index).pte.U)
+                    {
+                        valid_access := false.B
+                    }
                 }
 
                 when(valid_access)
