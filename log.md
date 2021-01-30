@@ -80,3 +80,5 @@
   + ![coremark](doc/screenshot/coremark测试.png)
 + 成功运行`RT-Thread`
   + ![RT-Thread](doc/screenshot/启动rtthread.png)
++ 成功启动`XV6`
+  + ![XV6](doc/screenshot/基本跑通xv6.png)

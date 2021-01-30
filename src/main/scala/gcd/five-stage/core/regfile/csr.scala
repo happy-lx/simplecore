@@ -759,7 +759,8 @@ class CSRfile extends Module
     // {
     //     io.redir_target := wire_trap_addr
     // }.elsewhen(satp_modified)
-    when(satp_modified)
+    //!!!!!!!!!!!!!!!!!!!!!!! when interrupt happens and now write to satp , the redirect target is wrong
+    when(satp_modified && !csr_hasinterrupt && !csr_hasexception)
     {
         //when we write to satp , the redirect target should be the next instruction of this instruciton
         when(io.in_exe_pc =/= 0.U)
