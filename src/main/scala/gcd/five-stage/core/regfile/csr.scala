@@ -153,6 +153,7 @@ class CSRfile extends Module
     val reg_stval = RegInit(0.U(64.W))
     val reg_sscratch = RegInit(0.U(64.W))
     val reg_scause = RegInit(0.U(64.W))
+    val reg_scounteren = RegInit(0.U(64.W))
 
     //no actual regs of sstatus ,sie ,sip
     //it's a subset of mstatus ,mie ,mip
@@ -242,7 +243,8 @@ class CSRfile extends Module
         scause    -> reg_scause,
         stval     -> reg_stval,
         sscratch  -> reg_sscratch,
-        satp      -> reg_satp
+        satp      -> reg_satp,
+        scounteren-> reg_scounteren
 
     )
 
@@ -426,7 +428,7 @@ class CSRfile extends Module
         when(is_csr_of(stval)){ reg_stval := csr_write_data }
         when(is_csr_of(sscratch)){ reg_sscratch := csr_write_data }
         when(is_csr_of(satp)){ reg_satp := csr_write_data }
-
+        when(is_csr_of(scounteren)){ reg_scounteren := csr_write_data } 
         
     }
 
