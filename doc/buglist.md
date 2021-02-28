@@ -138,8 +138,15 @@
 
 ### From 12/23
 
-+ [ ] 描述：发生page fault之后可能发生错误
++ [x] 描述：发生page fault之后可能发生错误
   + 级别：不定
   + 原因：由于TLB发生page fault的标志信号只保留一个周期，MMU的page fault信号也只保留一个周期，这个信号传给cpath后也只保留一个周期，然而这个时候只是没有data_stall了，还可能存在instr_stall，所以流水线不能向前，然而这个周期过了之后，page fault的信号就消失了，而异常只在没有stall的时候才处理，所以当没有stall之后，这个异常信号就消失了而没有处理
   + 解决办法：给MMU增加三个状态，分别保留好page fault 信号等没有stall了之后才在下一个周期进入idle状态
+
+### From 2/28
+
++ [x] 描述：启动linux内核时，开启分页后的第一条访问数据cache的指令会产生page fault
+  + 级别：严重
+  + 原因：我看了一本错误的riscv-privilege手册，版本太低了，地址转换算法有个地方写错了，当在页表不足三级的时候比如第一级页表应该去判断pte的ppn[0]和ppn[1]是不是0而不是去判断va的vpn[0]和vpn[1]
+  + 解决办法：修改地址转换算法，去判断pte的ppn[0]和ppn[1]是不是0而不是去判断va的vpn[0]和vpn[1]
 
