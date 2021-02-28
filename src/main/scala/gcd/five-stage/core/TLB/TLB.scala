@@ -205,11 +205,25 @@ class TLB(name : String) extends Module
             //now we should find TLB entry 
             for(i <- (0 until tlb_entry_number))
             {
-                when(tlb(i).valid && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_2 === tlb_va.VPN_2)
+                // when(tlb(i).valid && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_2 === tlb_va.VPN_2)
+                when(tlb(i).valid)
                 {
-                    //TLB HIT
-                    tlb_hit := true.B
-                    tlb_hit_index := i.U
+                    when(tlb(i).level === 0.U && tlb(i).VPN_0 === tlb_va.VPN_0)
+                    {
+                        //TLB HIT
+                        tlb_hit := true.B
+                        tlb_hit_index := i.U
+                    }.elsewhen(tlb(i).level === 1.U && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1)
+                    {
+                        //TLB HIT
+                        tlb_hit := true.B
+                        tlb_hit_index := i.U
+                    }.elsewhen(tlb(i).level === 2.U && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_2 === tlb_va.VPN_2)
+                    {
+                        //TLB HIT
+                        tlb_hit := true.B
+                        tlb_hit_index := i.U
+                    }
                 }
             }
 

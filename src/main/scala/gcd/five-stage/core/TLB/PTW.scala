@@ -172,8 +172,8 @@ class PTW(name : String) extends Module
                     when(temp_pte.R || temp_pte.X)
                     {
                         //it is a leaf pte
-                        //now we should check whether vpn_1 and vpn_0 is zero
-                        when(ptw_va.VPN_1 === 0.U && ptw_va.VPN_0 === 0.U)
+                        //now we should check whether ppn_1 and ppn_0 is zero
+                        when(temp_pte.PPN_1 === 0.U && temp_pte.PPN_0 === 0.U)
                         {
                             //valid 
                             //the physical addr is ppn_2 vpn1 vpn0 offset
@@ -245,8 +245,8 @@ class PTW(name : String) extends Module
                         when(temp_pte.R || temp_pte.X)
                         {
                             //it is a leaf pte
-                            //now we should check whether vpn_0 is zero
-                            when(ptw_va.VPN_0 === 0.U)
+                            //now we should check whether ppn_0 is zero
+                            when(temp_pte.PPN_0 === 0.U)
                             {
                                 //valid 
                                 //the physical addr is ppn_2 ppn_1 vpn0 offset
