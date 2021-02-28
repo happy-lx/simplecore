@@ -88,10 +88,17 @@ trait AXI_const
 
 trait Uart_const
 {
+    
     val uart_read_addr =  0x40600000L
     val uart_write_addr = 0x40600004L
     val uart_state_addr = 0x40600008L
     val uart_contr_addr = 0x4060000cL
+
+    //for nemu
+    // val uart_read_addr =  0x40600000L
+    // val uart_write_addr = 0xa10003f8L
+    // val uart_state_addr = 0x40600008L
+    // val uart_contr_addr = 0x4060000cL
 }
 
 trait alu_const
@@ -185,15 +192,19 @@ trait CSRConstants extends PRV
     val csr_LSB = 20
     val csr_MSB = 31
 
-    val MTVEC_ADDR = 0x8000c09cL
+    val MTVEC_ADDR = 0x80000004L
 
     //for RT-Thread
     // val mtimecmp_addr = 0x40704000L
     // val mtime_addr    = 0x4070bff8L
 
     //for XV6
-    val mtimecmp_addr = 0x40700008L
-    val mtime_addr    = 0x40700000L
+    // val mtimecmp_addr = 0x40700008L
+    // val mtime_addr    = 0x40700000L
+
+    //for Linux
+    val mtimecmp_addr = 0x40704000L
+    val mtime_addr    = 0x4070bff8L
 
     //for am-test
     // val mtimecmp_addr = 0x38004000L
@@ -205,9 +216,23 @@ trait CSRConstants extends PRV
     // val clint_msi  = 0x40700000L
 
     //for XV6
+    // val clint_freq = 0x40708000L
+    // val clint_inc  = 0x40708008L
+    // val clint_msi  = 0x4070bff8L
+
+    //for Linux
     val clint_freq = 0x40708000L
-    val clint_inc  = 0x40708008L
+    val clint_inc  = 0x40700004L
     val clint_msi  = 0x4070bff8L
+
+    //for nemu
+    // val clint_freq = 0xa2008000L
+    // val clint_inc  = 0xa2008008L
+    // val clint_msi  = 0xa2000000L
+
+    //for nemu
+    // val mtimecmp_addr = 0xa2000000L
+    // val mtime_addr    = 0xa200bff8L
 }
 
 trait CpathConstants 

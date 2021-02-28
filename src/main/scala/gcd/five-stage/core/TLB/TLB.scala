@@ -52,9 +52,6 @@ class TLB(name : String) extends Module
 
     io := DontCare
 
-    //we just have sv39 0:off 8:sv39
-    val sv39_on = !(io.satp(63,60) === 0.U)
-
     val tlb_idle :: tlb_find_tlb :: tlb_find_entry :: tlb_write_back :: tlb_find_ptw :: Nil = Enum(5)
 
     val tlb_stage = RegInit(tlb_idle)
@@ -118,6 +115,11 @@ class TLB(name : String) extends Module
     {
         BoringUtils.addSink(reg_mstatus_sum,"reg_mstatus_sum_for_dTLB")
     }
+
+    //we just have sv39 0:off 8:sv39
+    //alse we should make sure the privilege mode is U or S , do not open sv39 when the mode is M
+    //TODO: MPRV bit of mstatus
+    val sv39_on = !(io.satp(63,60) === 0.U) && prv_now =/= PRV_M
 
     if(name == "itlb")
     {
