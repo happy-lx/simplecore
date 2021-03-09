@@ -170,3 +170,10 @@
   + 级别：严重
   + 原因：TLB hit的判断对于superpage而言应该是vpn2而不是vpn0
   + 解决办法：修改对于TLB hit的判断
+
+### From 3/9
+
++ [x] 描述：启动linux过程中store和load遇到page fault无法处理的情况
+  + 级别：严重
+  + 原因：store和load的page fault之后需要对tval设置为访问出错的那个虚拟地址而不是别的值，这样linux在处理这个异常的时候才可以正确进行处理
+  + 解决办法：修改csr部分发生store或者loadpage fault后的tval的值为当前需要访问的虚拟地址的值

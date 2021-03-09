@@ -727,10 +727,12 @@ class CSRfile extends Module
                 process_exception(Etype = load_addr_misalign,tval = io.instruction)
             }.elsewhen(csr_store_page_fault)
             {
-                process_exception(Etype = store_page_fault,tval = io.instruction)
+                //!! data_in is the mem request address 
+                process_exception(Etype = store_page_fault,tval = io.data_in)
             }.elsewhen(csr_load_page_fault)
             {
-                process_exception(Etype = load_page_fault,tval = io.instruction) 
+                //!! data_in is the mem request address 
+                process_exception(Etype = load_page_fault,tval = io.data_in) 
             }
 
         }.elsewhen(csr_ismret)
