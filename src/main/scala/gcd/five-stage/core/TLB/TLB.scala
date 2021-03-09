@@ -210,17 +210,17 @@ class TLB(name : String) extends Module
                 // when(tlb(i).valid && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_2 === tlb_va.VPN_2)
                 when(tlb(i).valid)
                 {
-                    when(tlb(i).level === 0.U && tlb(i).VPN_0 === tlb_va.VPN_0)
+                    when(tlb(i).level === 0.U && tlb(i).VPN_2 === tlb_va.VPN_2)
                     {
                         //TLB HIT
                         tlb_hit := true.B
                         tlb_hit_index := i.U
-                    }.elsewhen(tlb(i).level === 1.U && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1)
+                    }.elsewhen(tlb(i).level === 1.U && tlb(i).VPN_2 === tlb_va.VPN_2 && tlb(i).VPN_1 === tlb_va.VPN_1)
                     {
                         //TLB HIT
                         tlb_hit := true.B
                         tlb_hit_index := i.U
-                    }.elsewhen(tlb(i).level === 2.U && tlb(i).VPN_0 === tlb_va.VPN_0 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_2 === tlb_va.VPN_2)
+                    }.elsewhen(tlb(i).level === 2.U && tlb(i).VPN_2 === tlb_va.VPN_2 && tlb(i).VPN_1 === tlb_va.VPN_1 && tlb(i).VPN_0 === tlb_va.VPN_0)
                     {
                         //TLB HIT
                         tlb_hit := true.B

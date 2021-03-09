@@ -163,3 +163,10 @@
   + 级别：严重
   + 原因：在S模式下是不可以访问U模式下的PTE.U为1的页的，但是当mstatus.sum位打开后是可以的，在Linux中需要对sum位进行操作来保证可以刷新U模式下的内存和复制U模式下的内存，但是csr部分的mstatus没有设置sum位可以写入
   + 解决办法：csr的mstatus的sum，mxr等位设置为可以写入
+
+### From 3/9
+
++ [x] 描述：一处可能会引起异常的bug
+  + 级别：严重
+  + 原因：TLB hit的判断对于superpage而言应该是vpn2而不是vpn0
+  + 解决办法：修改对于TLB hit的判断
