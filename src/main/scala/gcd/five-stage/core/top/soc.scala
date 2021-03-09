@@ -42,6 +42,8 @@ class top extends Module
     BoringUtils.addSink(difftestwire.ptw_stage,"ptw_stage")
     BoringUtils.addSink(difftestwire.ptw_req_addr,"ptw_req_addr")
     BoringUtils.addSink(difftestwire.ptw_resp_data,"ptw_resp_data")
+    BoringUtils.addSink(difftestwire.dptw_req_addr,"dptw_req_addr")
+    BoringUtils.addSink(difftestwire.dptw_resp_data,"dptw_resp_data")
 
     io.diff := difftestwire
 

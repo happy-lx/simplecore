@@ -319,6 +319,12 @@ class CSRfile extends Module
             reg_mstatus.sie := temp_mstatus.sie
             reg_mstatus.spie := temp_mstatus.spie
             reg_mstatus.spp := temp_mstatus.spp
+
+            reg_mstatus.mxr := temp_mstatus.mxr
+            reg_mstatus.sum := temp_mstatus.sum
+            reg_mstatus.tvm := temp_mstatus.tvm
+            reg_mstatus.tsr := temp_mstatus.tsr
+            reg_mstatus.mprv := temp_mstatus.mprv
         }
 
         when(is_csr_of(mie))
@@ -407,6 +413,12 @@ class CSRfile extends Module
             reg_mstatus.sie := temp_sstatus.sie
             reg_mstatus.spie := temp_sstatus.spie
             reg_mstatus.spp := temp_sstatus.spp
+
+            reg_mstatus.mxr := temp_sstatus.mxr
+            reg_mstatus.sum := temp_sstatus.sum
+            reg_mstatus.tvm := temp_sstatus.tvm
+            reg_mstatus.tsr := temp_sstatus.tsr
+            reg_mstatus.mprv := temp_sstatus.mprv
         }
         when(is_csr_of(sie)){
             val temp_sie = csr_write_data.asTypeOf(new MIP)

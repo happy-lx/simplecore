@@ -24,6 +24,8 @@ class difftestIO extends Bundle
     val ptw_stage = Output(UInt(3.W))
     val ptw_req_addr = Output(UInt(64.W))
     val ptw_resp_data = Output(UInt(64.W))
+    val dptw_req_addr = Output(UInt(64.W))
+    val dptw_resp_data = Output(UInt(64.W))
 }
 
 // class top extends Module {

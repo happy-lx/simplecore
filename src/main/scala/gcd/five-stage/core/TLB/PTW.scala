@@ -150,6 +150,11 @@ class PTW(name : String) extends Module
                 BoringUtils.addSource(io.cache_req.addr,"ptw_req_addr")
                 BoringUtils.addSource(io.cache_req.rdata,"ptw_resp_data")
             }
+            if(name == "dptw")
+            {
+                BoringUtils.addSource(io.cache_req.addr,"dptw_req_addr")
+                BoringUtils.addSource(io.cache_req.rdata,"dptw_resp_data")
+            }
 
             when(io.cache_req.data_valid)
             {
