@@ -13,7 +13,7 @@ nemuresult::nemuresult(Ram* ram_addr)
     assert(nemu != NULL);
 
     #ifdef LOG
-    std::cout << "[info] load nemu interpreter successfully!\n" << std::endl;
+    std::cout << "[info] load nemu interpreter successfully!" << std::endl;
     #endif
 
     dllMemoryFromDUT = (dllMemoryFromDUT_t)dlsym(nemu, "difftest_memcpy_from_dut");
@@ -23,21 +23,21 @@ nemuresult::nemuresult(Ram* ram_addr)
     dllInit = (dllInit_t)dlsym(nemu, "difftest_init");
 
     #ifdef LOG
-    std::cout << "[info] initing nemu...\n" << std::endl;
+    std::cout << "[info] initing nemu..." << std::endl;
     #endif
     dllInit();
     #ifdef LOG
-    std::cout << "[info] init nemu down\n" << std::endl;
+    std::cout << "[info] init nemu down" << std::endl;
     #endif
 
     #ifdef LOG
-    std::cout << "[info] loading instructions and data from ram to nemu...\n" << std::endl;
+    std::cout << "[info] loading instructions and data from ram to nemu..." << std::endl;
     #endif
 
     dllMemoryFromDUT(STARTADDR,nemu_ram->get_ram_start_addr(),nemu_ram->get_ramsize_system());
 
     #ifdef LOG
-    std::cout << "[info] load instructions and data from ram to nemu down\n" << std::endl;
+    std::cout << "[info] load instructions and data from ram to nemu down" << std::endl;
     #endif
 
 }

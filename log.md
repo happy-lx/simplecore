@@ -27,7 +27,9 @@
 + 完成`sfence.vma`和写入`satp`时对TLB(iTLB，dTLB)的刷新，完成`fence.i`对Cache(iCache，dCache)的刷新，目前刷新的情况测试用例覆盖完整，行为正确
 + 完成A指令集的扩展，基本通过了测试，发现有设计不合理的地方，对处理器结构进行了修改，具体见`doc/xv6.md`
 + 成功启动xv6，运行了一个`echo`的用户程序，但是还存在一些问题
-+ 已经冻结的版本在[here](https://github.com/happy-lx/ysyx_lx)
++ 成功启动xv6，运行了`ls,echo,mkdir,cd`等用户程序
++ 成功启动Linux，创建`init`进程，输出`hello riscv world!`
++ 流片已经冻结的版本在[here](https://github.com/happy-lx/ysyx_lx)
 
 ### 问题列表
 
@@ -40,7 +42,7 @@
 + [x] 运行`MicroBench`的时候有浮点数异常，但是和`nemu`对比每一步的运行结果都是对的，注释了`seive`函数就都可以通过，不知道是不是这个函数有除0异常的情况
 + [x] TLB的一致性该如何保证，如果访问TLB对V,D等位的修改只发生在TLB中，如果操作系统进行页面的替换，需要写回页面，则page table中的PTE和TLB中的PTE不一致该如何处理，或者操作系统修改了page table，把某一些PTE设置为invalid，两者之间的不一致该如何处理
 + [x] mip中的`mti`和`sti`有什么区别，发生时钟中断的时候是置位哪一个
-+ [ ] Linux启动后在ram中解析elf格式的init文件时，只要访问bss段就发生异常，似乎是没有给bss段加上页表，而访问text段就没有问题
++ [x] Linux启动后在ram中解析elf格式的init文件时，只要访问bss段就发生异常，似乎是没有给bss段加上页表，而访问text段就没有问题
 
 ### 接下来的工作
 
@@ -70,10 +72,11 @@
 - [x] 实现M/S/U特权模式
 - [x] 实现cache与TLB的刷新
 - [x] 开启分页之后TLB和PTW的行为可能有问题，等待测试
-- [ ] 特权模式S/U的行为需要进一步测试
+- [x] 特权模式S/U的行为需要进一步测试
 - [x] 添加A指令集的扩展
 - [ ] 添加PMP机制
 - [ ] 添加PLIC
+- [ ] 编译`busybox`等套件在Linux上运行
 
 ### 成果
 
@@ -83,3 +86,5 @@
   + ![RT-Thread](doc/screenshot/启动rtthread.png)
 + 成功启动`XV6`
   + ![XV6](doc/screenshot/基本跑通xv6.png)
++ 成功启动`Linux 4.18`
+  + ![Linux](doc/screenshot/启动linux.png)

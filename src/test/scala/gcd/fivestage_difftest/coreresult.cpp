@@ -13,11 +13,11 @@ coreresult::coreresult(Vtop* in,Ram* ram_in)
     coreInit(1);
 
     #ifdef LOG
-    std::cout << "[info] copying core's instructions and data to ram...\n" << std::endl;
+    std::cout << "[info] copying core's instructions and data to ram..." << std::endl;
     #endif
     memcpy(core_ram,top->top__DOT__mem__DOT__mem,RAMSIZE);
     #ifdef LOG
-    std::cout << "[info] copy down\n" << std::endl;
+    std::cout << "[info] copy down" << std::endl;
     #endif
 }
 system_word coreresult::coreGetcycle_time()
@@ -91,3 +91,11 @@ Vtop* coreresult::getTop()
     return top;
 }
 
+void coreresult::getSmodeCSR()
+{
+    printf("stvec   :%lx\n",top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_stvec);
+    printf("sepc    :%lx\n",top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_sepc);
+    printf("stval   :%lx\n",top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_stval);
+    printf("sscratch:%lx\n",top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_sscratch);
+    printf("scause  :%lx\n",top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_scause);
+}

@@ -106,6 +106,27 @@ void print_tlb_ptw_stage(Vtop* target)
         default:
             break;
     }
+    switch (target->top__DOT__mycore__DOT__dmmu__DOT__tlb__DOT__tlb_stage)
+    {
+        case 0:
+            printf("dtlb is in tlb_idle stage\n");
+            break;
+        case 1:
+            printf("dtlb is in tlb_find_tlb stage\n");
+            break;
+        case 2:
+            printf("dtlb is in tlb_find_entry stage\n");
+            break;
+        case 3:
+            printf("dtlb is in tlb_write_back stage\n");
+            break;
+        case 4:
+            printf("dtlb is in tlb_find_ptw stage\n");
+            break;
+        
+        default:
+            break;
+    }
 
     switch (target->io_diff_ptw_stage)
     {
@@ -120,6 +141,25 @@ void print_tlb_ptw_stage(Vtop* target)
             break;
         case 3:
             printf("iptw is in ptw_vpn0 stage\n");
+            break;
+        
+        default:
+            break;
+    }
+
+    switch (target->top__DOT__mycore__DOT__dmmu__DOT__tlb__DOT__ptw__DOT__ptw_stage)
+    {
+        case 0:
+            printf("dptw is in ptw_idle stage\n");
+            break;
+        case 1:
+            printf("dptw is in ptw_vpn2 stage\n");
+            break;
+        case 2:
+            printf("dptw is in ptw_vpn1 stage\n");
+            break;
+        case 3:
+            printf("dptw is in ptw_vpn0 stage\n");
             break;
         
         default:
@@ -184,6 +224,7 @@ void printcsrs(Vtop* target)
     printf("mscratch : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mscratch);
     printf("mip_time : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mip_mti);
     printf("mie_time : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mie_mti);
+    printf("satp : [%lx] \n",(unsigned long)target->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_satp);
 }
 void print_pc(Vtop* target)
 {
@@ -477,6 +518,8 @@ void print_ptw_addr_data(Vtop* target)
 {
     printf("iptw's mem request address is : %lx\n",(unsigned long)target->io_diff_ptw_req_addr);
     printf("iptw's mem response data is   : %lx\n",(unsigned long)target->io_diff_ptw_resp_data);
+    printf("dptw's mem request address is : %lx\n",(unsigned long)target->io_diff_dptw_req_addr);
+    printf("dptw's mem response data is   : %lx\n",(unsigned long)target->io_diff_dptw_resp_data);
 }
 
 int main(int argc,char** argv)
@@ -488,7 +531,10 @@ int main(int argc,char** argv)
     reset_cycle(top,1);
 
     // put_to_pipeline(top,4);
-    uart_init("12asa");
+    uart_init("ls\nls\nls\nmkdir\n");
+
+    bool prt_flag = false;
+    int prt_cnt = 0;
     
     while(!Verilated::gotFinish())
     {
@@ -497,11 +543,13 @@ int main(int argc,char** argv)
             top->clock = ! (top->clock);
         }
         top->eval();
-
+        if((unsigned long)top->io_diff_pc_data == 0x105c0)
+            prt_flag = true;
 
         if(main_time % 20 == 0)
         {
-            if(main_time > 0 && main_time < 71980)
+            // if(main_time > 71980*16 && main_time < 71980*22)
+            if(prt_flag)
             {
                 printf("in cycle %d:\n",(int)main_time / 20);
                 print_valid(top);
@@ -525,12 +573,14 @@ int main(int argc,char** argv)
                 print_regs(top);
                 printcsrs(top);
                 printf("============================================   end  ================================================\n");
+                prt_cnt += 1;
             }
         }
          
         main_time += 10;
 
-        if(main_time == 71980)
+        // if(main_time == 71980*22)
+        if(prt_cnt == 10000)
         {
             break;
         }

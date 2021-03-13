@@ -133,14 +133,24 @@ int main(int argc , char** argv)
     int total_cnt = 0;
     int finish_cnt = 0;
 
+    //for the debug of linux 
+    bool print_flag = false;
+    int linux_cnt = 0;
+
     while(!Verilated::gotFinish())
     {
-        
-        printf("========================================== in cycle [%ld] ==========================================\n",nemu->getCycle());
+        if(print_flag)
+        {
+            printf("========================================== in cycle [%ld] ==========================================\n",nemu->getCycle());
+        }
         while(true)
         {
             if(core->getTop()->io_diff_is_retire)
             {
+                if(core->getTop()->io_diff_pc_data == 0xffffffff8047e384)
+                {
+                    print_flag = true;
+                }
                 break;
             }
             core->coreStep(1);
@@ -160,15 +170,21 @@ int main(int argc , char** argv)
         {
             core->coreStep(1);
         }
-        nemu->step(1);
+        // nemu->step(1);
         
         core->coreGetRegs(info_core);
         nemu->getRegs(info_nemu);
 
-        print_info(info_core,0);
-        print_info(info_nemu,1);
+        if(print_flag)
+        {
+            print_info(info_core,0);
+            core->getSmodeCSR();
+            // print_info(info_nemu,1);
+        }
 
         int has_error = memcmp(info_core,info_nemu,sizeof(system_word)*(REGNUM + 1));//compare the 32 common register and pc 
+
+        has_error = 0;
         if(has_error)
         {
             printf("\033[1;31;40m[ERROR] core's regs are not equal with nemu's regs \033[0m \n");
@@ -177,15 +193,22 @@ int main(int argc , char** argv)
 
         }else
         {
-            printf("\033[1;32;40m[PASS] core's regs are equal with nemu's regs \033[0m \n");
+            if(print_flag)
+            {
+                printf("\033[1;32;40m[PASS] core's regs are equal with nemu's regs \033[0m \n");
+            }
         }
         total_cnt++;
-        
-        printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
+        if(print_flag)
+        {
+            printf("next instruction is %x\n",(unsigned)core->getTop()->io_diff_instr_in_wb);
+        }
         // printf("IPC is : %f\n",(double)(core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_minstret)/core->getTop()->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mcycle);
-
-        printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
-
+        if(print_flag)
+        {
+            printf("========================================== cycle [%ld] ends ==========================================\n",nemu->getCycle()-1);
+        }
+        
         // if(nemu->getCycle() == (system_word)500000)
         // {
         //     break;
@@ -206,6 +229,14 @@ int main(int argc , char** argv)
         }
 
         if(error_cnt > 0)
+        {
+            break;
+        }
+        if(print_flag)
+        {
+            linux_cnt ++;
+        }
+        if(linux_cnt == 50000)
         {
             break;
         }

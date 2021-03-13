@@ -22,6 +22,7 @@ install:
 	./split result.hex result.byte
 	cp ./result.byte ../../src/test/scala/gcd/utest/obj_dir/test1.txt
 	cp ./result.byte ../../src/test/scala/gcd/fivestage_difftest/obj_dir/test1.txt
+	cp ./result.byte ../../src/test/scala/gcd/toptest/obj_dir/test1.txt
 
 clean:
 	rm $(object) tool split result.*

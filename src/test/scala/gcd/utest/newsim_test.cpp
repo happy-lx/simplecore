@@ -64,6 +64,8 @@ int main(int argc,char** argv)
     //for RT-Thread
     // uart_init("help\nps\nps\nlist_msgqueue\nlist_mempool\nlist_timer\nps\nmemcheck\nmemtrace\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\nps\n");
     //for xv6
+    // uart_init("ls\nls\nls\nmkdir\n");
+    //for linux
     uart_init("ls\nls\nls\nmkdir\n");
     
     long long cnt = 0;
@@ -99,15 +101,25 @@ int main(int argc,char** argv)
         // if(cnt == 10000000)
         // break;
 
-        // for XV6
-        // if(cnt >= 80000000)
+        // for XV6 Linux
+        // if(cnt >= 800000)
         // {
-        //     printf("mtime   : %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtime);
-        //     printf("mtimecmp: %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtimecmp);
-        //     printf("pc in WB: 0x%lx\n", (unsigned long)top->io_diff_pc_data);
+            // printf("mtime   : %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtime);
+            // printf("mtimecmp: %ld\n",top->top__DOT__mycore__DOT__dcache_cross_bar__DOT__reg_mtimecmp);
+            // printf("pc in WB: 0x%lx\n", (unsigned long)top->io_diff_pc_data);
+            // printf("mepc:%lx; mtval:%lx\n", (unsigned long)top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mepc,(unsigned long)top->top__DOT__mycore__DOT__dpath__DOT__csr__DOT__reg_mtval);
+            // int* kernel_ptr = (int*)(top->top__DOT__mem__DOT__mem + 0x200000);
+            // unsigned long pc = 0xffffffff80000000;
+            // for(int i=0;i<0x20000;i++)
+            // {
+            //     printf("%lx:	%08x\n",pc,*kernel_ptr);
+            //     kernel_ptr++;
+            //     pc += 4;
+            // }
+            // break;
         // }
 
-        // if(cnt == (80000000 + 2000000))
+        // if(cnt == (800000 + 2000000))
         // {
         //     break;
         // }

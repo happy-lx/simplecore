@@ -21,7 +21,8 @@ class AXI4_UART extends Module
     uart.io.putc := false.B
 
     val uart_control = RegInit(0.U(32.W))
-    val uart_state = RegInit(1.U(32.W))
+    //for Linux , make kernel know that the uart is empty
+    val uart_state = RegInit(0.U(32.W))
 
     val (read_idle : UInt) :: (read_burst : UInt) :: (read_resp : UInt) :: Nil = Enum(3)
 

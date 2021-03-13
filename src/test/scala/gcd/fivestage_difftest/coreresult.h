@@ -21,6 +21,7 @@ public:
     void coreInit(int n);
     Vtop* getTop();
     system_word coreGetcycle_time();
+    void getSmodeCSR();
 };
 
 
