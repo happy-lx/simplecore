@@ -29,6 +29,7 @@
 + 成功启动xv6，运行了一个`echo`的用户程序，但是还存在一些问题
 + 成功启动xv6，运行了`ls,echo,mkdir,cd`等用户程序
 + 成功启动Linux，创建`init`进程，输出`hello riscv world!`
++ 成功运行busybox套件，运行`ls,echo,pwd`以及`stream benchmark`
 + 流片已经冻结的版本在[here](https://github.com/happy-lx/ysyx_lx)
 
 ### 问题列表
@@ -76,7 +77,7 @@
 - [x] 添加A指令集的扩展
 - [ ] 添加PMP机制
 - [ ] 添加PLIC
-- [ ] 编译`busybox`等套件在Linux上运行
+- [x] 编译`busybox`等套件在Linux上运行
 
 ### 成果
 
@@ -88,3 +89,5 @@
   + ![XV6](doc/screenshot/基本跑通xv6.png)
 + 成功启动`Linux 4.18`
   + ![Linux](doc/screenshot/启动linux.png)
++ 在`Linux 4.18`上运行`busybox`套件，以及运行`stream benchmark`
+  + ![busybox](doc/screenshot/启动linux及运行busybox.png)
