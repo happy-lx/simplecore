@@ -177,3 +177,10 @@
   + 级别：严重
   + 原因：store和load的page fault之后需要对tval设置为访问出错的那个虚拟地址而不是别的值，这样linux在处理这个异常的时候才可以正确进行处理
   + 解决办法：修改csr部分发生store或者loadpage fault后的tval的值为当前需要访问的虚拟地址的值
+
+### From 3/26
+
++ [x] 描述：为JAL指令进行优化时发现运行不正确
+  + 级别：严重
+  + 原因：当出现以下代码序列时`jal $ra 0x80008ff0 ; jalr $ra`，第一条jal指令的rd我之前实现的时候实际上是在cpath的write-back-select的地方加的，增加了一个pc+4的选项，所以实际上最终写会到寄存器中的内容是在WB阶段才产生，之前对于jal类指令是无脑kill掉三个周期，所以当jal到达WB时，下一条指令到达DEC阶段，这时如果与上一条指令有数据相关，forwarding把WB阶段的值fowarding到DEC阶段，这是正确的。但是优化完JAL指令后，它不需要kill掉2个周期了，所以当JAL到达EXE阶段，下一条指令就以及到达DEC阶段了，这时forwarding的值为EXE阶段的输出，而这个输出并不是pc+4的值。同理对JALR的指令优化的时候也会有这样的问题。
+  + 解决办法：在cpath的译码部分设置对于jal指令在exe阶段把pc+4的值计算出来，虽然后面不使用，但是只是作为forwarding的数据以防后面的指令出错
