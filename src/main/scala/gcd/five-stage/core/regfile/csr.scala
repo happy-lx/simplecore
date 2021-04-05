@@ -126,7 +126,7 @@ class CSRfile extends Module
     val reg_mip = RegInit(0.U.asTypeOf(new MIP()))
     val reg_mtval = RegInit(0.U(64.W))
     val reg_mscratch = RegInit(0.U(64.W))
-    val reg_mstatus = RegInit(0.U.asTypeOf(new Mstatus()))
+    val reg_mstatus = RegInit("h00001800".U.asTypeOf(new Mstatus()))
     // val reg_mtimecmp = RegInit(UInt(64.W),0.U)
     // val reg_mtime = RegInit(UInt(64.W),0.U)//??
     // val reg_misa = WireInit(UInt(64.W),0.U)
