@@ -20,6 +20,8 @@ class BPU_io extends Bundle
     //for RAS
     val pc_value = Input(UInt(64.W))
     val ras_target = Output(UInt(64.W))
+    //for PHT
+    val pc_exe  = Input(UInt(64.W))
 
     val IF_pc_branch = Output(UInt(2.W))
     val IF_pc_sel = Output(UInt(3.W))
@@ -39,7 +41,25 @@ class BPU extends Module
     val JALRTYPE    =   BitPat("b????????_????????_?000????_?1100111")
 
     val sn_TAKEN :: n_TAKEN :: _TAKEN :: s_TAKEN :: Nil = Enum(4) 
-    val prediction_state = RegInit(sn_TAKEN)
+    
+    val bpu_PHT = if(Config.get("preciseBPU")) RegInit(VecInit(Seq.fill(PHTSIZE)(sn_TAKEN))) else null
+
+    val bpu_raw = RegInit(sn_TAKEN) 
+
+    val bpu_BHT = if(Config.get("preciseBPU")) RegInit(VecInit(Seq.fill(BHTSIZE)(0.U(BHRWIDTH.W)))) else null
+
+    if(Config.get("preciseBPU"))
+    {
+        when(io.EXE_pc_branch =/= 0.U)
+        {
+            //indicate that this is a branch instruction
+            bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW)) := Mux(io.EXE_actual_branch === 1.U,
+                Cat(bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))(BHRWIDTH-1,1),1.U(1.W)),
+                Cat(bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))(BHRWIDTH-1,1),0.U(1.W))
+            )
+        }
+    }
+
 
     val isBtype = WireInit(false.B)
     val isJALtype = WireInit(false.B)
@@ -99,9 +119,13 @@ class BPU extends Module
             bpu_ras.io.op := ras_x
         }
     }
-
+    //val pht_index_if = Cat(io.pc_value(PHTINDEX,0),bpu_BHT(io.pc_value(BHTINDEX_HIGH,BHTINDEX_LOW)))
+    val prediction_state_if = if(Config.get("preciseBPU")) 
+                          bpu_PHT(Cat(io.pc_value(PHTINDEX,0),bpu_BHT(io.pc_value(BHTINDEX_HIGH,BHTINDEX_LOW))))
+                              else 
+                          bpu_raw
     //prediction logic 
-    switch(prediction_state)
+    switch(prediction_state_if)
     {
 
         is(sn_TAKEN)
@@ -137,48 +161,52 @@ class BPU extends Module
             }
         }
     }
-
+    //val pht_index_exe = Cat(io.pc_exe(PHTINDEX,0),bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW)))
+    val prediction_state_exe = if(Config.get("preciseBPU")) 
+                           bpu_PHT(Cat(io.pc_exe(PHTINDEX,0),bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))))
+                               else 
+                           bpu_raw
     //state switch logic 
-    switch(prediction_state)
+    switch(prediction_state_exe)
     {
         is(sn_TAKEN)
         {
             when(prediction_suc && !io.has_stall)
             {
-                prediction_state := sn_TAKEN
+                prediction_state_exe := sn_TAKEN
             }.elsewhen(prediction_fail && !io.has_stall)
             {
-                prediction_state := n_TAKEN
+                prediction_state_exe := n_TAKEN
             }
         }
         is(n_TAKEN)
         {
             when(prediction_suc && !io.has_stall)
             {
-                prediction_state := sn_TAKEN
+                prediction_state_exe := sn_TAKEN
             }.elsewhen(prediction_fail && !io.has_stall)
             {
-                prediction_state := _TAKEN
+                prediction_state_exe := _TAKEN
             }
         }
         is(_TAKEN)
         {
             when(prediction_suc && !io.has_stall)
             {
-                prediction_state := s_TAKEN
+                prediction_state_exe := s_TAKEN
             }.elsewhen(prediction_fail && !io.has_stall)
             {
-                prediction_state := n_TAKEN
+                prediction_state_exe := n_TAKEN
             }
         }
         is(s_TAKEN)
         {
             when(prediction_suc && !io.has_stall)
             {
-                prediction_state := s_TAKEN
+                prediction_state_exe := s_TAKEN
             }.elsewhen(prediction_fail && !io.has_stall)
             {
-                prediction_state := _TAKEN
+                prediction_state_exe := _TAKEN
             }
         }
     }

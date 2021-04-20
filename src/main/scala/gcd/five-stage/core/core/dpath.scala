@@ -23,6 +23,8 @@ class D2CIO extends Bundle
 
     //for instruction missaligned judgement 
     val pc_if = Output(UInt(64.W))
+    //for PHT
+    val pc_exe = Output(UInt(64.W))
 
     //for load and store missaligned judgement 
     val mem_isWrite = Output(Bool())
@@ -502,7 +504,7 @@ class Dpath extends Module {
 
     dp_wire_exe_aluout := dp_alu.io.res
 
-
+    io.d2c.pc_exe := dp_exe_reg_pc
 
     //send the relation of op1 and op2 to cpath
     io.d2c.islt := (dp_exe_reg_op1_source.asSInt() < dp_exe_reg_op2_source.asSInt())

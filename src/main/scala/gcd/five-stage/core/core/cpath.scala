@@ -235,6 +235,7 @@ class Cpath extends Module {
     cp_bpu.io.has_stall := cs_wire_pipeline_stall
     cp_bpu.io.EXE_pc_branch := io.d2c.EXE_pc_branch
     cp_bpu.io.pc_value := io.d2c.pc_if
+    cp_bpu.io.pc_exe   := io.d2c.pc_exe
     io.c2d.cp_bpu_ras_target := cp_bpu.io.ras_target
 
     io.c2d.cp_if_pc_branch := cp_bpu.io.IF_pc_branch

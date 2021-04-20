@@ -9,7 +9,7 @@ object Config
 {
     val ConfigMap = scala.collection.mutable.Map[String,Boolean](
         "fastMU" -> false,
-        "gShare" -> false
+        "preciseBPU" -> false
     )
     def get(name:String):Boolean = {
         if(ConfigMap.contains(name))
@@ -29,6 +29,10 @@ object Config
         {
             ConfigMap += (name -> value)
         }
+    }
+    val plateform = "linux"
+    def get_plateform():String = {
+        return this.plateform
     }
 
 }
