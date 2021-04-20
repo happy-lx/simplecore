@@ -84,6 +84,16 @@ class MDU extends Module
 
     io.exe_stall := io.en && !(io.finish)
 
+    val wmu = if(Config.get("fastMU")) Module(new WallanceMU) else null
+    if (Config.get("fastMU"))
+    {
+        wmu.io.abs_op1 := abs_op1
+        wmu.io.abs_op2 := abs_op2
+        wmu.io.en      := io.en && is_mul_op
+        wmu.io.data_got:= io.result_got
+        
+    }
+
     def mul_step() = {
         when(mul_result(0) === 1.U)
         {
@@ -133,34 +143,55 @@ class MDU extends Module
             io.finish := false.B
 
             exe_cycles := exe_cycles - 1.U
+            if(!Config.get("fastMU"))
+            {
+                when(is_mul_op)
+                {
+                    mul_step()
+                }.elsewhen(is_div_op)
+                {
+                    div_step()
+                }
 
-            when(is_mul_op)
+                when(exe_cycles === 1.U && is_mul_op)
+                {
+                    mdu_state := mdu_finish
+                }
+
+                when(exe_cycles === 0.U && is_div_op)
+                {
+                    mdu_state := mdu_finish
+                }
+            }else
             {
-                mul_step()
-            }.elsewhen(is_div_op)
-            {
-                div_step()
+                when(is_mul_op)
+                {
+                    when(wmu.io.ready)
+                    {
+                        mdu_state := mdu_finish
+                    }
+                }.elsewhen(is_div_op)
+                {
+                    div_step()
+                }
+                when(exe_cycles === 0.U && is_div_op)
+                {
+                    mdu_state := mdu_finish
+                }
             }
 
-            when(exe_cycles === 1.U && is_mul_op)
-            {
-                mdu_state := mdu_finish
-            }
-
-            when(exe_cycles === 0.U && is_div_op)
-            {
-                mdu_state := mdu_finish
-            }
         }
         is(mdu_finish)
         {
             io.finish := true.B
 
-            mdu_result := MuxCase(mul_result(63,0),Array(
-                (io.op === ALU_MUL)     -> Mux(sign_change,(~mul_result + 1.U)(63,0),mul_result(63,0)),
-                (io.op === ALU_MULH)    -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
-                (io.op === ALU_MULHSU)  -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
-                (io.op === ALU_MULHU)   -> Mux(sign_change,(~mul_result + 1.U)(127,64),mul_result(127,64)),
+            val new_mul_result = if(Config.get("fastMU")) wmu.io.result else mul_result
+
+            mdu_result := MuxCase(new_mul_result(63,0),Array(
+                (io.op === ALU_MUL)     -> Mux(sign_change,(~new_mul_result + 1.U)(63,0) ,new_mul_result(63,0)),
+                (io.op === ALU_MULH)    -> Mux(sign_change,(~new_mul_result + 1.U)(127,64),new_mul_result(127,64)),
+                (io.op === ALU_MULHSU)  -> Mux(sign_change,(~new_mul_result + 1.U)(127,64),new_mul_result(127,64)),
+                (io.op === ALU_MULHU)   -> Mux(sign_change,(~new_mul_result + 1.U)(127,64),new_mul_result(127,64)),
                 
                 (io.op === ALU_REM)     -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
                 (io.op === ALU_REMU)    -> Mux(rem_sign_change,(~rem_result(63,0)) + 1.U,rem_result(63,0)),
@@ -187,4 +218,95 @@ class MDU extends Module
         }
     }
     
+}
+
+class WallanceMU extends Module
+{
+    val io = IO(new Bundle{
+        val abs_op1 = Input(UInt(64.W))
+        val abs_op2 = Input(UInt(64.W))
+        val en      = Input(Bool())
+        val data_got= Input(Bool())
+
+        val ready   = Output(Bool())
+        val result  = Output(UInt(128.W))
+    })
+    val wmu_idle :: wmu_stage1 :: wmu_stage2 :: wmu_stage3 :: Nil = Enum(4)
+
+    val stage = RegInit(wmu_idle)
+    io.ready := io.en && stage === wmu_stage3
+
+    //stage switch logic 
+    switch(stage)
+    {
+        is(wmu_idle)
+        {
+            when(io.en) {stage := wmu_stage1}
+        }
+        is(wmu_stage1)
+        {
+            stage := wmu_stage2
+        }
+        is(wmu_stage2)
+        {
+            stage := wmu_stage3
+        }
+        is(wmu_stage3)
+        {
+            when(io.data_got) {stage := wmu_idle}
+        }
+    }
+
+    /* stage1 begin 
+    *  we get the result 4 by 4 so we have to store middle result to 16 regs
+    */
+    val stage1_result  = RegInit(VecInit(Seq.fill(64 / 4)(0.U((64 + 4).W))))
+    val stage1_res_len = 64 / 4
+
+    when(io.en && stage === wmu_stage1)
+    {
+        for(i <- (0 until stage1_res_len))
+        {
+            stage1_result(i) := (
+                Mux(io.abs_op2((i<<2) + 0).asBool,io.abs_op1,0.U) + 
+                Mux(io.abs_op2((i<<2) + 1).asBool,Cat(io.abs_op1,0.U(1.W)),0.U) + 
+                Mux(io.abs_op2((i<<2) + 2).asBool,Cat(io.abs_op1,0.U(2.W)),0.U) + 
+                Mux(io.abs_op2((i<<2) + 3).asBool,Cat(io.abs_op1,0.U(3.W)),0.U) 
+            )
+        }
+    }
+    // stage1 end 
+
+    /* stage2 begin 
+    *  we get the result 4 by 4 so we have to store middle result to 4 regs
+    */
+    val stage2_result = RegInit(VecInit(Seq.fill(64 / 4 / 4)(0.U((64 + 4 + 3*4 + 1).W))))
+    val stage2_res_len = 64 / 4 / 4
+
+    when(io.en && stage === wmu_stage2)
+    {
+        for(i <- (0 until stage2_res_len))
+        {
+            stage2_result(i) := (
+                    stage1_result((i<<2) + 0) + 
+                Cat(stage1_result((i<<2) + 1),0.U(4.W))  + 
+                Cat(stage1_result((i<<2) + 2),0.U(8.W))  + 
+                Cat(stage1_result((i<<2) + 3),0.U(12.W)) 
+            )
+        }
+    }
+    // stage2 end 
+
+    /* stage3 begin 
+    *  we have 4 output of stage2 so just add them together
+    */
+    io.result := (
+        stage2_result(0) + 
+        Cat(stage2_result(1),0.U(16.W)) + 
+        Cat(stage2_result(2),0.U(32.W)) +  
+        Cat(stage2_result(3),0.U(48.W))  
+    )
+
+    // stage3 end 
+
 }
