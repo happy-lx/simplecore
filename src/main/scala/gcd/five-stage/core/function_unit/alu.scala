@@ -49,6 +49,7 @@ class alu_module extends Module {
     val srl_res = Wire(UInt(64.W))
     val srlw_res = Wire(UInt(64.W))
     val cp1_res = Wire(UInt(64.W))
+    val cp2_res = Wire(UInt(64.W))
 
     sub_res := (io.input1 - io.input2)
     and_res := (io.input1 & io.input2)
@@ -63,6 +64,7 @@ class alu_module extends Module {
     srl_res := ((io.input1.asUInt() >> sham).asUInt())
     srlw_res := ((io.input1(31,0).asUInt() >> sham(4,0)).asUInt())
     cp1_res := (io.input1)
+    cp2_res := (io.input2)
 
     val is_mdu_op = WireInit(false.B)
 
@@ -105,7 +107,8 @@ class alu_module extends Module {
         (io.op === ALU_DIV) -> mdu.io.result,
         (io.op === ALU_DIVU) -> mdu.io.result,
         (io.op === ALU_DIVUW) -> mdu.io.result,
-        (io.op === ALU_DIVW) -> mdu.io.result
+        (io.op === ALU_DIVW) -> mdu.io.result,
+        (io.op === ALU_CP2) -> cp2_res
     ))
 
     //extend the result using arg res_ext_op

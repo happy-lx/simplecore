@@ -130,6 +130,7 @@ trait alu_const
     val ALU_DIVUW = 23.U(5.W)
     val ALU_DIVW = 24.U(5.W)
     val ALU_SLLW = 25.U(5.W)
+    val ALU_CP2  = 26.U(5.W)
     val ALU_X = 0.U(5.W)
 
 
@@ -244,6 +245,8 @@ trait CpathConstants
     val pc_jr = 3.U(3.W)
     val pc_redir = 4.U(3.W)
     val pc_bpu = 5.U(3.W)
+    val pc_btb = 6.U(3.W)
+    val pc_ras = 7.U(3.W)
 
     //brach type selector
     val BR_N = 0.U(4.W)
@@ -257,10 +260,11 @@ trait CpathConstants
     val BR_JR = 8.U(4.W)
 
     //OP1 selector
-    val OP1_X = 0.U(2.W)
-    val OP1_RS1 = 0.U(2.W)
-    val OP1_Z = 1.U(2.W)
-    val OP1_U = 2.U(2.W)
+    val OP1_X = 0.U(3.W)
+    val OP1_RS1 = 0.U(3.W)
+    val OP1_Z = 1.U(3.W)
+    val OP1_U = 2.U(3.W)
+    val OP1_4 = 3.U(3.W)
 
     //OP2 selector
     val OP2_X = 0.U(3.W)
@@ -269,6 +273,7 @@ trait CpathConstants
     val OP2_IIM = 2.U(3.W)
     val OP2_SIM = 3.U(3.W)
     val OP2_ZERO = 4.U(3.W)
+    val OP2_PC4 = 5.U(3.W)
 
     //reg file write enable
     val rf_wr_Y = true.B
@@ -291,6 +296,17 @@ trait CpathConstants
 
     
     
+}
+
+trait RASConst
+{
+    // op code 
+    val ras_x = 0.U(2.W)
+    val ras_read = 1.U(2.W)
+    val ras_write = 2.U(2.W)
+    //settings
+    val recursion_depth = 16
+    val ras_number = 32
 }
 
 object Cause 
@@ -417,5 +433,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with TLB_const with A_extension_const
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with TLB_const with A_extension_const with RASConst
 {}

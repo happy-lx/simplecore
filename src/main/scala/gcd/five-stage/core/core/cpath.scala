@@ -13,7 +13,7 @@ class C2DIO extends Bundle
 {
     //控制通路向数据通路传递的信息
     val cp_pc_sel = Output(UInt(3.W))
-    val cp_op1_sel = Output(UInt(2.W))
+    val cp_op1_sel = Output(UInt(3.W))
     val cp_op2_sel = Output(UInt(3.W))
     val cp_alu_sel = Output(UInt(5.W))
     val cp_reg_wen = Output(Bool())
@@ -36,6 +36,8 @@ class C2DIO extends Bundle
     //for BPU
     val cp_if_pc_branch = Output(UInt(2.W))
     val cp_exe_actual_branch = Output(UInt(2.W))
+    //for RAS
+    val cp_bpu_ras_target = Output(UInt(64.W))
 
     val hasexception = Output(Bool())
     val shouldstall = Output(Bool())
@@ -84,9 +86,13 @@ class Cpath extends Module {
                             /*
                             | valid instr | br type | op1    | op2    | alu    | reg write | mem en | mem read op | mem write mask | mem write en |  wb data | csr op  | ALU EXT | is fence.i? | rs1 en | rs2 en | is sfence.vma? | is A extension? | A-extension op | is A-extensio's word
                             */
-                JAL     -> List(    Y  ,     BR_J   ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_pc_4   ,csr_x,   alu_res_x   ,  N   ,  N   , N , N , N , A_op_x , N),
+                //JAL AND JALR should calculate the target if BPU needs
+                //JAL ra ; JALR ra will fault if the target is not calculated 
+                //so the alu add pc + 4 only for forwarding 
+                //JALR : op1_rs1 is to calcualte the target address in EXE stage
+                JAL     -> List(    Y  ,     BR_J   ,  OP1_RS1 , OP2_PC4   ,ALU_CP2   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_pc_4   ,csr_x,   alu_res_x   ,  N   ,  N   , N , N , N , A_op_x , N),
                 // JAL     -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_ADD   ,rf_wr_Y    ,Y , op_bu       ,mask_x          , mem_wr_N     , wback_memout   ,csr_x,   alu_res_noext),
-                JALR    -> List(    Y  ,     BR_JR  ,  OP1_X , OP2_X   ,ALU_X   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_pc_4   ,csr_x,   alu_res_x  ,  N   ,  Y   , N , N , N , A_op_x , N),
+                JALR    -> List(    Y  ,     BR_JR  ,  OP1_RS1 , OP2_PC4   ,ALU_CP2   ,rf_wr_Y    ,N , op_x       ,mask_x          , mem_wr_N     , wback_pc_4   ,csr_x,   alu_res_x  ,  N   ,  Y   , N , N , N , A_op_x , N),
                 // JALR    -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_ADD   ,rf_wr_Y    ,Y , op_bu       ,mask_x          , mem_wr_N     , wback_memout   ,csr_x,   alu_res_noext),
 
                 LB      -> List(    Y  ,     BR_N  ,  OP1_RS1 , OP2_IIM   ,ALU_ADD   ,rf_wr_Y    ,Y , op_b       ,mask_x          , mem_wr_N     , wback_memout   ,csr_x, alu_res_noext  ,  N   ,  Y   , N , N , N , A_op_x , N),
@@ -228,6 +234,8 @@ class Cpath extends Module {
     cp_bpu.io.IF_ins := io.d2c.IF_ins
     cp_bpu.io.has_stall := cs_wire_pipeline_stall
     cp_bpu.io.EXE_pc_branch := io.d2c.EXE_pc_branch
+    cp_bpu.io.pc_value := io.d2c.pc_if
+    io.c2d.cp_bpu_ras_target := cp_bpu.io.ras_target
 
     io.c2d.cp_if_pc_branch := cp_bpu.io.IF_pc_branch
 
@@ -244,8 +252,10 @@ class Cpath extends Module {
         (cs_exe_branch === BR_GEU) -> (Mux(!io.d2c.isltu,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
         (cs_exe_branch === BR_LT) -> (Mux(io.d2c.islt,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
         (cs_exe_branch === BR_LTU) -> (Mux(io.d2c.isltu,Mux(io.d2c.EXE_pc_branch === 1.U,pc_sel_from_bpu,pc_branch),Mux(io.d2c.EXE_pc_branch === 1.U,pc_branch,pc_sel_from_bpu))),
-        (cs_exe_branch === BR_J) -> pc_j,
-        (cs_exe_branch === BR_JR) -> pc_jr
+        (cs_exe_branch === BR_J) -> pc_sel_from_bpu,
+        // (cs_exe_branch === BR_J) -> pc_j,
+        (cs_exe_branch === BR_JR) -> Mux(io.d2c.ras_pred_suc,pc_sel_from_bpu,pc_jr)
+        // (cs_exe_branch === BR_JR) -> pc_jr
     ))
 
     cp_bpu.io.EXE_actual_branch := MuxCase(0.U(2.W),Array(
@@ -275,7 +285,7 @@ class Cpath extends Module {
     BoringUtils.addSource(cs_reg_mem_is_fencei,"cache_flush")
 
     // when(temp_pc_sel =/= pc_4)
-    when(temp_pc_sel =/= pc_4 && temp_pc_sel =/= pc_bpu)
+    when(temp_pc_sel =/= pc_4 && temp_pc_sel =/= pc_bpu && temp_pc_sel =/= pc_btb && temp_pc_sel =/= pc_ras)
     {
         cs_wire_control_hazard := true.B
     }.otherwise

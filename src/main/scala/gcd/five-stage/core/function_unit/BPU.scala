@@ -17,6 +17,9 @@ class BPU_io extends Bundle
     val EXE_pc_branch = Input(UInt(2.W))
     val EXE_actual_branch = Input(UInt(2.W))
     val has_stall = Input(Bool())
+    //for RAS
+    val pc_value = Input(UInt(64.W))
+    val ras_target = Output(UInt(64.W))
 
     val IF_pc_branch = Output(UInt(2.W))
     val IF_pc_sel = Output(UInt(3.W))
@@ -29,19 +32,43 @@ class BPU extends Module
 
     io := DontCare
 
-    val BRANCHTYPRE = BitPat("b????????_????????_????????_?1100011")
+    val BRANCHTYPRE =   BitPat("b????????_????????_????????_?1100011")
+    //jal : rd = any
+    val JALTYPE     =   BitPat("b????????_????????_????????_?1101111")
+    //jalr $ra
+    val JALRTYPE    =   BitPat("b????????_????????_?000????_?1100111")
 
     val sn_TAKEN :: n_TAKEN :: _TAKEN :: s_TAKEN :: Nil = Enum(4) 
     val prediction_state = RegInit(sn_TAKEN)
 
     val isBtype = WireInit(false.B)
+    val isJALtype = WireInit(false.B)
+    val isJALRtype = WireInit(false.B)
 
+    //for recursion
+    val target_reserve = RegInit(0.U(64.W))
+
+    val bpu_ras = Module(new RAS)
+    bpu_ras.io := DontCare
+    bpu_ras.io.pipeline_stall := io.has_stall
+
+    //mutex: only one will be true or all the signals are false
     val (isBtype_temp : Bool) :: Nil = ListLookup(io.IF_ins,
                            List(false.B),
     Array( BRANCHTYPRE ->  List(true.B ))
     )
+    val (isJALtype_temp : Bool) :: Nil = ListLookup(io.IF_ins,
+                             List(false.B),
+    Array( JALTYPE    ->     List(true.B ))
+    )
+    val (isJALRtype_temp : Bool) :: Nil = ListLookup(io.IF_ins,
+                            List(false.B),
+    Array( JALRTYPE   ->    List(true.B ))
+    )
 
     isBtype := isBtype_temp && !io.has_stall
+    isJALtype := isJALtype_temp && !io.has_stall
+    isJALRtype := isJALRtype_temp && !io.has_stall
 
     val prediction_suc  = (io.EXE_actual_branch === io.EXE_pc_branch && io.EXE_actual_branch =/= 0.U(2.W))
     val prediction_fail = (io.EXE_actual_branch =/= io.EXE_pc_branch && io.EXE_actual_branch =/= 0.U(2.W) && io.EXE_pc_branch =/= 0.U(2.W))
@@ -49,8 +76,28 @@ class BPU extends Module
 
     when(!isBtype)
     {
-        io.IF_pc_sel := pc_4
-        io.IF_pc_branch := 0.U(2.W)
+        when(isJALtype)
+        {
+            io.IF_pc_sel := pc_btb
+            io.IF_pc_branch := 0.U(2.W)
+            bpu_ras.io.op := ras_write
+            bpu_ras.io.write_target := io.pc_value + 4.U
+            target_reserve := io.pc_value + 4.U
+            bpu_ras.io.write_same := Mux(io.pc_value + 4.U === target_reserve,true.B,false.B)
+            
+        }.elsewhen(isJALRtype)
+        {
+            io.IF_pc_sel := pc_ras
+            io.IF_pc_branch := 0.U(2.W)
+            bpu_ras.io.op := ras_read
+            io.ras_target := bpu_ras.io.read_value
+
+        }.otherwise
+        {
+            io.IF_pc_sel := pc_4
+            io.IF_pc_branch := 0.U(2.W)
+            bpu_ras.io.op := ras_x
+        }
     }
 
     //prediction logic 
@@ -136,4 +183,79 @@ class BPU extends Module
         }
     }
 
+}
+
+class RAS_io extends Bundle
+{
+    val op = Input(UInt(2.W))
+    val write_same = Input(Bool())
+    val write_target = Input(UInt(64.W))
+    
+    val read_value = Output(UInt(64.W))
+
+    val pipeline_stall = Input(Bool())
+}
+
+class RAS_data extends Bundle
+{
+    val target = UInt(64.W)
+    val depth = UInt(log2Down(recursion_depth).W)
+}
+
+class RAS extends Module
+{
+    val io = IO(new RAS_io)
+
+    io := DontCare
+
+    val ras_data = Mem(ras_number,new RAS_data)
+    val pointer = RegInit(0.U(log2Down(ras_number).W))
+
+    /* eg. for a 4 entry RAS 
+    ------
+    |    |
+    ------    
+    |    |  <- pointer
+    ------  
+    |ras2|
+    ------  
+    |ras1|
+    ------  
+    */
+
+    //for read , step1: connect the output value for BPU to read 
+    //step2: when there is no stall signal,pop the value on the top of RAS , pointer--
+    when(io.op === ras_read)
+    {
+        io.read_value := ras_data(pointer - 1.U).target
+        when(!io.pipeline_stall)
+        {
+            //pipeline about to foward 
+            when(ras_data(pointer - 1.U).depth > 0.U)
+            {
+                ras_data(pointer - 1.U).depth := ras_data(pointer - 1.U).depth - 1.U
+            }.otherwise
+            {
+                pointer := pointer - 1.U
+            }
+        }
+    }
+
+    //for write , only active on jal instruction so when no stall , write to the top of RAS , pointer++
+    when(io.op === ras_write)
+    {
+        when(!io.pipeline_stall)
+        {
+            when(io.write_same)
+            {
+                //recursion
+                ras_data(pointer - 1.U).depth := ras_data(pointer - 1.U).depth + 1.U
+            }.otherwise
+            {
+                ras_data(pointer).target := io.write_target
+                ras_data(pointer).depth := 0.U
+                pointer := pointer + 1.U
+            }
+        }
+    }
 }

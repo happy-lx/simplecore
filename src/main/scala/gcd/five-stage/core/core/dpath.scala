@@ -39,6 +39,7 @@ class D2CIO extends Bundle
     }
 
     val dp_mem_wire_is_amo = Output(Bool())
+    val ras_pred_suc = Output(Bool())
 }
 
 class DpathIO extends Bundle
@@ -72,6 +73,8 @@ class Dpath extends Module {
     //the following target is generated in mem stage
     val wire_pc_redirect_target = Wire(UInt(64.W))
     val wire_pc_bpu_target = Wire(UInt(64.W))
+    val wire_pc_btb_target = Wire(UInt(64.W))
+    val wire_pc_ras_target = Wire(UInt(64.W))
 
     val dcache_doing_flush = WireInit(false.B)
     BoringUtils.addSink(dcache_doing_flush,"dcache_doing_flush")
@@ -95,7 +98,9 @@ class Dpath extends Module {
         (io.c2d.cp_pc_sel === pc_j)     -> wire_pc_jump_target,
         (io.c2d.cp_pc_sel === pc_jr)    -> wire_pc_jr_target,
         (io.c2d.cp_pc_sel === pc_branch)-> wire_pc_branch_target,
-        (io.c2d.cp_pc_sel === pc_bpu)   -> wire_pc_bpu_target
+        (io.c2d.cp_pc_sel === pc_bpu)   -> wire_pc_bpu_target,
+        (io.c2d.cp_pc_sel === pc_btb)   -> wire_pc_btb_target,
+        (io.c2d.cp_pc_sel === pc_ras)   -> wire_pc_ras_target
     ))
 
 
@@ -106,6 +111,12 @@ class Dpath extends Module {
     val if_bim_ext = Cat(Fill(51,if_bim(11)),if_bim,0.U(1.W))
     wire_pc_bpu_target := reg_if_pc + if_bim_ext
 
+    val if_jim = Cat(wire_if_instr(31),wire_if_instr(19,12),wire_if_instr(20),wire_if_instr(30,21))
+    val if_jim_ext = Cat(Fill(43,if_jim(19)),if_jim,0.U(1.W))
+    wire_pc_btb_target := reg_if_pc + if_jim_ext
+
+    wire_pc_ras_target := io.c2d.cp_bpu_ras_target
+
     //the instruction register in decode stage init to nop in case the cpath generates a 
     //excepiton in the init cycle for the first instruction is zero
     val reg_dec_instr = RegInit(NOP)
@@ -113,6 +124,9 @@ class Dpath extends Module {
     val reg_dec_pc = RegInit(STARTADDR)
     //for BPU
     val reg_dec_pc_branch = RegInit(0.U(2.W))
+    //for RAS
+    val reg_dec_pc_sel = RegInit(0.U(3.W))
+    val reg_dec_ras_target = RegInit(0.U(64.W))
     // reg_dec_instr := reg_dec_instr
 
     //update pc 
@@ -124,6 +138,8 @@ class Dpath extends Module {
         reg_dec_instr_valid := reg_dec_instr_valid
         reg_dec_pc := reg_dec_pc
         reg_dec_pc_branch := reg_dec_pc_branch
+        reg_dec_pc_sel := reg_dec_pc_sel
+        reg_dec_ras_target := reg_dec_ras_target
 
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -132,6 +148,8 @@ class Dpath extends Module {
         reg_dec_instr_valid := false.B
         reg_dec_pc := 0.U(64.W)
         reg_dec_pc_branch := 0.U(2.W)
+        reg_dec_pc_sel := 0.U(3.W)
+        reg_dec_ras_target := 0.U(64.W)
 
     }.otherwise
     {
@@ -142,6 +160,8 @@ class Dpath extends Module {
             reg_dec_instr_valid := true.B
             reg_dec_pc := reg_dec_pc
             reg_dec_pc_branch := reg_dec_pc_branch
+            reg_dec_pc_sel := reg_dec_pc_sel
+            reg_dec_ras_target := reg_dec_ras_target
         }.elsewhen(io.c2d.cp_control_hazard)
         {
             reg_dec_instr := NOP
@@ -149,6 +169,8 @@ class Dpath extends Module {
             reg_dec_instr_valid := false.B
             reg_dec_pc := 0.U(64.W)
             reg_dec_pc_branch := 0.U(2.W)
+            reg_dec_pc_sel := 0.U(3.W)
+            reg_dec_ras_target := 0.U(64.W)
         }.elsewhen(io.c2d.cp_if_kill)
         {
             reg_dec_instr := NOP
@@ -156,6 +178,8 @@ class Dpath extends Module {
             reg_dec_instr_valid := false.B
             reg_dec_pc := 0.U(64.W)
             reg_dec_pc_branch := 0.U(2.W)
+            reg_dec_pc_sel := 0.U(3.W)
+            reg_dec_ras_target := 0.U(64.W)
         }.otherwise
         {
             reg_dec_instr := wire_if_instr
@@ -163,6 +187,8 @@ class Dpath extends Module {
             reg_dec_instr_valid := true.B
             reg_dec_pc := reg_if_pc
             reg_dec_pc_branch := io.c2d.cp_if_pc_branch
+            reg_dec_pc_sel := io.c2d.cp_pc_sel
+            reg_dec_ras_target := io.c2d.cp_bpu_ras_target
         }
     }
 
@@ -230,6 +256,7 @@ class Dpath extends Module {
     dp_dec_wire_op1_source := MuxCase(dp_dec_rs1_data,Array(
         (io.c2d.cp_op1_sel === OP1_Z)   -> dp_dec_zim_ext,
         (io.c2d.cp_op1_sel === OP1_U)   -> dp_dec_uim_ext,
+        (io.c2d.cp_op1_sel === OP1_4)   -> 4.U,
         //the the op1_sel is op1_rs1
         (dp_dec_rs1_addr === dp_exe_reg_rd_addr && dp_dec_rs1_addr =/= 0.U && dp_exe_reg_rf_wen) -> dp_wire_exe_aluout,
         (dp_dec_rs1_addr === dp_mem_reg_rd_addr && dp_dec_rs1_addr =/= 0.U && dp_mem_reg_rf_wen) -> dp_wire_mem_memstageout,
@@ -241,7 +268,8 @@ class Dpath extends Module {
         (io.c2d.cp_op2_sel === OP2_PC)  -> reg_dec_pc,
         (io.c2d.cp_op2_sel === OP2_IIM) -> dp_dec_iim_ext,
         (io.c2d.cp_op2_sel === OP2_SIM) -> dp_dec_sim_ext,
-        (io.c2d.cp_op2_sel === OP2_ZERO) -> 0.U
+        (io.c2d.cp_op2_sel === OP2_ZERO) -> 0.U,
+        (io.c2d.cp_op2_sel === OP2_PC4) -> (reg_dec_pc + 4.U)
     ))
 
     dp_dec_wire_op2_source := MuxCase(dp_dec_wire_op2_temp,Array(
@@ -287,6 +315,10 @@ class Dpath extends Module {
     //for BPU
     val dp_exe_pc_branch = RegInit(0.U(2.W))
 
+    //for RAS
+    val dp_exe_pc_sel = RegInit(0.U(3.W))
+    val dp_exe_ras_target = RegInit(0.U(64.W))
+
     //pass signals from dec to exe stage due to all kinds of hazard 
     //needs rewrite that only control signal should be set to false 
     when(io.c2d.cp_pipeline_stall)
@@ -316,6 +348,8 @@ class Dpath extends Module {
         dp_exe_reg_is_Ainstr := dp_exe_reg_is_Ainstr
         dp_exe_reg_A_op := dp_exe_reg_A_op
         dp_exe_reg_A_is_word := dp_exe_reg_A_is_word
+        dp_exe_pc_sel := dp_exe_pc_sel
+        dp_exe_ras_target := dp_exe_ras_target
         
     }.elsewhen(io.c2d.cp_pipeline_kill)
     {
@@ -344,6 +378,8 @@ class Dpath extends Module {
         dp_exe_reg_is_Ainstr := false.B
         dp_exe_reg_A_op := A_op_x
         dp_exe_reg_A_is_word := false.B
+        dp_exe_pc_sel := 0.U(3.W)
+        dp_exe_ras_target := 0.U(64.W)
 
     }.otherwise
     {
@@ -374,6 +410,8 @@ class Dpath extends Module {
             dp_exe_reg_is_Ainstr := false.B
             dp_exe_reg_A_op := A_op_x
             dp_exe_reg_A_is_word := false.B
+            dp_exe_pc_sel := 0.U(3.W)
+            dp_exe_ras_target := 0.U(64.W)
 
         }.elsewhen(io.c2d.cp_control_hazard)
         {
@@ -402,6 +440,8 @@ class Dpath extends Module {
             dp_exe_reg_is_Ainstr := false.B
             dp_exe_reg_A_op := A_op_x
             dp_exe_reg_A_is_word := false.B
+            dp_exe_pc_sel := 0.U(3.W)
+            dp_exe_ras_target := 0.U(64.W)
         }.otherwise
         {
             dp_exe_reg_instr_valid := reg_dec_instr_valid
@@ -429,6 +469,8 @@ class Dpath extends Module {
             dp_exe_reg_is_Ainstr := io.c2d.cp_is_Ainstr
             dp_exe_reg_A_op := io.c2d.cp_A_op
             dp_exe_reg_A_is_word := io.c2d.cp_A_is_word
+            dp_exe_pc_sel := reg_dec_pc_sel
+            dp_exe_ras_target := reg_dec_ras_target
         }
     }
 
@@ -445,6 +487,9 @@ class Dpath extends Module {
 
     io.d2c.EXE_pc_branch := dp_exe_pc_branch
 
+    //for RAS
+    val ras_pred_suc = Mux(dp_exe_ras_target === wire_pc_jr_target ,true.B,false.B)
+    io.d2c.ras_pred_suc := ras_pred_suc
     //let alu do it's work 
     val dp_alu = Module(new alu_module)
 
