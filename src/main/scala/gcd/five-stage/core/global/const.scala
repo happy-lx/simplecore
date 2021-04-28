@@ -36,6 +36,15 @@ trait TLB_const
     val tlb_entry_number = 16
 }
 
+trait BPU_const
+{
+    val PHTSIZE = 128
+    val BHTSIZE = 8
+    val BHRWIDTH = 4
+    val PHTINDEX = log2Ceil(PHTSIZE) - BHRWIDTH - 1
+    val BHTINDEX_LOW  = PHTINDEX + 1
+    val BHTINDEX_HIGH = BHTINDEX_LOW + log2Ceil(BHTSIZE) - 1
+}
 trait A_extension_const
 {
     //for ALU operation code 
@@ -433,5 +442,5 @@ trait CSRmap
 
 }
 
-object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with TLB_const with A_extension_const with RASConst
+object Constraints extends memory_const with alu_const with core with CpathConstants with CSRConstants with CSRmap with AXI_const with Uart_const with TLB_const with A_extension_const with RASConst with BPU_const
 {}
