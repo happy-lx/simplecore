@@ -65,12 +65,10 @@ class BPU extends Module
     val isJALtype = WireInit(false.B)
     val isJALRtype = WireInit(false.B)
 
-    //for recursion
-    val target_reserve = RegInit(0.U(64.W))
-
     val bpu_ras = Module(new RAS)
     bpu_ras.io := DontCare
     bpu_ras.io.pipeline_stall := io.has_stall
+    bpu_ras.io.pc_in := io.pc_value
 
     //mutex: only one will be true or all the signals are false
     val (isBtype_temp : Bool) :: Nil = ListLookup(io.IF_ins,
@@ -102,8 +100,6 @@ class BPU extends Module
             io.IF_pc_branch := 0.U(2.W)
             bpu_ras.io.op := ras_write
             bpu_ras.io.write_target := io.pc_value + 4.U
-            target_reserve := io.pc_value + 4.U
-            bpu_ras.io.write_same := Mux(io.pc_value + 4.U === target_reserve,true.B,false.B)
             
         }.elsewhen(isJALRtype)
         {
@@ -216,7 +212,7 @@ class BPU extends Module
 class RAS_io extends Bundle
 {
     val op = Input(UInt(2.W))
-    val write_same = Input(Bool())
+    val pc_in = Input(UInt(64.W))
     val write_target = Input(UInt(64.W))
     
     val read_value = Output(UInt(64.W))
@@ -238,6 +234,7 @@ class RAS extends Module
 
     val ras_data = Mem(ras_number,new RAS_data)
     val pointer = RegInit(0.U(log2Down(ras_number).W))
+    val write_same = (io.pc_in + 4.U === ras_data(pointer - 1.U).target)
 
     /* eg. for a 4 entry RAS 
     ------
@@ -274,7 +271,7 @@ class RAS extends Module
     {
         when(!io.pipeline_stall)
         {
-            when(io.write_same)
+            when(write_same)
             {
                 //recursion
                 ras_data(pointer - 1.U).depth := ras_data(pointer - 1.U).depth + 1.U
