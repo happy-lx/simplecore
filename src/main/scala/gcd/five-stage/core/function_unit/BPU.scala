@@ -50,7 +50,7 @@ class BPU extends Module
 
     if(Config.get("preciseBPU"))
     {
-        when(io.EXE_pc_branch =/= 0.U)
+        when(io.EXE_pc_branch =/= 0.U && !io.has_stall)
         {
             //indicate that this is a branch instruction
             bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW)) := Mux(io.EXE_actual_branch === 1.U,
