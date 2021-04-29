@@ -30,6 +30,8 @@
 + 成功启动xv6，运行了`ls,echo,mkdir,cd`等用户程序
 + 成功启动Linux，创建`init`进程，输出`hello riscv world!`
 + 成功运行busybox套件，运行`ls,echo,pwd`以及`stream benchmark`
++ 进行性能优化，添加了华莱士树形乘法器
++ 添加了Gshare与Pshare的分支预测器
 + 流片已经冻结的版本在[here](https://github.com/happy-lx/ysyx_lx)
 
 ### 问题列表
@@ -44,6 +46,7 @@
 + [x] TLB的一致性该如何保证，如果访问TLB对V,D等位的修改只发生在TLB中，如果操作系统进行页面的替换，需要写回页面，则page table中的PTE和TLB中的PTE不一致该如何处理，或者操作系统修改了page table，把某一些PTE设置为invalid，两者之间的不一致该如何处理
 + [x] mip中的`mti`和`sti`有什么区别，发生时钟中断的时候是置位哪一个
 + [x] Linux启动后在ram中解析elf格式的init文件时，只要访问bss段就发生异常，似乎是没有给bss段加上页表，而访问text段就没有问题
++ [ ] 现在的分支预测器，并没有考虑当异常发生刷新流水线的情况，如果EXE阶段写入了BHR或者GHR，但是这条指令被流水线刷掉了，它是不应该保存这个修改的。而且如果EXE阶段才写入BHR或者GHR那么在DEC或者IF阶段的指令如果是相同的这条分支指令，就使用不到这个最新的结果。这两种情况该如何处理。
 
 ### 接下来的工作
 
