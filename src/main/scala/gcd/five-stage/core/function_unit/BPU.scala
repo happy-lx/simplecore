@@ -41,14 +41,20 @@ class BPU extends Module
     val JALRTYPE    =   BitPat("b????????_????????_?000????_?1100111")
 
     val sn_TAKEN :: n_TAKEN :: _TAKEN :: s_TAKEN :: Nil = Enum(4) 
+
+    assert(Config.get("Pshare") && !Config.get("Gshare") || !Config.get("Pshare") && Config.get("Gshare") || !Config.get("Pshare") && !Config.get("Gshare"))
     
-    val bpu_PHT = if(Config.get("preciseBPU")) RegInit(VecInit(Seq.fill(PHTSIZE)(sn_TAKEN))) else null
+    val bpu_PHT = if(Config.get("Pshare")) RegInit(VecInit(Seq.fill(PHTSIZE)(sn_TAKEN))) else null
 
     val bpu_raw = RegInit(sn_TAKEN) 
 
-    val bpu_BHT = if(Config.get("preciseBPU")) RegInit(VecInit(Seq.fill(BHTSIZE)(0.U(BHRWIDTH.W)))) else null
+    val bpu_BHT = if(Config.get("Pshare")) RegInit(VecInit(Seq.fill(BHTSIZE)(0.U(BHRWIDTH.W)))) else null
+    
+    val bpu_GHR = if(Config.get("Gshare")) RegInit(0.U(GHRWIDTH.W)) else null
+    
+    val bpu_GPHT = if(Config.get("Gshare")) RegInit(VecInit(Seq.fill(PHTSIZE)(sn_TAKEN))) else null
 
-    if(Config.get("preciseBPU"))
+    if(Config.get("Pshare"))
     {
         when(io.EXE_pc_branch =/= 0.U && !io.has_stall)
         {
@@ -56,6 +62,17 @@ class BPU extends Module
             bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW)) := Mux(io.EXE_actual_branch === 1.U,
                 Cat(bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))(BHRWIDTH-1,1),1.U(1.W)),
                 Cat(bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))(BHRWIDTH-1,1),0.U(1.W))
+            )
+        }
+    }
+    if(Config.get("Gshare"))
+    {
+        when(io.EXE_pc_branch =/= 0.U && !io.has_stall)
+        {
+            //indicate that this is a branch instruction
+            bpu_GHR := Mux(io.EXE_actual_branch === 1.U,
+                Cat(bpu_GHR(GHRWIDTH-1,1),1.U(1.W)),
+                Cat(bpu_GHR(GHRWIDTH-1,1),0.U(1.W))
             )
         }
     }
@@ -116,9 +133,11 @@ class BPU extends Module
         }
     }
     //val pht_index_if = Cat(io.pc_value(PHTINDEX,0),bpu_BHT(io.pc_value(BHTINDEX_HIGH,BHTINDEX_LOW)))
-    val prediction_state_if = if(Config.get("preciseBPU")) 
+    val prediction_state_if = if(Config.get("Pshare")) 
                           bpu_PHT(Cat(io.pc_value(PHTINDEX,0),bpu_BHT(io.pc_value(BHTINDEX_HIGH,BHTINDEX_LOW))))
-                              else 
+                              else if(Config.get("Gshare"))
+                          bpu_GPHT((io.pc_value(GHRWIDTH-1,0) ^ bpu_GHR)(GHRWIDTH-1,GHRWIDTH-1-log2Ceil(PHTSIZE)-1))
+                              else
                           bpu_raw
     //prediction logic 
     switch(prediction_state_if)
@@ -158,8 +177,10 @@ class BPU extends Module
         }
     }
     //val pht_index_exe = Cat(io.pc_exe(PHTINDEX,0),bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW)))
-    val prediction_state_exe = if(Config.get("preciseBPU")) 
+    val prediction_state_exe = if(Config.get("Pshare")) 
                            bpu_PHT(Cat(io.pc_exe(PHTINDEX,0),bpu_BHT(io.pc_exe(BHTINDEX_HIGH,BHTINDEX_LOW))))
+                               else if(Config.get("Gshare"))
+                           bpu_GPHT((io.pc_value(GHRWIDTH-1,0) ^ bpu_GHR)(GHRWIDTH-1,GHRWIDTH-1-log2Ceil(PHTSIZE)-1))
                                else 
                            bpu_raw
     //state switch logic 

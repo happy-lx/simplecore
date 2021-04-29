@@ -8,8 +8,9 @@ import chisel3.experimental.BundleLiterals._
 object Config 
 {
     val ConfigMap = scala.collection.mutable.Map[String,Boolean](
-        "fastMU" -> false,
-        "preciseBPU" -> false
+        "fastMU" -> true,
+        "Pshare" -> false,
+        "Gshare" -> true
     )
     def get(name:String):Boolean = {
         if(ConfigMap.contains(name))
